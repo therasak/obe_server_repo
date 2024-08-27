@@ -1,18 +1,18 @@
 const { DataTypes } = require('sequelize');
 const sequelize_conn = require('./dbconnection');
 
-const studentmaster = sequelize_conn.define('studentmaster',
+const department = sequelize_conn.define('department',
 {
-    stu_regno: {
+    dept_id: {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true
     },
-    stu_name: {
+    dept_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    dept_id: {
+    graduate: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -20,19 +20,11 @@ const studentmaster = sequelize_conn.define('studentmaster',
         type: DataTypes.STRING,
         allowNull: false
     },
-    semester: {
+    programme: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    section: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    mentor: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    emis: {
+    dept_hod: {
         type: DataTypes.STRING,
         allowNull: false
     }
@@ -42,4 +34,4 @@ const studentmaster = sequelize_conn.define('studentmaster',
     freezeTableName: true
 });
 
-module.exports = studentmaster;
+module.exports = department;

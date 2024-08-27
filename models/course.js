@@ -1,22 +1,22 @@
 const { DataTypes } = require('sequelize');
 const sequelize_conn = require('./dbconnection');
 
-const staffmaster = sequelize_conn.define('staffmaster', 
+const course = sequelize_conn.define('course',
 {
-    staff_id: {
+    course_code: {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true
     },
-    staff_name: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    staff_pass: {
+    course_title: {
         type: DataTypes.STRING,
         allowNull: false
     },
     dept_id: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    course_part: {
         type: DataTypes.STRING,
         allowNull: false
     }
@@ -26,4 +26,4 @@ const staffmaster = sequelize_conn.define('staffmaster',
     freezeTableName: true
 });
 
-module.exports = staffmaster;
+module.exports = course;

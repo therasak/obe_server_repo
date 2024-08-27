@@ -1,22 +1,18 @@
 const { DataTypes } = require('sequelize');
 const sequelize_conn = require('./dbconnection');
 
-const studentmaster = sequelize_conn.define('studentmaster',
+const coursemapping = sequelize_conn.define('coursemapping',
 {
-    stu_regno: {
+    staff_id: {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true
     },
-    stu_name: {
+    category: {
         type: DataTypes.STRING,
         allowNull: false
     },
     dept_id: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    category: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -28,11 +24,7 @@ const studentmaster = sequelize_conn.define('studentmaster',
         type: DataTypes.STRING,
         allowNull: false
     },
-    mentor: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    emis: {
+    course_code: {
         type: DataTypes.STRING,
         allowNull: false
     }
@@ -42,4 +34,4 @@ const studentmaster = sequelize_conn.define('studentmaster',
     freezeTableName: true
 });
 
-module.exports = studentmaster;
+module.exports = coursemapping;
