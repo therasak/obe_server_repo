@@ -3,10 +3,15 @@ const sequelize_conn = require('./dbconnection');
 
 const coursemapping = sequelize_conn.define('coursemapping',
 {
+    s_no: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement:true
+    },
     staff_id: {
         type: DataTypes.STRING,
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
     },
     category: {
         type: DataTypes.STRING,
