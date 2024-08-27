@@ -26,7 +26,7 @@ const course = sequelize_conn.define('course',
     },
     ese_mark: {
         type: DataTypes.INTEGER,
-        allowNull: fals
+        allowNull: false
     }
 }, 
 {
