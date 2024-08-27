@@ -48,20 +48,27 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.post('/login', async (req, res) => {
-    const { staff_id, password } = req.body;
+    const { staff_id, staff_pass} = req.body;
 
     try {
         const user = await staffmaster.findOne({
             where: {
-                staff_id: staff_id,
-                staff_pass: password
+                staff_id: staff_id
             }
         });
 
         if (user) {
-            return res.status(200).json({ success: true, message: "Login Successful" });
+            if(user.staff_pass === staff_pass)
+            {
+                return res.json({ success: true, message:" Login Succesful"})
+            }
+            else
+            {
+                return res.json({ success: false, message:" password invalid"})
+            }
+            
         } else {
-            return res.status(401).json({ success: false, message: "Invalid Credentials" });
+            return res.json({ success: true, message: " user id not found"})
         }
     } catch (error) {
         console.error('Error during Login:', error);
@@ -82,3 +89,19 @@ sequelize_conn.authenticate()
 .catch(err => {
     console.error('Unable to connect to the Database:', err);
 });
+
+// fetch data for Dashboard
+
+// async function course(){
+//     try {
+//     const user = await coursemapping.findOne({
+//         where: {
+//             staff_id: staff_id,
+//         }
+//     });
+//     const course_code=user.course_code;
+//     console.log(course_code)
+// }catch(error){
+//     console.log(error)
+// }
+// }
