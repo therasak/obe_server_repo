@@ -21,12 +21,12 @@ const course = sequelize_conn.define('course',
         allowNull: false
     },
     cia_mark: {
-        type: DataTypes.INTERGER,
+        type: DataTypes.INTEGER,
         allowNull: false
     },
     ese_mark: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: fals
     }
 }, 
 {
