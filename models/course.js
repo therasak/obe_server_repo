@@ -19,6 +19,14 @@ const course = sequelize_conn.define('course',
     course_part: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    cia_mark: {
+        type: DataTypes.INTERGER,
+        allowNull: false
+    },
+    ese_mark: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 }, 
 {
