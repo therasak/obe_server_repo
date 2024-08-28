@@ -3,10 +3,6 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const sequelize_conn = require('./models/dbconnection');
 const staffmaster = require('./models/staffmaster');
-const studentmaster = require('./models/studentmaster');
-const department = require('./models/department');
-const course = require('./models/course');
-const coursemapping = require('./models/coursemapping');
 
 // async function dbconncheck() 
 // {
@@ -35,10 +31,10 @@ const coursemapping = require('./models/coursemapping');
 //         console.log('Error Occurred:', error.message);
 //     } 
 
-//     finally {
-//         // Close the database connection
-//         await sequelize_conn.close();
-//     }
+//     // finally {
+//     //     // Close the database connection
+//     //     await sequelize_conn.close();
+//     // }
 // }
 
 // dbconncheck();
@@ -48,60 +44,38 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.post('/login', async (req, res) => {
-    const { staff_id, staff_pass} = req.body;
+    const { staff_id, staff_pass } = req.body;
 
     try {
         const user = await staffmaster.findOne({
-            where: {
-                staff_id: staff_id
-            }
+            where: { staff_id: staff_id }
         });
 
         if (user) {
-            if(user.staff_pass === staff_pass)
-            {
-                return res.json({ success: true, message:" Login Succesful"})
+            if (user.staff_pass === staff_pass) {
+                return res.json({ success: true, message: "Login Successful" });
+            } 
+            else {
+                return res.json({ success: false, message: "Invalid Password" });
             }
-            else
-            {
-                return res.json({ success: false, message:" password invalid"})
-            }
-            
-        } else {
-            return res.json({ success: true, message: " user id not found"})
+        } 
+        else {
+            return res.json({ success: false, message: "User Not Found" });
         }
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error during Login:', error);
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
 
-
 sequelize_conn.authenticate()
-
-.then(() => {
-    console.log('Database connected');
-    app.listen(5000, () => {
-        console.log('Server running on http://localhost:5000');
+    .then(() => {
+        console.log('Database connected');
+        app.listen(5000, () => {
+            console.log('Server running on http://localhost:5000');
+        });
+    })
+    .catch(err => {
+        console.error('Unable to connect to the Database:', err);
     });
-})
-
-.catch(err => {
-    console.error('Unable to connect to the Database:', err);
-});
-
-// fetch data for Dashboard
-
-// async function course(){
-//     try {
-//     const user = await coursemapping.findOne({
-//         where: {
-//             staff_id: staff_id,
-//         }
-//     });
-//     const course_code=user.course_code;
-//     console.log(course_code)
-// }catch(error){
-//     console.log(error)
-// }
-// }
