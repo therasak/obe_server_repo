@@ -76,6 +76,7 @@ app.post('/login', async (req, res) => {
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
+
 app.post('/login', async (req, res) => {
     const { staff_id } = req.body;
 
