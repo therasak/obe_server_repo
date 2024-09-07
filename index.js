@@ -8,6 +8,10 @@ const department = require('./models/department');
 const course = require('./models/course');
 const coursemapping=require('./models/coursemapping');
 const XLSX = require('xlsx');
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+app.use(express.json());
 
 // ---------------------------------------------------------------------------------- //
 
@@ -49,7 +53,7 @@ const XLSX = require('xlsx');
 
 // ---------------------------------------------------------------------------------- //
 
-// Import Staff Data Into Tables
+// Import Staff Data Into Database
 
 // const staffmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Master Dup.xlsx');
 // const staffmasterSheetNo = staffmasterDataXL.SheetNames[0]; 
@@ -75,7 +79,7 @@ const XLSX = require('xlsx');
 
 // ---------------------------------------------------------------------------------- //
 
-// Import Course Mapping Data Into Tables
+// Import Course Mapping Data Into Database
 
 // const coursemappingDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Course Mapping Dup.xlsx');
 // const coursemappingSheetNo = coursemappingDataXL.SheetNames[0]; 
@@ -102,23 +106,21 @@ const XLSX = require('xlsx');
 
 // ---------------------------------------------------------------------------------- //
 
-const app = express();
-app.use(bodyParser.json());
-app.use(cors()); 
+// Validation Coding
 
-app.post('/login', async (req, res) => {
-    
+app.post('/login', async (req, res) => 
+{
     const { staff_id, staff_pass } = req.body;
 
     try {
         const user = await staffmaster.findOne({
             where: { staff_id: staff_id }
         });
-        
         if (user) {
             if (user.staff_pass === staff_pass) {
                 return res.json({ success: true, message: "Login Successful" });
             } 
+            
             else {
                 return res.json({ success: false, message: "Invalid Password" });
             }
@@ -135,238 +137,36 @@ app.post('/login', async (req, res) => {
 
 // ---------------------------------------------------------------------------------- //
 
-app.get('/coursemap', async (req, res) => {
+// Course Mapping Details Getting Coding
+
+app.post('/coursemapp', async (req, res) => 
+{
+    const { staff_id } = req.body;
+
     try {
-        const courseMappings = await coursemapping.findAll();
-        res.json(courseMappings);
-    } catch (err) {
-        console.error(err);
+        const courseMapping = await coursemapping.findAll({
+            where: { staff_id: staff_id }
+        });
+        res.json(courseMapping);
+    } 
+    catch (err) {
         res.status(500).json({ error: 'An error occurred while fetching data.' });
     }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    sequelize_conn.authenticate()
-        .then(() => {
-            console.log('Database connected');
-            app.listen(5000, () => {
-                console.log('Server running on http://localhost:5000');
-            });
-        })
-        .catch(err => {
-            console.error('Unable to connect to the Database:', err);
-        }); 
-
-
-app.get('/coursemap', async (req, res) => {
-    try {
-        const courseMappings = await coursemapping.findAll();
-        res.json(courseMappings);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'An error occurred while fetching data.' });
-    }
-});
-
+// ---------------------------------------------------------------------------------- //
+
+// Database Authenticate Coding
+
+sequelize_conn.authenticate()
+.then(() => 
+{
+    console.log('Database connected');
+    app.listen( 5000 , () => {
+        console.log('Server running on http://localhost:5000');
+    });
+})
+.catch (err => 
+{
+    console.error('Unable to connect to the Database:', err);
+}); 
