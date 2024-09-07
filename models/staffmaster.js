@@ -16,7 +16,7 @@ const staffmaster = sequelize_conn.define('staffmaster',
         type: DataTypes.STRING,
         allowNull: false
     },
-    dept_id: {
+    dept_name: {
         type: DataTypes.STRING,
         allowNull: false
     }

@@ -7,45 +7,104 @@ const studentmaster = require('./models/studentmaster');
 const department = require('./models/department');
 const course = require('./models/course');
 const coursemapping=require('./models/coursemapping');
+const XLSX = require('xlsx');
+
+// ---------------------------------------------------------------------------------- //
+
+// Tables ( Model ) Synchronization Coding
 
 // async function dbconncheck() 
 // {
 //     try {
-//         // Authenticate the connection
-//         await sequelize_conn.authenticate();
-//         console.log('Database Synced');
+//         // // Authenticate the connection
+//         // await sequelize_conn.authenticate();
+//         // console.log('Database Synced');
 
-//         // Synchronize the staffmaster model
-//         await staffmaster.sync();
+//         // // Synchronize the staffmaster model
+//         // await staffmaster.sync();
+//         // console.log('Staffmaster Table Synced');
 
-//         // Synchronize the studentmaster model
-//         await studentmaster.sync();
+//         // // Synchronize the studentmaster model
+//         // await studentmaster.sync();
+//         // console.log('Studentmaster Table Synced');
 
-//         // Synchronize the course model
-//         await course.sync();
+//         // // Synchronize the course model
+//         // await course.sync();
+//         // console.log('Course Table Synced');
 
-//         // Synchronize the coursemapping model
-//         await coursemapping.sync();
+//         // // Synchronize the coursemapping model
+//         // await coursemapping.sync();
+//         // console.log('Coursemapping Table Synced');
 
-//         // Synchronize the department model
-//         await department.sync();
+//         // // Synchronize the department model
+//         // await department.sync();
+//         // console.log('Deparment Table Synced');
 //     } 
-
 //     catch (error) {
 //         console.log('Error Occurred:', error.message);
-//     } 
-
-//     finally {
-//         // Close the database connection
-//         await sequelize_conn.close();
 //     }
 // }
 
 // dbconncheck();
 
+// ---------------------------------------------------------------------------------- //
+
+// Import Staff Data Into Tables
+
+// const staffmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Master Dup.xlsx');
+// const staffmasterSheetNo = staffmasterDataXL.SheetNames[0]; 
+// const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
+// const staffdata = XLSX.utils.sheet_to_json(staffmasterWorksheet);
+// const staffImportData = async () => 
+// {
+//     try {
+//         const staffExistingRecords = await staffmaster.findAll();
+//         if (staffExistingRecords.length > 0) {
+//             await staffmaster.destroy({ where: {} });
+//             console.log('Existing records deleted.');
+//             }
+//         await staffmaster.bulkCreate(staffdata, { ignoreDuplicates: true });
+//         console.log('Staff Master data inserted successfully!');
+//     } 
+//     catch (err) {
+//         console.error('Error Importing Data :', err);
+//     }
+// };
+
+// staffImportData();
+
+// ---------------------------------------------------------------------------------- //
+
+// Import Course Mapping Data Into Tables
+
+// const coursemappingDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Course Mapping Dup.xlsx');
+// const coursemappingSheetNo = coursemappingDataXL.SheetNames[0]; 
+// const coursemappingWorksheet = coursemappingDataXL.Sheets[coursemappingSheetNo];
+// const coursemappingdata = XLSX.utils.sheet_to_json(coursemappingWorksheet);
+// const courseMappingImportData = async () => 
+// {
+//     try {
+//         const coursemappingExistingRecords = await staffmaster.findAll();
+//         if (coursemappingExistingRecords.length > 0) {
+//             await coursemapping.destroy({ where: {} });
+//             console.log('Existing records deleted.');
+//         }
+//         await sequelize_conn.query('ALTER TABLE coursemapping AUTO_INCREMENT = 1');
+//         await coursemapping.bulkCreate(coursemappingdata, { ignoreDuplicates: true });
+//         console.log('Course Mapping data inserted successfully!');
+//     } 
+//     catch (err) {
+//         console.error('Error Importing Data :', err);
+//     }
+// };
+
+// courseMappingImportData();
+
+// ---------------------------------------------------------------------------------- //
+
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors()); 
 
 app.post('/login', async (req, res) => {
     
@@ -55,10 +114,6 @@ app.post('/login', async (req, res) => {
         const user = await staffmaster.findOne({
             where: { staff_id: staff_id }
         });
-        const user1=coursemapping.findAll({
-            where :{staff_id : staff_id}
-        }
-        );
         
         if (user) {
             if (user.staff_pass === staff_pass) {
@@ -78,31 +133,231 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.post('/login', async (req, res) => {
-    const { staff_id } = req.body;
+// ---------------------------------------------------------------------------------- //
 
-try{
-    const user1=coursemapping.findAll({
-        where :{staff_id : staff_id}
+app.get('/coursemap', async (req, res) => {
+    try {
+        const courseMappings = await coursemapping.findAll();
+        res.json(courseMappings);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while fetching data.' });
     }
-    )
-    console.log(user1);
-}catch(error)
-{
-    console.error('Error during Login:', error);
-    // return res.status(500).json({ success: false, message: "Internal Server Error" });
-}
-})
-sequelize_conn.authenticate()
-    .then(() => {
-        console.log('Database connected');
-        app.listen(5000, () => {
-            console.log('Server running on http://localhost:5000');
-        });
-    })
-    .catch(err => {
-        console.error('Unable to connect to the Database:', err);
-    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    sequelize_conn.authenticate()
+        .then(() => {
+            console.log('Database connected');
+            app.listen(5000, () => {
+                console.log('Server running on http://localhost:5000');
+            });
+        })
+        .catch(err => {
+            console.error('Unable to connect to the Database:', err);
+        }); 
 
 
 app.get('/coursemap', async (req, res) => {
@@ -114,3 +369,4 @@ app.get('/coursemap', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching data.' });
     }
 });
+

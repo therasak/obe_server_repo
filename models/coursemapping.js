@@ -7,7 +7,7 @@ const coursemapping = sequelize_conn.define('coursemapping',
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement:true
+        autoIncrement: true
     },
     staff_id: {
         type: DataTypes.STRING,
@@ -17,12 +17,16 @@ const coursemapping = sequelize_conn.define('coursemapping',
         type: DataTypes.STRING,
         allowNull: false
     },
-    dept_id: {
+    dept_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
     semester: {
         type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    class: {
+        type: DataTypes.STRING,
         allowNull: false
     },
     section: {
