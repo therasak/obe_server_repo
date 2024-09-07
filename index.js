@@ -139,7 +139,7 @@ app.post('/login', async (req, res) =>
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemapp', async (req, res) => 
+app.post('/coursemap', async (req, res) => 
 {
     const { staff_id } = req.body;
 
@@ -169,4 +169,4 @@ sequelize_conn.authenticate()
 .catch (err => 
 {
     console.error('Unable to connect to the Database:', err);
-}); 
+});
