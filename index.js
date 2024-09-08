@@ -106,6 +106,35 @@ app.use(express.json());
 
 // ---------------------------------------------------------------------------------- //
 
+// Import Student Tables Data Into Database
+
+// const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master Dup.xlsx');
+// const studentmasterSheetNo = studentmasterDataXL.SheetNames[0]; 
+// const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
+// const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet);
+
+// const studentImportData = async () => {
+//     try {
+//         const studentExistingRecords = await studentmaster.findAll();
+        
+//         if (studentExistingRecords.length > 0) {
+//             await studentmaster.destroy({ where: {} });
+//             console.log('Existing records deleted.');
+//         }
+//         await sequelize_conn.query('ALTER TABLE studentmaster AUTO_INCREMENT = 1');
+//         await studentmaster.bulkCreate(studentdata, { ignoreDuplicates: true });
+//         console.log('Student Master data inserted successfully!');
+//     } 
+//     catch (err) {
+//         console.error('Error Importing Data:', err);
+//     }
+// };
+
+// studentImportData();
+
+
+// ---------------------------------------------------------------------------------- //
+
 // Validation Coding
 
 app.post('/login', async (req, res) => 
@@ -150,6 +179,30 @@ app.post('/coursemap', async (req, res) =>
         res.json(courseMapping);
     } 
     catch (err) {
+        res.status(500).json({ error: 'An error occurred while fetching data.' });
+    }
+});
+
+// ---------------------------------------------------------------------------------- //
+
+// Students Data Fetching Coding
+
+app.post('/studentdetails', async (req, res) => 
+{
+    const { dept_name, stu_section, stu_semester } = req.body;
+
+    try {
+        const studentDetails = await studentmaster.findAll({
+            where: { 
+                dept_name: dept_name, 
+                semester: stu_semester, 
+                section: stu_section
+            }
+        });
+        res.json(studentDetails);
+    } 
+    catch (err) {
+        console.error('Error fetching data:', err);
         res.status(500).json({ error: 'An error occurred while fetching data.' });
     }
 });

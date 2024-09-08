@@ -3,16 +3,21 @@ const sequelize_conn = require('./dbconnection');
 
 const studentmaster = sequelize_conn.define('studentmaster',
 {
+    s_no: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true
+    },
     stu_regno: {
         type: DataTypes.STRING,
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
     },
     stu_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    dept_id: {
+    dept_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
