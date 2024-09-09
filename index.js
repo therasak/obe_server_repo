@@ -108,29 +108,29 @@ app.use(express.json());
 
 // Import Student Tables Data Into Database
 
-// const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master Dup.xlsx');
-// const studentmasterSheetNo = studentmasterDataXL.SheetNames[0]; 
-// const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
-// const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet);
+const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master.xlsx');
+const studentmasterSheetNo = studentmasterDataXL.SheetNames[0]; 
+const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
+const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet);
 
-// const studentImportData = async () => {
-//     try {
-//         const studentExistingRecords = await studentmaster.findAll();
+const studentImportData = async () => {
+    try {
+        const studentExistingRecords = await studentmaster.findAll();
         
-//         if (studentExistingRecords.length > 0) {
-//             await studentmaster.destroy({ where: {} });
-//             console.log('Existing records deleted.');
-//         }
-//         await sequelize_conn.query('ALTER TABLE studentmaster AUTO_INCREMENT = 1');
-//         await studentmaster.bulkCreate(studentdata, { ignoreDuplicates: true });
-//         console.log('Student Master data inserted successfully!');
-//     } 
-//     catch (err) {
-//         console.error('Error Importing Data:', err);
-//     }
-// };
+        if (studentExistingRecords.length > 0) {
+            await studentmaster.destroy({ where: {} });
+            console.log('Existing records deleted.');
+        }
+        await sequelize_conn.query('ALTER TABLE studentmaster AUTO_INCREMENT = 1');
+        await studentmaster.bulkCreate(studentdata, { ignoreDuplicates: true });
+        console.log('Student Master data inserted successfully!');
+    } 
+    catch (err) {
+        console.error('Error Importing Data:', err);
+    }
+};
 
-// studentImportData();
+studentImportData();
 
 
 // ---------------------------------------------------------------------------------- //
