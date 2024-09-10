@@ -6,6 +6,7 @@ const staffmaster = require('./models/staffmaster');
 const studentmaster = require('./models/studentmaster');
 const department = require('./models/department');
 const course = require('./models/course');
+const scope = require('./models/scope');
 const coursemapping=require('./models/coursemapping');
 const XLSX = require('xlsx');
 const app = express();
@@ -17,39 +18,43 @@ app.use(express.json());
 
 // Tables ( Model ) Synchronization Coding
 
-// async function dbconncheck() 
-// {
-//     try {
-//         // // Authenticate the connection
-//         // await sequelize_conn.authenticate();
-//         // console.log('Database Synced');
+async function dbconncheck() 
+{
+    try {
+        // // Authenticate the connection
+        // await sequelize_conn.authenticate();
+        // console.log('Database Synced');
 
-//         // // Synchronize the staffmaster model
-//         // await staffmaster.sync();
-//         // console.log('Staffmaster Table Synced');
+        // // Synchronize the staffmaster model
+        // await staffmaster.sync();
+        // console.log('Staffmaster Table Synced');
 
-//         // // Synchronize the studentmaster model
-//         // await studentmaster.sync();
-//         // console.log('Studentmaster Table Synced');
+        // // Synchronize the studentmaster model
+        // await studentmaster.sync();
+        // console.log('Studentmaster Table Synced');
 
-//         // // Synchronize the course model
-//         // await course.sync();
-//         // console.log('Course Table Synced');
+        // // Synchronize the course model
+        // await course.sync();
+        // console.log('Course Table Synced');
 
-//         // // Synchronize the coursemapping model
-//         // await coursemapping.sync();
-//         // console.log('Coursemapping Table Synced');
+        // Synchronize the scope model
+        await scope.sync();
+        console.log('Scope Table Synced');
 
-//         // // Synchronize the department model
-//         // await department.sync();
-//         // console.log('Deparment Table Synced');
-//     } 
-//     catch (error) {
-//         console.log('Error Occurred:', error.message);
-//     }
-// }
+        // // Synchronize the coursemapping model
+        // await coursemapping.sync();
+        // console.log('Coursemapping Table Synced');
 
-// dbconncheck();
+        // // Synchronize the department model
+        // await department.sync();
+        // console.log('Deparment Table Synced');
+    } 
+    catch (error) {
+        console.log('Error Occurred:', error.message);
+    }
+}
+
+dbconncheck();
 
 // ---------------------------------------------------------------------------------- //
 
@@ -108,29 +113,29 @@ app.use(express.json());
 
 // Import Student Tables Data Into Database
 
-const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master.xlsx');
-const studentmasterSheetNo = studentmasterDataXL.SheetNames[0]; 
-const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
-const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet);
+// const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master.xlsx');
+// const studentmasterSheetNo = studentmasterDataXL.SheetNames[0]; 
+// const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
+// const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet);
 
-const studentImportData = async () => {
-    try {
-        const studentExistingRecords = await studentmaster.findAll();
+// const studentImportData = async () => {
+//     try {
+//         const studentExistingRecords = await studentmaster.findAll();
         
-        if (studentExistingRecords.length > 0) {
-            await studentmaster.destroy({ where: {} });
-            console.log('Existing records deleted.');
-        }
-        await sequelize_conn.query('ALTER TABLE studentmaster AUTO_INCREMENT = 1');
-        await studentmaster.bulkCreate(studentdata, { ignoreDuplicates: true });
-        console.log('Student Master data inserted successfully!');
-    } 
-    catch (err) {
-        console.error('Error Importing Data:', err);
-    }
-};
+//         if (studentExistingRecords.length > 0) {
+//             await studentmaster.destroy({ where: {} });
+//             console.log('Existing records deleted.');
+//         }
+//         await sequelize_conn.query('ALTER TABLE studentmaster AUTO_INCREMENT = 1');
+//         await studentmaster.bulkCreate(studentdata, { ignoreDuplicates: true });
+//         console.log('Student Master data inserted successfully!');
+//     } 
+//     catch (err) {
+//         console.error('Error Importing Data:', err);
+//     }
+// };
 
-studentImportData();
+// studentImportData();
 
 
 // ---------------------------------------------------------------------------------- //
@@ -168,7 +173,7 @@ app.post('/login', async (req, res) =>
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemap', async (req, res) => 
+app.post('/coursemap/', async (req, res) => 
 {
     const { staff_id } = req.body;
 
