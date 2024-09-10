@@ -224,7 +224,7 @@ app.post('/studentdetails', async (req, res) =>
     try {
         const studentDetails = await studentmaster.findAll({
             where: { 
-                dept_name: dept_name, 
+                course_id: dept_name, 
                 semester: stu_semester, 
                 section: stu_section
             }
