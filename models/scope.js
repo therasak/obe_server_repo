@@ -20,6 +20,10 @@ const scope = sequelize_conn.define('scope',
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    upload_files : {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     logout: {
         type: DataTypes.INTEGER,
         allowNull: false

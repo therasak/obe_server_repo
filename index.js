@@ -7,7 +7,7 @@ const studentmaster = require('./models/studentmaster');
 const department = require('./models/department');
 const course = require('./models/course');
 const scope = require('./models/scope');
-const coursemapping=require('./models/coursemapping');
+const coursemapping = require('./models/coursemapping');
 const XLSX = require('xlsx');
 const app = express();
 app.use(bodyParser.json());
@@ -18,43 +18,43 @@ app.use(express.json());
 
 // Tables ( Model ) Synchronization Coding
 
-async function dbconncheck() 
-{
-    try {
-        // // Authenticate the connection
-        // await sequelize_conn.authenticate();
-        // console.log('Database Synced');
+// async function dbconncheck() 
+// {
+//     try {
+//         // // Authenticate the connection
+//         // await sequelize_conn.authenticate();
+//         // console.log('Database Synced');
 
-        // // Synchronize the staffmaster model
-        // await staffmaster.sync();
-        // console.log('Staffmaster Table Synced');
+//         // // Synchronize the staffmaster model
+//         // await staffmaster.sync();
+//         // console.log('Staffmaster Table Synced');
 
-        // // Synchronize the studentmaster model
-        // await studentmaster.sync();
-        // console.log('Studentmaster Table Synced');
+//         // // Synchronize the studentmaster model
+//         // await studentmaster.sync();
+//         // console.log('Studentmaster Table Synced');
 
-        // // Synchronize the course model
-        // await course.sync();
-        // console.log('Course Table Synced');
+//         // // Synchronize the course model
+//         // await course.sync();
+//         // console.log('Course Table Synced');
 
-        // Synchronize the scope model
-        await scope.sync();
-        console.log('Scope Table Synced');
+//         // // Synchronize the coursemapping model
+//         // await coursemapping.sync();
+//         // console.log('Coursemapping Table Synced');
 
-        // // Synchronize the coursemapping model
-        // await coursemapping.sync();
-        // console.log('Coursemapping Table Synced');
+//         // // Synchronize the scope model
+//         // await scope.sync();
+//         // console.log('Scope Table Synced');
 
-        // // Synchronize the department model
-        // await department.sync();
-        // console.log('Deparment Table Synced');
-    } 
-    catch (error) {
-        console.log('Error Occurred:', error.message);
-    }
-}
+//         // // Synchronize the department model
+//         // await department.sync();
+//         // console.log('Deparment Table Synced');
+//     } 
+//     catch (error) {
+//         console.log('Error Occurred:', error.message);
+//     }
+// }
 
-dbconncheck();
+// dbconncheck();
 
 // ---------------------------------------------------------------------------------- //
 
@@ -86,20 +86,34 @@ dbconncheck();
 
 // Import Course Mapping Data Into Database
 
-// const coursemappingDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Course Mapping Dup.xlsx');
+// const coursemappingDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Course Mapping.xlsx');
 // const coursemappingSheetNo = coursemappingDataXL.SheetNames[0]; 
 // const coursemappingWorksheet = coursemappingDataXL.Sheets[coursemappingSheetNo];
-// const coursemappingdata = XLSX.utils.sheet_to_json(coursemappingWorksheet);
+// const coursemappingdata = XLSX.utils.sheet_to_json(coursemappingWorksheet, { header: 1 });
+
+// const mappedCourseMappingData = coursemappingdata.slice(1).map((row) => ({
+//     category: row[0],          
+//     batch: row[1],           
+//     degree: row[2],       
+//     branch: row[3],    
+//     semester: row[4],       
+//     section: row[5],         
+//     course_code: row[6],           
+//     staff_id: row[7],          
+//     staff_name: row[8],
+//     course_title: row[9]            
+// }));
+
 // const courseMappingImportData = async () => 
 // {
 //     try {
-//         const coursemappingExistingRecords = await staffmaster.findAll();
+//         const coursemappingExistingRecords = await coursemapping.findAll();
 //         if (coursemappingExistingRecords.length > 0) {
 //             await coursemapping.destroy({ where: {} });
 //             console.log('Existing records deleted.');
 //         }
 //         await sequelize_conn.query('ALTER TABLE coursemapping AUTO_INCREMENT = 1');
-//         await coursemapping.bulkCreate(coursemappingdata, { ignoreDuplicates: true });
+//         await coursemapping.bulkCreate(mappedCourseMappingData, { ignoreDuplicates: true });
 //         console.log('Course Mapping data inserted successfully!');
 //     } 
 //     catch (err) {
@@ -110,33 +124,44 @@ dbconncheck();
 // courseMappingImportData();
 
 // ---------------------------------------------------------------------------------- //
-
+ 
 // Import Student Tables Data Into Database
 
 // const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master.xlsx');
-// const studentmasterSheetNo = studentmasterDataXL.SheetNames[0]; 
+// const studentmasterSheetNo = studentmasterDataXL.SheetNames[0];
 // const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
-// const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet);
+// const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet, { header: 1 });
 
-// const studentImportData = async () => {
+// const mappedStudentData = studentdata.slice(1).map((row) => ({
+//     reg_no: row[0],          
+//     stu_name: row[1],           
+//     course_id: row[2],       
+//     college_code: row[3],    
+//     semester: row[4],       
+//     section: row[5],         
+//     batch: row[6],           
+//     mentor: row[7],          
+//     emis: row[8]             
+// }));
+
+// const studentImportData = async () => 
+// {
 //     try {
 //         const studentExistingRecords = await studentmaster.findAll();
-        
+
 //         if (studentExistingRecords.length > 0) {
 //             await studentmaster.destroy({ where: {} });
 //             console.log('Existing records deleted.');
 //         }
-//         await sequelize_conn.query('ALTER TABLE studentmaster AUTO_INCREMENT = 1');
-//         await studentmaster.bulkCreate(studentdata, { ignoreDuplicates: true });
+//         await studentmaster.bulkCreate(mappedStudentData, { ignoreDuplicates: true });
 //         console.log('Student Master data inserted successfully!');
 //     } 
 //     catch (err) {
 //         console.error('Error Importing Data:', err);
 //     }
-// };
+// }
 
 // studentImportData();
-
 
 // ---------------------------------------------------------------------------------- //
 
@@ -173,7 +198,7 @@ app.post('/login', async (req, res) =>
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemap/', async (req, res) => 
+app.post('/coursemap', async (req, res) => 
 {
     const { staff_id } = req.body;
 
@@ -214,12 +239,35 @@ app.post('/studentdetails', async (req, res) =>
 
 // ---------------------------------------------------------------------------------- //
 
+// Scope Options Validating Coding
+
+app.get('/scope/:staffId', async (req, res) => 
+{
+    const { staffId } = req.params;
+
+    try {
+        const scopeDetails = await scope.findOne({
+            where: { staff_id: staffId }
+        });
+        if (scopeDetails.length === 0) {
+            return res.status(404).json({ error: 'No records found for the given staff ID.' });
+        }
+        res.json(scopeDetails);
+    } 
+    catch (err) {
+        console.error('Error fetching scope details:', err);
+        res.status(500).json({ error: 'An error occurred while fetching data.' });
+    }
+});
+
+// ---------------------------------------------------------------------------------- //
+
 // Database Authenticate Coding
 
 sequelize_conn.authenticate()
 .then(() => 
 {
-    console.log('Database connected');
+    console.log('Database Connected');
     app.listen( 5000 , () => {
         console.log('Server running on http://localhost:5000');
     });

@@ -3,40 +3,40 @@ const sequelize_conn = require('./dbconnection');
 
 const studentmaster = sequelize_conn.define('studentmaster',
 {
-    Reg_no : {
+    reg_no : {
         type: DataTypes.STRING,
         allowNull: false,
         primaryKey: true
     },
-    Name : {
+    stu_name : {
         type: DataTypes.STRING,
         allowNull: false
     },
-    Course_Id : {
+    course_id : {
         type: DataTypes.STRING,
         allowNull: false
     },
-    College_code : {
+    college_code : {
         type: DataTypes.STRING,
         allowNull: false
     },
-    Semester: {
+    semester: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    Section: {
+    section: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    Batch : {
+    batch : {
         type: DataTypes.STRING,
         allowNull: false
     },
-    Mentor : {
+    mentor : {
         type: DataTypes.STRING,
         allowNull: false
     },
-    EMIS : {
+    emis : {
         type: DataTypes.STRING,
         allowNull: false
     }

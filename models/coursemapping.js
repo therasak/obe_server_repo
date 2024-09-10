@@ -9,15 +9,19 @@ const coursemapping = sequelize_conn.define('coursemapping',
         primaryKey: true,
         autoIncrement: true
     },
-    staff_id: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
     category: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    dept_name: {
+    batch: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    degree: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    branch: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -25,15 +29,19 @@ const coursemapping = sequelize_conn.define('coursemapping',
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    class: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
     section: {
         type: DataTypes.STRING,
         allowNull: false
     },
     course_code: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    staff_id: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    staff_name: {
         type: DataTypes.STRING,
         allowNull: false
     },
