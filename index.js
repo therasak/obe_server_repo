@@ -18,151 +18,163 @@ app.use(express.json());
 
 // Tables ( Model ) Synchronization Coding
 
-// async function dbconncheck() 
-// {
-//     try {
-//         // // Authenticate the connection
-//         // await sequelize_conn.authenticate();
-//         // console.log('Database Synced');
+async function dbconncheck() 
+{
+    try {
+        // Authenticate the connection
+        await sequelize_conn.authenticate();
+        console.log('Database Synced');
 
-//         // // Synchronize the staffmaster model
-//         // await staffmaster.sync();
-//         // console.log('Staffmaster Table Synced');
+        // Synchronize the staffmaster model
+        await staffmaster.sync();
+        console.log('Staffmaster Table Synced');
 
-//         // // Synchronize the studentmaster model
-//         // await studentmaster.sync();
-//         // console.log('Studentmaster Table Synced');
+        // Synchronize the studentmaster model
+        await studentmaster.sync();
+        console.log('Studentmaster Table Synced');
 
-//         // // Synchronize the course model
-//         // await course.sync();
-//         // console.log('Course Table Synced');
+        // Synchronize the course model
+        await course.sync();
+        console.log('Course Table Synced');
 
-//         // // Synchronize the coursemapping model
-//         // await coursemapping.sync();
-//         // console.log('Coursemapping Table Synced');
+        // Synchronize the coursemapping model
+        await coursemapping.sync();
+        console.log('Coursemapping Table Synced');
 
-//         // // Synchronize the scope model
-//         // await scope.sync();
-//         // console.log('Scope Table Synced');
+        // Synchronize the scope model
+        await scope.sync();
+        console.log('Scope Table Synced');
 
-//         // // Synchronize the department model
-//         // await department.sync();
-//         // console.log('Deparment Table Synced');
-//     } 
-//     catch (error) {
-//         console.log('Error Occurred:', error.message);
-//     }
-// }
+        // Synchronize the department model
+        await department.sync();
+        console.log('Deparment Table Synced');
+    } 
+    catch (error) {
+        console.log('Error Occurred:', error.message);
+    }
+}
 
-// dbconncheck();
+dbconncheck();
 
 // ---------------------------------------------------------------------------------- //
 
 // Import Staff Data Into Database
 
-// const staffmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Master Dup.xlsx');
-// const staffmasterSheetNo = staffmasterDataXL.SheetNames[0]; 
-// const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
-// const staffdata = XLSX.utils.sheet_to_json(staffmasterWorksheet);
-// const staffImportData = async () => 
-// {
-//     try {
-//         const staffExistingRecords = await staffmaster.findAll();
-//         if (staffExistingRecords.length > 0) {
-//             await staffmaster.destroy({ where: {} });
-//             console.log('Existing records deleted.');
-//             }
-//         await staffmaster.bulkCreate(staffdata, { ignoreDuplicates: true });
-//         console.log('Staff Master data inserted successfully!');
-//     } 
-//     catch (err) {
-//         console.error('Error Importing Data :', err);
-//     }
-// };
+const staffmasterDataXL = XLSX.readFile('D:\\OBE ORIGINALS\\Staff Master.xlsx');
+const staffmasterSheetNo = staffmasterDataXL.SheetNames[0];
+const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
+const staffdata = XLSX.utils.sheet_to_json(staffmasterWorksheet, { header: 1 });
 
-// staffImportData();
+const mappedStaffData = staffdata.slice(1).map((row) => ({
+    staff_id: row[0],          
+    staff_name: row[1],           
+    staff_pass: row[2],       
+    staff_dept: row[3],    
+    category: row[4] 
+}));
+
+const staffImportData = async () => {
+    try {
+        const staffExistingRecords = await staffmaster.findAll();
+
+        if (staffExistingRecords.length > 0) {
+            await staffmaster.destroy({ where: {} });
+            console.log('Existing records deleted.');
+        }
+        await staffmaster.bulkCreate(mappedStaffData, { ignoreDuplicates: true });
+        console.log('Staff Master data inserted successfully!');
+    } 
+    catch (err) {
+        console.error('Error Importing Data:', err.stack); // Log stack trace
+    }
+}
+
+staffImportData();
+
+
+
 
 // ---------------------------------------------------------------------------------- //
 
 // Import Course Mapping Data Into Database
 
-// const coursemappingDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Course Mapping.xlsx');
-// const coursemappingSheetNo = coursemappingDataXL.SheetNames[0]; 
-// const coursemappingWorksheet = coursemappingDataXL.Sheets[coursemappingSheetNo];
-// const coursemappingdata = XLSX.utils.sheet_to_json(coursemappingWorksheet, { header: 1 });
+const coursemappingDataXL = XLSX.readFile('D:\\OBE ORIGINALS\\Staff Course Mapping.xlsx');
+const coursemappingSheetNo = coursemappingDataXL.SheetNames[0]; 
+const coursemappingWorksheet = coursemappingDataXL.Sheets[coursemappingSheetNo];
+const coursemappingdata = XLSX.utils.sheet_to_json(coursemappingWorksheet, { header: 1 });
 
-// const mappedCourseMappingData = coursemappingdata.slice(1).map((row) => ({
-//     category: row[0],          
-//     batch: row[1],  
-//     course_id: row[2],         
-//     degree: row[3],       
-//     branch: row[4],    
-//     semester: row[5],       
-//     section: row[6],         
-//     course_code: row[7],           
-//     staff_id: row[8],          
-//     staff_name: row[9],
-//     course_title: row[10]            
-// }));
+const mappedCourseMappingData = coursemappingdata.slice(1).map((row) => ({
+    category: row[0],          
+    batch: row[1],  
+    course_id: row[2],         
+    degree: row[3],       
+    branch: row[4],    
+    semester: row[5],       
+    section: row[6],         
+    course_code: row[7],           
+    staff_id: row[8],          
+    staff_name: row[9],
+    course_title: row[10]            
+}));
 
-// const courseMappingImportData = async () => 
-// {
-//     try {
-//         const coursemappingExistingRecords = await coursemapping.findAll();
-//         if (coursemappingExistingRecords.length > 0) {
-//             await coursemapping.destroy({ where: {} });
-//             console.log('Existing records deleted.');
-//         }
-//         await sequelize_conn.query('ALTER TABLE coursemapping AUTO_INCREMENT = 1');
-//         await coursemapping.bulkCreate(mappedCourseMappingData, { ignoreDuplicates: true });
-//         console.log('Course Mapping data inserted successfully!');
-//     } 
-//     catch (err) {
-//         console.error('Error Importing Data :', err);
-//     }
-// };
+const courseMappingImportData = async () => 
+{
+    try {
+        const coursemappingExistingRecords = await coursemapping.findAll();
+        if (coursemappingExistingRecords.length > 0) {
+            await coursemapping.destroy({ where: {} });
+            console.log('Existing records deleted.');
+        }
+        await sequelize_conn.query('ALTER TABLE coursemapping AUTO_INCREMENT = 1');
+        await coursemapping.bulkCreate(mappedCourseMappingData, { ignoreDuplicates: true });
+        console.log('Course Mapping data inserted successfully!');
+    } 
+    catch (err) {
+        console.error('Error Importing Data :', err);
+    }
+};
 
-// courseMappingImportData();
+courseMappingImportData();
 
 // ---------------------------------------------------------------------------------- //
  
 // Import Student Tables Data Into Database
 
-// const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master.xlsx');
-// const studentmasterSheetNo = studentmasterDataXL.SheetNames[0];
-// const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
-// const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet, { header: 1 });
+const studentmasterDataXL = XLSX.readFile('D:\\OBE ORIGINALS\\Student Master.xlsx');
+const studentmasterSheetNo = studentmasterDataXL.SheetNames[0];
+const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
+const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet, { header: 1 });
 
-// const mappedStudentData = studentdata.slice(1).map((row) => ({
-//     reg_no: row[0],          
-//     stu_name: row[1],           
-//     course_id: row[2],       
-//     category: row[3],    
-//     semester: row[4],       
-//     section: row[5],         
-//     batch: row[6],           
-//     mentor: row[7],          
-//     emis: row[8]             
-// }));
+const mappedStudentData = studentdata.slice(1).map((row) => ({
+    reg_no: row[0],          
+    stu_name: row[1],           
+    course_id: row[2],       
+    category: row[3],    
+    semester: row[4],       
+    section: row[5],         
+    batch: row[6],           
+    mentor: row[7],          
+    emis: row[8]             
+}));
 
-// const studentImportData = async () => 
-// {
-//     try {
-//         const studentExistingRecords = await studentmaster.findAll();
+const studentImportData = async () => 
+{
+    try {
+        const studentExistingRecords = await studentmaster.findAll();
 
-//         if (studentExistingRecords.length > 0) {
-//             await studentmaster.destroy({ where: {} });
-//             console.log('Existing records deleted.');
-//         }
-//         await studentmaster.bulkCreate(mappedStudentData, { ignoreDuplicates: true });
-//         console.log('Student Master data inserted successfully!');
-//     } 
-//     catch (err) {
-//         console.error('Error Importing Data:', err);
-//     }
-// }
+        if (studentExistingRecords.length > 0) {
+            await studentmaster.destroy({ where: {} });
+            console.log('Existing records deleted.');
+        }
+        await studentmaster.bulkCreate(mappedStudentData, { ignoreDuplicates: true });
+        console.log('Student Master data inserted successfully!');
+    } 
+    catch (err) {
+        console.error('Error Importing Data:', err);
+    }
+}
 
-// studentImportData();
+studentImportData();
 
 // ---------------------------------------------------------------------------------- //
 
