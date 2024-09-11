@@ -16,7 +16,7 @@ const studentmaster = sequelize_conn.define('studentmaster',
         type: DataTypes.STRING,
         allowNull: false
     },
-    college_code : {
+    category : {
         type: DataTypes.STRING,
         allowNull: false
     },

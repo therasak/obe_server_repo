@@ -93,15 +93,16 @@ app.use(express.json());
 
 // const mappedCourseMappingData = coursemappingdata.slice(1).map((row) => ({
 //     category: row[0],          
-//     batch: row[1],           
-//     degree: row[2],       
-//     branch: row[3],    
-//     semester: row[4],       
-//     section: row[5],         
-//     course_code: row[6],           
-//     staff_id: row[7],          
-//     staff_name: row[8],
-//     course_title: row[9]            
+//     batch: row[1],  
+//     course_id: row[2],         
+//     degree: row[3],       
+//     branch: row[4],    
+//     semester: row[5],       
+//     section: row[6],         
+//     course_code: row[7],           
+//     staff_id: row[8],          
+//     staff_name: row[9],
+//     course_title: row[10]            
 // }));
 
 // const courseMappingImportData = async () => 
@@ -136,7 +137,7 @@ app.use(express.json());
 //     reg_no: row[0],          
 //     stu_name: row[1],           
 //     course_id: row[2],       
-//     college_code: row[3],    
+//     category: row[3],    
 //     semester: row[4],       
 //     section: row[5],         
 //     batch: row[6],           
@@ -219,14 +220,15 @@ app.post('/coursemap', async (req, res) =>
 
 app.post('/studentdetails', async (req, res) => 
 {
-    const { dept_name, stu_section, stu_semester } = req.body;
+    const { course_id, stu_section, stu_semester, stu_category } = req.body;
 
     try {
         const studentDetails = await studentmaster.findAll({
             where: { 
-                course_id: dept_name, 
+                course_id: course_id, 
                 semester: stu_semester, 
-                section: stu_section
+                section: stu_section,
+                category: stu_category
             }
         });
         res.json(studentDetails);

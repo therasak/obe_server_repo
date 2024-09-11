@@ -17,6 +17,10 @@ const coursemapping = sequelize_conn.define('coursemapping',
             type: DataTypes.STRING,
             allowNull: false
         },
+        course_id: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         degree: {
             type: DataTypes.STRING,
             allowNull: false
