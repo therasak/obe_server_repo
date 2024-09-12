@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize_conn = require('./dbconnection');
 
-const Markentry = sequelize_conn.define('markentry',
+const markentry = sequelize_conn.define('markentry',
 {
     s_no: {
         type: DataTypes.INTEGER,
@@ -9,11 +9,11 @@ const Markentry = sequelize_conn.define('markentry',
         primaryKey: true,
         autoIncrement: true
     },
-    Batch: {
+    batch: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    Ug_Pg: {
+    category: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -22,15 +22,15 @@ const Markentry = sequelize_conn.define('markentry',
         allowNull: false
     },
     reg_no: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false
     },
-    sub_code: {
+    course_code: {
         type: DataTypes.STRING,
         allowNull: false
     },
     semester: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
         allowNull: false
     }
     // C1LOT: {
@@ -72,4 +72,4 @@ const Markentry = sequelize_conn.define('markentry',
     freezeTableName: true
 });
 
-module.exports = Markentry;
+module.exports = markentry;
