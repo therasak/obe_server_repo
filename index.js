@@ -7,6 +7,7 @@ const studentmaster = require('./models/studentmaster');
 const department = require('./models/department');
 const course = require('./models/course');
 const scope = require('./models/scope');
+const markentry = require('./models/markentry');
 const coursemapping = require('./models/coursemapping');
 const XLSX = require('xlsx');
 const app = express();
@@ -48,6 +49,10 @@ async function dbconncheck()
         // Synchronize the department model
         await department.sync();
         console.log('Deparment Table Synced');
+
+        // Synchronize the markentry model
+        await markentry.sync();
+        console.log('Markentry table created');
     } 
     catch (error) {
         console.log('Error Occurred:', error.message);
@@ -90,6 +95,53 @@ const staffImportData = async () => {
 }
 
 staffImportData();
+
+
+// ----------------------------------------------------------------------------------=//
+
+// markenty table data insertion
+
+const markEntryDataXL = XLSX.readFile('D:\\OBE ORIGINALS\\Stu Sta Cou Map.xlsx');
+const markEntrySheetNo = markEntryDataXL.SheetNames[0];
+const markEntryWorksheet = markEntryDataXL.Sheets[markEntrySheetNo];
+const markEntrydata = XLSX.utils.sheet_to_json(markEntryWorksheet, { header: 1 });
+
+const markEntryMappData = markEntrydata.slice(1).map((row) => {
+    try {
+        return {
+            Batch: row[0],      // Assuming no transformation needed
+            Ug_Pg: row[1],      // Assuming no transformation needed
+            course_id: row[2],  // Assuming no transformation needed
+            reg_no: parseInt(row[3], 10) || null, // Ensure reg_no is converted to an integer
+            sub_code: row[4],   // Assuming no transformation needed
+            semester: row[5]    // Assuming no transformation needed
+        };
+    } catch (error) {
+        console.error('Error processing row:', row, error);
+        return null; // Skip invalid rows
+    }
+}).filter(row => row !== null); // Filter out any rows that failed processing
+
+const markImportData = async () => {
+    try {
+        console.log('Mapped Data:', markEntryMappData); // Log the mapped data for debugging
+
+        const markEntryExistingRecords = await markentry.findAll();
+
+        if (markEntryExistingRecords.length > 0) {
+            await markentry.destroy({ where: {} });
+            console.log('Existing records deleted.');
+        }
+
+        await markentry.bulkCreate(markEntryMappData);
+        console.log('Mark entry data inserted successfully!');
+    } catch (err) {
+        console.error('Error Importing Data:', err?.stack || err);
+    }
+};
+
+markImportData();
+
 
 
 
