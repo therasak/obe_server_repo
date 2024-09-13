@@ -32,40 +32,63 @@ const markentry = sequelize_conn.define('markentry',
     semester: {
         type: DataTypes.INTEGER,
         allowNull: false
+    },
+    c1_lot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    c1_hot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    c1_mot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    c1_total: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    c2_lot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    c2_hot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    c2_mot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    c2_total: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    a1_lot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    a2_lot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    ese_lot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    ese_hot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    ese_mot: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    ese_total: {
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
-    // C1LOT: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false
-    // },
-    // C1MOT: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false
-    // },
-    // C1HOT: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false
-    // },
-    // C1TOTAL: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false
-    // },
-    // C2LOT: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false
-    // },
-    // C2MOT: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false
-    // },
-    // C2HOT: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false
-    // },
-    // C2TOTAL: {
-    //     type: DataTypes.INTEGER,
-    //     allowNull: false
-    // },
-    
 },
 {
     timestamps: false,

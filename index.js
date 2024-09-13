@@ -26,25 +26,25 @@ app.use(express.json());
 //         // await sequelize_conn.authenticate();
 //         // console.log('Database Synced');
 
-//         // // Synchronize the staffmaster model
-//         // await staffmaster.sync();
-//         // console.log('Staffmaster Table Synced');
+//         // Synchronize the staffmaster model
+//         await staffmaster.sync();
+//         console.log('Staffmaster Table Synced');
 
-//         // // Synchronize the studentmaster model
-//         // await studentmaster.sync();
-//         // console.log('Studentmaster Table Synced');
+//         // Synchronize the studentmaster model
+//         await studentmaster.sync();
+//         console.log('Studentmaster Table Synced');
 
 //         // // Synchronize the course model
 //         // await course.sync();
 //         // console.log('Course Table Synced');
 
-//         // // Synchronize the coursemapping model
-//         // await coursemapping.sync();
-//         // console.log('Coursemapping Table Synced');
+//         // Synchronize the coursemapping model
+//         await coursemapping.sync();
+//         console.log('Coursemapping Table Synced');
 
-//         // // Synchronize the scope model
-//         // await scope.sync();
-//         // console.log('Scope Table Synced');
+//         // Synchronize the scope model
+//         await scope.sync();
+//         console.log('Scope Table Synced');
 
 //         // // Synchronize the department model
 //         // await department.sync();
@@ -65,7 +65,7 @@ app.use(express.json());
 
 // Import Staff Data Into Database
 
-// const staffmasterDataXL = XLSX.readFile('D:\\OBE ORIGINALS\\Staff Master.xlsx');
+// const staffmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Master.xlsx');
 // const staffmasterSheetNo = staffmasterDataXL.SheetNames[0];
 // const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
 // const staffdata = XLSX.utils.sheet_to_json(staffmasterWorksheet, { header: 1 });
@@ -101,7 +101,7 @@ app.use(express.json());
 
 // Import Course Mapping Data Into Database
 
-// const coursemappingDataXL = XLSX.readFile('D:\\OBE ORIGINALS\\Staff Course Mapping.xlsx');
+// const coursemappingDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Course Mapping.xlsx');
 // const coursemappingSheetNo = coursemappingDataXL.SheetNames[0]; 
 // const coursemappingWorksheet = coursemappingDataXL.Sheets[coursemappingSheetNo];
 // const coursemappingdata = XLSX.utils.sheet_to_json(coursemappingWorksheet, { header: 1 });
@@ -143,7 +143,7 @@ app.use(express.json());
  
 // Import Student Tables Data Into Database
 
-// const studentmasterDataXL = XLSX.readFile('D:\\OBE ORIGINALS\\Student Master.xlsx');
+// const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master.xlsx');
 // const studentmasterSheetNo = studentmasterDataXL.SheetNames[0];
 // const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
 // const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet, { header: 1 });
@@ -183,18 +183,32 @@ app.use(express.json());
 
 // Markenty Table Data Insertion
 
-// const markentryDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Stu Sta Cou Map.xlsx');
+// const markentryDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Course Mapping.xlsx');
 // const markentrySheetNo = markentryDataXL.SheetNames[0]; 
 // const markentryWorksheet = markentryDataXL.Sheets[markentrySheetNo];
 // const markentryData = XLSX.utils.sheet_to_json(markentryWorksheet, { header: 1 });
 
 // const mappedMarkEntryData = markentryData.slice(1).map((row) => ({
 //     batch: row[0],          
-//     category: row[1],  
-//     course_id: row[2],         
-//     reg_no: row[3],       
+//     category: row[1],       
+//     course_id: row[2],      
+//     reg_no: row[3],        
 //     course_code: row[4],    
-//     semester: row[5]            
+//     semester: row[5],       
+//     c1_lot: row[6],         
+//     c1_hot: row[7],         
+//     c1_mot: row[8],         
+//     c1_total: row[9],       
+//     c2_lot: row[10],        
+//     c2_hot: row[11],       
+//     c2_mot: row[12],        
+//     c2_total: row[13],      
+//     a1_lot: row[14],        
+//     a2_lot: row[15],       
+//     ese_lot: row[16],       
+//     ese_hot: row[17],       
+//     ese_mot: row[18],      
+//     ese_total: row[19]      
 // }));
 
 // const markEntryImportData = async () => 
@@ -215,6 +229,42 @@ app.use(express.json());
 // };
 
 // markEntryImportData();
+
+// ---------------------------------------------------------------------------------- //
+
+// Scope Table Data Insertion
+
+// const scopeDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Scope.xlsx');
+// const scopeSheetNo = scopeDataXL.SheetNames[0];
+// const scopeWorksheet = scopeDataXL.Sheets[scopeSheetNo];
+// const scopedata = XLSX.utils.sheet_to_json(scopeWorksheet, { header: 1 });
+
+// const mappedScopeData = scopedata.slice(1).map((row) => ({
+//     staff_id: row[0],        
+//     dashboard: row[1],       
+//     course_list: row[2],     
+//     report: row[3],          
+//     upload_files: row[4],   
+//     logout: row[5]           
+// }));
+
+// const scopeImportData = async () => {
+//     try {
+//         const scopeExistingRecords = await scope.findAll();
+
+//         if (scopeExistingRecords.length > 0) {
+//             await scope.destroy({ where: {} });
+//             console.log('Existing scope records deleted.');
+//         }
+
+//         await scope.bulkCreate(mappedScopeData, { ignoreDuplicates: true });
+//         console.log('Scope data inserted successfully!');
+//     } catch (err) {
+//         console.error('Error Importing Scope Data:', err.stack);
+//     }
+// }
+
+// scopeImportData();
 
 // ---------------------------------------------------------------------------------- //
 

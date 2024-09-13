@@ -12,7 +12,7 @@ const scope = sequelize_conn.define('scope',
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    mark_entry: {
+    course_list: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
