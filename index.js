@@ -78,7 +78,8 @@ app.use(express.json());
 //     category: row[4] 
 // }));
 
-// const staffImportData = async () => {
+// const staffImportData = async () => 
+// {
 //     try {
 //         const staffExistingRecords = await staffmaster.findAll();
 
@@ -183,52 +184,52 @@ app.use(express.json());
 
 // Markenty Table Data Insertion
 
-// const markentryDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Course Mapping.xlsx');
-// const markentrySheetNo = markentryDataXL.SheetNames[0]; 
-// const markentryWorksheet = markentryDataXL.Sheets[markentrySheetNo];
-// const markentryData = XLSX.utils.sheet_to_json(markentryWorksheet, { header: 1 });
+const markentryDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Course Mapping.xlsx');
+const markentrySheetNo = markentryDataXL.SheetNames[0]; 
+const markentryWorksheet = markentryDataXL.Sheets[markentrySheetNo];
+const markentryData = XLSX.utils.sheet_to_json(markentryWorksheet, { header: 1 });
 
-// const mappedMarkEntryData = markentryData.slice(1).map((row) => ({
-//     batch: row[0],          
-//     category: row[1],       
-//     course_id: row[2],      
-//     reg_no: row[3],        
-//     course_code: row[4],    
-//     semester: row[5],       
-//     c1_lot: row[6],         
-//     c1_hot: row[7],         
-//     c1_mot: row[8],         
-//     c1_total: row[9],       
-//     c2_lot: row[10],        
-//     c2_hot: row[11],       
-//     c2_mot: row[12],        
-//     c2_total: row[13],      
-//     a1_lot: row[14],        
-//     a2_lot: row[15],       
-//     ese_lot: row[16],       
-//     ese_hot: row[17],       
-//     ese_mot: row[18],      
-//     ese_total: row[19]      
-// }));
+const mappedMarkEntryData = markentryData.slice(1).map((row) => ({
+    batch: row[0],          
+    category: row[1],       
+    course_id: row[2],      
+    reg_no: row[3],        
+    course_code: row[4],    
+    semester: row[5],       
+    c1_lot: row[6],         
+    c1_hot: row[7],         
+    c1_mot: row[8],         
+    c1_total: row[9],       
+    c2_lot: row[10],        
+    c2_hot: row[11],       
+    c2_mot: row[12],        
+    c2_total: row[13],      
+    a1_lot: row[14],        
+    a2_lot: row[15],       
+    ese_lot: row[16],       
+    ese_hot: row[17],       
+    ese_mot: row[18],      
+    ese_total: row[19]      
+}));
 
-// const markEntryImportData = async () => 
-// {
-//     try {
-//         const markEntryExistingRecords = await markentry.findAll();
-//         if (markEntryExistingRecords.length > 0) {
-//             await markentry.destroy({ where: {} });
-//             console.log('Existing records deleted.');
-//         }
-//         await sequelize_conn.query('ALTER TABLE markentry AUTO_INCREMENT = 1');
-//         await markentry.bulkCreate(mappedMarkEntryData, { ignoreDuplicates: true });
-//         console.log('Mark Entry data inserted successfully!');
-//     } 
-//     catch (err) {
-//         console.error('Error Importing Data :', err);
-//     }
-// };
+const markEntryImportData = async () => 
+{
+    try {
+        const markEntryExistingRecords = await markentry.findAll();
+        if (markEntryExistingRecords.length > 0) {
+            await markentry.destroy({ where: {} });
+            console.log('Existing records deleted.');
+        }
+        await sequelize_conn.query('ALTER TABLE markentry AUTO_INCREMENT = 1');
+        await markentry.bulkCreate(mappedMarkEntryData, { ignoreDuplicates: true });
+        console.log('Mark Entry data inserted successfully!');
+    } 
+    catch (err) {
+        console.error('Error Importing Data :', err);
+    }
+};
 
-// markEntryImportData();
+markEntryImportData();
 
 // ---------------------------------------------------------------------------------- //
 
@@ -388,6 +389,90 @@ app.get('/scope/:staffId', async (req, res) =>
 
 // ---------------------------------------------------------------------------------- //
 
+// Mark Updation Coding
+
+app.put('/updateMark', async (req, res) => 
+{
+    const { updates, activeSection, courseCode } = req.body;
+
+    const examType = activeSection;
+    const regNumbers = Object.keys(updates);
+
+    try {
+        for (const regNo of regNumbers) {
+            const updateData = updates[regNo];
+
+            let updateFields = {}; 
+
+            switch (examType) 
+            {
+                case '1': 
+                    updateFields = {
+                        c1_lot: updateData.lot || 0,
+                        c1_hot: updateData.hot || 0,
+                        c1_mot: updateData.mot || 0,
+                        c1_total: (updateData.lot || 0) + (updateData.hot || 0) + (updateData.mot || 0)
+                    };
+                    // console.log("CIA 1 marks being updated for", regNo);
+                    break;
+
+                case '2':
+                    updateFields = {
+                        c2_lot: updateData.lot || 0,
+                        c2_hot: updateData.hot || 0,
+                        c2_mot: updateData.mot || 0,
+                        c2_total: (updateData.lot || 0) + (updateData.hot || 0) + (updateData.mot || 0)
+                    };
+                    // console.log("CIA 2 marks being updated for", regNo);
+                    break;
+
+                case '3': 
+                    updateFields = {
+                        a1_lot: updateData.lot || 0
+                    };
+                    // console.log("ASS-1 marks being updated for", regNo);
+                    break;
+
+                case '4':
+                    updateFields = {
+                        a2_lot: updateData.lot || 0
+                    };
+                    // console.log("ASS-2 marks being updated for", regNo);
+                    break;
+
+                case '5': 
+                    updateFields = {
+                        ese_lot: updateData.lot || 0,
+                        ese_hot: updateData.hot || 0,
+                        ese_mot: updateData.mot || 0,
+                        ese_total: (updateData.lot || 0) + (updateData.hot || 0) + (updateData.mot || 0)
+                    };
+                    // console.log("ESE marks being updated for", regNo);
+                    break;
+
+                default:
+                    console.log('Invalid section');
+                    res.status(400).send({ error: "Invalid section" });
+                    return;
+            }
+            
+            await markentry.update(updateFields, {
+                where: {
+                    reg_no: regNo,
+                    course_code: courseCode
+                }
+            });
+        }
+        res.status(200).send({ success: true, message: 'Marks updated successfully' });
+    }
+    catch (error) {
+        console.error("Error updating marks:", error);
+        res.status(500).send({ success: false, error: "Failed to update marks" });
+    }
+});
+
+// ---------------------------------------------------------------------------------- //
+ 
 // Database Authenticate Coding
 
 sequelize_conn.authenticate()
