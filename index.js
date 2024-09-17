@@ -10,8 +10,9 @@ const course = require('./models/course');
 const scope = require('./models/scope');
 const markentry = require('./models/markentry');
 const coursemapping = require('./models/coursemapping');
-const xlsx = require('xlsx');
+const XLSX = require('xlsx');
 const app = express();
+const upload = multer({ dest: 'uploads' })
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
@@ -66,7 +67,7 @@ app.use(express.json());
 
 // Import Staff Data Into Database
 
-// const staffmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Master.xlsx');
+// const staffmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Master.XLSX');
 // const staffmasterSheetNo = staffmasterDataXL.SheetNames[0];
 // const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
 // const staffdata = XLSX.utils.sheet_to_json(staffmasterWorksheet, { header: 1 });
@@ -103,7 +104,7 @@ app.use(express.json());
 
 // Import Course Mapping Data Into Database
 
-// const coursemappingDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Course Mapping.xlsx');
+// const coursemappingDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Course Mapping.XLSX');
 // const coursemappingSheetNo = coursemappingDataXL.SheetNames[0]; 
 // const coursemappingWorksheet = coursemappingDataXL.Sheets[coursemappingSheetNo];
 // const coursemappingdata = XLSX.utils.sheet_to_json(coursemappingWorksheet, { header: 1 });
@@ -145,7 +146,7 @@ app.use(express.json());
 
 // Import Student Tables Data Into Database
 
-// const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master.xlsx');
+// const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master.XLSX');
 // const studentmasterSheetNo = studentmasterDataXL.SheetNames[0];
 // const studentmasterWorksheet = studentmasterDataXL.Sheets[studentmasterSheetNo];
 // const studentdata = XLSX.utils.sheet_to_json(studentmasterWorksheet, { header: 1 });
@@ -185,7 +186,7 @@ app.use(express.json());
 
 // Markenty Table Data Insertion
 
-// const markentryDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Course Mapping.xlsx');
+// const markentryDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Course Mapping.XLSX');
 // const markentrySheetNo = markentryDataXL.SheetNames[0]; 
 // const markentryWorksheet = markentryDataXL.Sheets[markentrySheetNo];
 // const markentryData = XLSX.utils.sheet_to_json(markentryWorksheet, { header: 1 });
@@ -236,7 +237,7 @@ app.use(express.json());
 
 // Scope Table Data Insertion
 
-// const scopeDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Scope.xlsx');
+// const scopeDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Scope.XLSX');
 // const scopeSheetNo = scopeDataXL.SheetNames[0];
 // const scopeWorksheet = scopeDataXL.Sheets[scopeSheetNo];
 // const scopedata = XLSX.utils.sheet_to_json(scopeWorksheet, { header: 1 });
@@ -261,7 +262,8 @@ app.use(express.json());
 
 //         await scope.bulkCreate(mappedScopeData, { ignoreDuplicates: true });
 //         console.log('Scope data inserted successfully!');
-//     } catch (err) {
+//     } 
+//     catch (err) {
 //         console.error('Error Importing Scope Data:', err.stack);
 //     }
 // }
@@ -272,7 +274,8 @@ app.use(express.json());
 
 // Validation Coding
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => 
+{
     const { staff_id, staff_pass } = req.body;
 
     try {
@@ -302,7 +305,8 @@ app.post('/login', async (req, res) => {
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemap', async (req, res) => {
+app.post('/coursemap', async (req, res) => 
+{
     const { staff_id } = req.body;
 
     try {
@@ -320,7 +324,8 @@ app.post('/coursemap', async (req, res) => {
 
 // Students Data Fetching Coding
 
-app.post('/studentdetails', async (req, res) => {
+app.post('/studentdetails', async (req, res) => 
+{
     const { course_id, stu_section, stu_semester, stu_category, stu_course_code } = req.body;
 
     try {
@@ -366,7 +371,8 @@ app.post('/studentdetails', async (req, res) => {
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => {
+app.get('/scope/:staffId', async (req, res) => 
+{
     const { staffId } = req.params;
 
     try {
@@ -395,9 +401,9 @@ app.put('/updateMark', async (req, res) => {
     const regNumbers = Object.keys(updates);
 
     try {
-        for (const regNo of regNumbers) {
+        for (const regNo of regNumbers) 
+        {
             const updateData = updates[regNo];
-
             let updateFields = {};
 
             switch (examType) {
@@ -406,7 +412,7 @@ app.put('/updateMark', async (req, res) => {
                         c1_lot: updateData.lot || 0,
                         c1_hot: updateData.hot || 0,
                         c1_mot: updateData.mot || 0,
-                        c1_total: (updateData.lot || 0) + (updateData.hot || 0) + (updateData.mot || 0)
+                        c1_total: updateData.total || 0
                     };
                     // console.log("CIA 1 marks being updated for", regNo);
                     break;
@@ -416,7 +422,7 @@ app.put('/updateMark', async (req, res) => {
                         c2_lot: updateData.lot || 0,
                         c2_hot: updateData.hot || 0,
                         c2_mot: updateData.mot || 0,
-                        c2_total: (updateData.lot || 0) + (updateData.hot || 0) + (updateData.mot || 0)
+                        c2_total: updateData.total || 0
                     };
                     // console.log("CIA 2 marks being updated for", regNo);
                     break;
@@ -440,7 +446,7 @@ app.put('/updateMark', async (req, res) => {
                         ese_lot: updateData.lot || 0,
                         ese_hot: updateData.hot || 0,
                         ese_mot: updateData.mot || 0,
-                        ese_total: (updateData.lot || 0) + (updateData.hot || 0) + (updateData.mot || 0)
+                        ese_total: updateData.total || 0
                     };
                     // console.log("ESE marks being updated for", regNo);
                     break;
@@ -458,7 +464,9 @@ app.put('/updateMark', async (req, res) => {
                 }
             });
         }
+
         res.status(200).send({ success: true, message: 'Marks updated successfully' });
+        
     }
     catch (error) {
         console.error("Error updating marks:", error);
@@ -481,20 +489,18 @@ sequelize_conn.authenticate()
         console.error('Unable to connect to the Database:', err);
     });
 
-
-
-
-
-const upload = multer({ dest: 'uploads' })
+// ---------------------------------------------------------------------------------- //
 
 // Route to handle Course Mapping file upload
-app.post('/upload1', upload.single('file'), async (req, res) => {
+
+app.post('/upload1', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
-        const workbook = xlsx.readFile(file.path);
+        const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const rows = xlsx.utils.sheet_to_json(worksheet);
+        const rows = XLSX.utils.sheet_to_json(worksheet);
 
         const course = rows.map(row => ({
             category: row.category,
@@ -510,24 +516,28 @@ app.post('/upload1', upload.single('file'), async (req, res) => {
             course_title: row.course_title
         }));
 
-        // Replace with your database logic
         await coursemapping.bulkCreate(course, {});
 
         res.status(200).send('Course Mapping Data imported successfully');
-    } catch (error) {
+    } 
+    catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
 });
 
+// ---------------------------------------------------------------------------------- //
+
 // Route to handle Staff Master file upload
-app.post('/upload2', upload.single('file'), async (req, res) => {
+
+app.post('/upload2', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
-        const workbook = xlsx.readFile(file.path);
+        const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const rows = xlsx.utils.sheet_to_json(worksheet);
+        const rows = XLSX.utils.sheet_to_json(worksheet);
 
         const staff = rows.map(row => ({
             staff_id: row.staff_id,
@@ -537,24 +547,28 @@ app.post('/upload2', upload.single('file'), async (req, res) => {
             category: row.category
         }));
 
-        // Replace with your database logic
         await staffmaster.bulkCreate(staff, {});
 
         res.status(200).send('Staff Master Data imported successfully');
-    } catch (error) {
+    } 
+    catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
 });
 
+// ---------------------------------------------------------------------------------- //
+
 // Route to handle Student Master file upload
-app.post('/upload3', upload.single('file'), async (req, res) => {
+
+app.post('/upload3', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
-        const workbook = xlsx.readFile(file.path);
+        const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const rows = xlsx.utils.sheet_to_json(worksheet);
+        const rows = XLSX.utils.sheet_to_json(worksheet);
 
         const students = rows.map(row => ({
             reg_no: row.reg_no,
@@ -568,25 +582,26 @@ app.post('/upload3', upload.single('file'), async (req, res) => {
             emis: row.emis
         }));
 
-        // Replace with your database logic
         await studentmaster.bulkCreate(students, {});
 
         res.status(200).send('Student Master Data imported successfully');
-    } catch (error) {
+    } 
+    catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
 });
 
+// ---------------------------------------------------------------------------------- //
 
-
-app.post('/upload4', upload.single('file'), async (req, res) => {
+app.post('/upload4', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
-        const workbook = xlsx.readFile(file.path);
+        const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const rows = xlsx.utils.sheet_to_json(worksheet);
+        const rows = XLSX.utils.sheet_to_json(worksheet);
 
         const scopes = rows.map(row => ({
             staff_id: row.staff_id,
@@ -597,24 +612,26 @@ app.post('/upload4', upload.single('file'), async (req, res) => {
             logout: row.logout
         }));
 
-        // Replace with your database logic
         await scope.bulkCreate(scopes, {});
 
         res.status(200).send('Student Master Data imported successfully');
-    } catch (error) {
+    } 
+    catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
 });
 
+// ---------------------------------------------------------------------------------- //
 
-app.post('/upload5', upload.single('file'), async (req, res) => {
+app.post('/upload5', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
-        const workbook = xlsx.readFile(file.path);
+        const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const rows = xlsx.utils.sheet_to_json(worksheet);
+        const rows = XLSX.utils.sheet_to_json(worksheet);
 
         const mark = rows.map(row => ({
             batch: row.batch,
@@ -640,15 +657,14 @@ app.post('/upload5', upload.single('file'), async (req, res) => {
 
         }));
 
-        // Replace with your database logic
         await markentry.bulkCreate(mark, {});
 
         res.status(200).send('Student Master Data imported successfully');
-    } catch (error) {
+    } 
+    catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
 });
 
-
-
+// ---------------------------------------------------------------------------------- //
