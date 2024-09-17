@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const multer = require('multer');
 const sequelize_conn = require('./models/dbconnection');
 const staffmaster = require('./models/staffmaster');
 const studentmaster = require('./models/studentmaster');
@@ -9,7 +10,7 @@ const course = require('./models/course');
 const scope = require('./models/scope');
 const markentry = require('./models/markentry');
 const coursemapping = require('./models/coursemapping');
-const XLSX = require('xlsx');
+const xlsx = require('xlsx');
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
@@ -141,7 +142,7 @@ app.use(express.json());
 // courseMappingImportData();
 
 // ---------------------------------------------------------------------------------- //
- 
+
 // Import Student Tables Data Into Database
 
 // const studentmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Master.xlsx');
@@ -184,52 +185,52 @@ app.use(express.json());
 
 // Markenty Table Data Insertion
 
-const markentryDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Course Mapping.xlsx');
-const markentrySheetNo = markentryDataXL.SheetNames[0]; 
-const markentryWorksheet = markentryDataXL.Sheets[markentrySheetNo];
-const markentryData = XLSX.utils.sheet_to_json(markentryWorksheet, { header: 1 });
+// const markentryDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Student Course Mapping.xlsx');
+// const markentrySheetNo = markentryDataXL.SheetNames[0]; 
+// const markentryWorksheet = markentryDataXL.Sheets[markentrySheetNo];
+// const markentryData = XLSX.utils.sheet_to_json(markentryWorksheet, { header: 1 });
 
-const mappedMarkEntryData = markentryData.slice(1).map((row) => ({
-    batch: row[0],          
-    category: row[1],       
-    course_id: row[2],      
-    reg_no: row[3],        
-    course_code: row[4],    
-    semester: row[5],       
-    c1_lot: row[6],         
-    c1_hot: row[7],         
-    c1_mot: row[8],         
-    c1_total: row[9],       
-    c2_lot: row[10],        
-    c2_hot: row[11],       
-    c2_mot: row[12],        
-    c2_total: row[13],      
-    a1_lot: row[14],        
-    a2_lot: row[15],       
-    ese_lot: row[16],       
-    ese_hot: row[17],       
-    ese_mot: row[18],      
-    ese_total: row[19]      
-}));
+// const mappedMarkEntryData = markentryData.slice(1).map((row) => ({
+//     batch: row[0],          
+//     category: row[1],       
+//     course_id: row[2],      
+//     reg_no: row[3],        
+//     course_code: row[4],    
+//     semester: row[5],       
+//     c1_lot: row[6],         
+//     c1_hot: row[7],         
+//     c1_mot: row[8],         
+//     c1_total: row[9],       
+//     c2_lot: row[10],        
+//     c2_hot: row[11],       
+//     c2_mot: row[12],        
+//     c2_total: row[13],      
+//     a1_lot: row[14],        
+//     a2_lot: row[15],       
+//     ese_lot: row[16],       
+//     ese_hot: row[17],       
+//     ese_mot: row[18],      
+//     ese_total: row[19]      
+// }));
 
-const markEntryImportData = async () => 
-{
-    try {
-        const markEntryExistingRecords = await markentry.findAll();
-        if (markEntryExistingRecords.length > 0) {
-            await markentry.destroy({ where: {} });
-            console.log('Existing records deleted.');
-        }
-        await sequelize_conn.query('ALTER TABLE markentry AUTO_INCREMENT = 1');
-        await markentry.bulkCreate(mappedMarkEntryData, { ignoreDuplicates: true });
-        console.log('Mark Entry data inserted successfully!');
-    } 
-    catch (err) {
-        console.error('Error Importing Data :', err);
-    }
-};
+// const markEntryImportData = async () => 
+// {
+//     try {
+//         const markEntryExistingRecords = await markentry.findAll();
+//         if (markEntryExistingRecords.length > 0) {
+//             await markentry.destroy({ where: {} });
+//             console.log('Existing records deleted.');
+//         }
+//         await sequelize_conn.query('ALTER TABLE markentry AUTO_INCREMENT = 1');
+//         await markentry.bulkCreate(mappedMarkEntryData, { ignoreDuplicates: true });
+//         console.log('Mark Entry data inserted successfully!');
+//     } 
+//     catch (err) {
+//         console.error('Error Importing Data :', err);
+//     }
+// };
 
-markEntryImportData();
+// markEntryImportData();
 
 // ---------------------------------------------------------------------------------- //
 
@@ -271,8 +272,7 @@ markEntryImportData();
 
 // Validation Coding
 
-app.post('/login', async (req, res) => 
-{
+app.post('/login', async (req, res) => {
     const { staff_id, staff_pass } = req.body;
 
     try {
@@ -282,16 +282,16 @@ app.post('/login', async (req, res) =>
         if (user) {
             if (user.staff_pass === staff_pass) {
                 return res.json({ success: true, message: "Login Successful" });
-            } 
-            
+            }
+
             else {
                 return res.json({ success: false, message: "Invalid Password" });
             }
-        } 
+        }
         else {
             return res.json({ success: false, message: "User Not Found" });
         }
-    } 
+    }
     catch (error) {
         console.error('Error during Login:', error);
         return res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -302,8 +302,7 @@ app.post('/login', async (req, res) =>
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemap', async (req, res) => 
-{
+app.post('/coursemap', async (req, res) => {
     const { staff_id } = req.body;
 
     try {
@@ -311,7 +310,7 @@ app.post('/coursemap', async (req, res) =>
             where: { staff_id: staff_id }
         });
         res.json(courseMapping);
-    } 
+    }
     catch (err) {
         res.status(500).json({ error: 'An error occurred while fetching data.' });
     }
@@ -321,22 +320,21 @@ app.post('/coursemap', async (req, res) =>
 
 // Students Data Fetching Coding
 
-app.post('/studentdetails', async (req, res) =>
-{
+app.post('/studentdetails', async (req, res) => {
     const { course_id, stu_section, stu_semester, stu_category, stu_course_code } = req.body;
 
     try {
         const studentDetails = await studentmaster.findAll({
-            where: { 
-                course_id: course_id, 
-                semester: stu_semester, 
+            where: {
+                course_id: course_id,
+                semester: stu_semester,
                 section: stu_section,
                 category: stu_category
             }
         });
 
         const registerNumbers = studentDetails.map(student => student.reg_no);
-        
+
         const stud_reg = await markentry.findAll({
             where: {
                 course_code: stu_course_code,
@@ -345,7 +343,7 @@ app.post('/studentdetails', async (req, res) =>
         });
 
         const stu_reg = stud_reg.map(register => register.reg_no);
-        
+
         const stud_name = await studentmaster.findAll({
             where: {
                 reg_no: stu_reg
@@ -353,11 +351,11 @@ app.post('/studentdetails', async (req, res) =>
         });
 
         res.json(stud_name);
-        
+
         if (!registerNumbers) {
             console.error("Error: No register numbers found");
         }
-    } 
+    }
     catch (err) {
         console.error('Error fetching data:', err);
         res.status(500).json({ error: 'An error occurred while fetching data.' });
@@ -368,8 +366,7 @@ app.post('/studentdetails', async (req, res) =>
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => 
-{
+app.get('/scope/:staffId', async (req, res) => {
     const { staffId } = req.params;
 
     try {
@@ -380,7 +377,7 @@ app.get('/scope/:staffId', async (req, res) =>
             return res.status(404).json({ error: 'No records found for the given staff ID.' });
         }
         res.json(scopeDetails);
-    } 
+    }
     catch (err) {
         console.error('Error fetching scope details:', err);
         res.status(500).json({ error: 'An error occurred while fetching data.' });
@@ -391,8 +388,7 @@ app.get('/scope/:staffId', async (req, res) =>
 
 // Mark Updation Coding
 
-app.put('/updateMark', async (req, res) => 
-{
+app.put('/updateMark', async (req, res) => {
     const { updates, activeSection, courseCode } = req.body;
 
     const examType = activeSection;
@@ -402,11 +398,10 @@ app.put('/updateMark', async (req, res) =>
         for (const regNo of regNumbers) {
             const updateData = updates[regNo];
 
-            let updateFields = {}; 
+            let updateFields = {};
 
-            switch (examType) 
-            {
-                case '1': 
+            switch (examType) {
+                case '1':
                     updateFields = {
                         c1_lot: updateData.lot || 0,
                         c1_hot: updateData.hot || 0,
@@ -426,7 +421,7 @@ app.put('/updateMark', async (req, res) =>
                     // console.log("CIA 2 marks being updated for", regNo);
                     break;
 
-                case '3': 
+                case '3':
                     updateFields = {
                         a1_lot: updateData.lot || 0
                     };
@@ -440,7 +435,7 @@ app.put('/updateMark', async (req, res) =>
                     // console.log("ASS-2 marks being updated for", regNo);
                     break;
 
-                case '5': 
+                case '5':
                     updateFields = {
                         ese_lot: updateData.lot || 0,
                         ese_hot: updateData.hot || 0,
@@ -455,7 +450,7 @@ app.put('/updateMark', async (req, res) =>
                     res.status(400).send({ error: "Invalid section" });
                     return;
             }
-            
+
             await markentry.update(updateFields, {
                 where: {
                     reg_no: regNo,
@@ -472,18 +467,188 @@ app.put('/updateMark', async (req, res) =>
 });
 
 // ---------------------------------------------------------------------------------- //
- 
+
 // Database Authenticate Coding
 
 sequelize_conn.authenticate()
-.then(() => 
-{
-    console.log('Database Connected');
-    app.listen( 5000 , () => {
-        console.log('Server running on http://localhost:5000');
+    .then(() => {
+        console.log('Database Connected');
+        app.listen(5000, () => {
+            console.log('Server running on http://localhost:5000');
+        });
+    })
+    .catch(err => {
+        console.error('Unable to connect to the Database:', err);
     });
-})
-.catch (err => 
-{
-    console.error('Unable to connect to the Database:', err);
+
+
+
+
+
+const upload = multer({ dest: 'uploads' })
+
+// Route to handle Course Mapping file upload
+app.post('/upload1', upload.single('file'), async (req, res) => {
+    try {
+        const file = req.file;
+        const workbook = xlsx.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = xlsx.utils.sheet_to_json(worksheet);
+
+        const course = rows.map(row => ({
+            category: row.category,
+            batch: row.batch,
+            course_id: row.course_id,
+            degree: row.degree,
+            branch: row.branch,
+            semester: row.semester,
+            section: row.section,
+            course_code: row.course_code,
+            staff_id: row.staff_id,
+            staff_name: row.staff_name,
+            course_title: row.course_title
+        }));
+
+        // Replace with your database logic
+        await coursemapping.bulkCreate(course, {});
+
+        res.status(200).send('Course Mapping Data imported successfully');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
 });
+
+// Route to handle Staff Master file upload
+app.post('/upload2', upload.single('file'), async (req, res) => {
+    try {
+        const file = req.file;
+        const workbook = xlsx.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = xlsx.utils.sheet_to_json(worksheet);
+
+        const staff = rows.map(row => ({
+            staff_id: row.staff_id,
+            staff_name: row.staff_name,
+            staff_pass: row.staff_pass,
+            staff_dept: row.staff_dept,
+            category: row.category
+        }));
+
+        // Replace with your database logic
+        await staffmaster.bulkCreate(staff, {});
+
+        res.status(200).send('Staff Master Data imported successfully');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+// Route to handle Student Master file upload
+app.post('/upload3', upload.single('file'), async (req, res) => {
+    try {
+        const file = req.file;
+        const workbook = xlsx.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = xlsx.utils.sheet_to_json(worksheet);
+
+        const students = rows.map(row => ({
+            reg_no: row.reg_no,
+            stu_name: row.stu_name,
+            course_id: row.course_id,
+            category: row.category,
+            semester: row.semester,
+            section: row.section,
+            batch: row.batch,
+            mentor: row.mentor,
+            emis: row.emis
+        }));
+
+        // Replace with your database logic
+        await studentmaster.bulkCreate(students, {});
+
+        res.status(200).send('Student Master Data imported successfully');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+
+
+app.post('/upload4', upload.single('file'), async (req, res) => {
+    try {
+        const file = req.file;
+        const workbook = xlsx.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = xlsx.utils.sheet_to_json(worksheet);
+
+        const scopes = rows.map(row => ({
+            staff_id: row.staff_id,
+            dashboard: row.dashboard,
+            course_list: row.course_list,
+            report: row.report,
+            upload_files: row.upload_files,
+            logout: row.logout
+        }));
+
+        // Replace with your database logic
+        await scope.bulkCreate(scopes, {});
+
+        res.status(200).send('Student Master Data imported successfully');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+
+app.post('/upload5', upload.single('file'), async (req, res) => {
+    try {
+        const file = req.file;
+        const workbook = xlsx.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = xlsx.utils.sheet_to_json(worksheet);
+
+        const mark = rows.map(row => ({
+            batch: row.batch,
+            category: row.category,
+            course_id: row.course_id,
+            reg_no: row.reg_no,
+            course_code: row.course_code,
+            semester: row.semester,
+            c1_lot: row.c1_lot,
+            c1_hot: row.c1_hot,
+            c1_mot: row.c1_mot,
+            c1_total: row.c1_total,
+            c2_lot: row.c2_lot,
+            c2_hot: row.c2_hot,
+            c2_mot: row.c2_mot,
+            c2_total: row.c2_total,
+            a1_lot: row.a1_lot,
+            a2_lot: row.a2_lot,
+            ese_lot: row.ese_lot,
+            ese_hot: row.ese_hot,
+            ese_mot: row.ese_mot,
+            ese_total: row.ese_total
+
+        }));
+
+        // Replace with your database logic
+        await markentry.bulkCreate(mark, {});
+
+        res.status(200).send('Student Master Data imported successfully');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+
+
