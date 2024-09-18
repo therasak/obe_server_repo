@@ -323,7 +323,7 @@ app.post('/coursemap', async (req, res) => {
 // Students Data Fetching Coding
 
 app.post('/studentdetails', async (req, res) => {
-    const { course_id, stu_section, stu_semester, stu_category, stu_course_code } = req.body;
+    const { course_id, stu_section, stu_semester, stu_category, stu_course_code, activeSection } = req.body;
 
     try {
         const studentDetails = await studentmaster.findAll({
@@ -337,26 +337,57 @@ app.post('/studentdetails', async (req, res) => {
 
         const registerNumbers = studentDetails.map(student => student.reg_no);
 
+        // Retrieve markentry data based on activeSection
+        let markFields = {};
+        switch (activeSection) {
+            case '1':
+                markFields = ['c1_lot', 'c1_mot', 'c1_hot', 'c1_total'];
+                break;
+            case '2':
+                markFields = ['c2_lot', 'c2_mot', 'c2_hot', 'c2_total'];
+                break;
+            case '3':
+                markFields = ['a1_lot'];
+                break;
+            case '4':
+                markFields = ['a2_lot'];
+                break;
+            case '5':
+                markFields = ['ese_lot', 'ese_mot', 'ese_hot', 'ese_total'];
+                break;
+            default:
+                return res.status(400).json({ error: 'Invalid section' });
+        }
+
         const stud_reg = await markentry.findAll({
             where: {
                 course_code: stu_course_code,
                 reg_no: registerNumbers
-            }
+            },
+            attributes: ['reg_no', ...markFields]
         });
-
-        const stu_reg = stud_reg.map(register => register.reg_no);
 
         const stud_name = await studentmaster.findAll({
             where: {
-                reg_no: stu_reg
-            }
+                reg_no: stud_reg.map(entry => entry.reg_no)
+            },
+            attributes: ['reg_no', 'stu_name']
         });
 
-        res.json(stud_name);
+        // Combine student names with their marks
+        const studentData = stud_name.map(student => {
+            const marks = stud_reg.find(mark => mark.reg_no === student.reg_no) || {};
+            return {
+                reg_no: student.reg_no,
+                stu_name: student.stu_name,
+                lot: marks[`${activeSection === '1' ? 'c1_lot' : activeSection === '2' ? 'c2_lot' : activeSection === '3' ? 'a1_lot' : activeSection === '4' ? 'a2_lot' : 'ese_lot'}`] || '',
+                mot: marks[`${activeSection === '1' ? 'c1_mot' : activeSection === '2' ? 'c2_mot' : 'ese_mot'}`] || '',
+                hot: marks[`${activeSection === '1' ? 'c1_hot' : activeSection === '2' ? 'c2_hot' : 'ese_hot'}`] || '',
+                total: marks[`${activeSection === '1' ? 'c1_total' : activeSection === '2' ? 'c2_total' : 'ese_total'}`] || ''
+            };
+        });
 
-        if (!registerNumbers) {
-            console.error("Error: No register numbers found");
-        }
+        res.json(studentData);
     }
     catch (err) {
         console.error('Error fetching data:', err);
