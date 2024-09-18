@@ -35,59 +35,59 @@ const markentry = sequelize_conn.define('markentry',
     },
     c1_lot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     c1_hot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     c1_mot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     c1_total: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     c2_lot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     c2_hot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     c2_mot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     c2_total: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     a1_lot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     a2_lot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     ese_lot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     ese_hot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     ese_mot: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     ese_total: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     }
 },
 {

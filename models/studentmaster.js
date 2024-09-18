@@ -34,11 +34,11 @@ const studentmaster = sequelize_conn.define('studentmaster',
     },
     mentor : {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     emis : {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     }
 }, 
 {

@@ -274,8 +274,7 @@ app.use(express.json());
 
 // Validation Coding
 
-app.post('/login', async (req, res) => 
-{
+app.post('/login', async (req, res) => {
     const { staff_id, staff_pass } = req.body;
 
     try {
@@ -305,8 +304,7 @@ app.post('/login', async (req, res) =>
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemap', async (req, res) => 
-{
+app.post('/coursemap', async (req, res) => {
     const { staff_id } = req.body;
 
     try {
@@ -324,8 +322,7 @@ app.post('/coursemap', async (req, res) =>
 
 // Students Data Fetching Coding
 
-app.post('/studentdetails', async (req, res) => 
-{
+app.post('/studentdetails', async (req, res) => {
     const { course_id, stu_section, stu_semester, stu_category, stu_course_code } = req.body;
 
     try {
@@ -371,8 +368,7 @@ app.post('/studentdetails', async (req, res) =>
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => 
-{
+app.get('/scope/:staffId', async (req, res) => {
     const { staffId } = req.params;
 
     try {
@@ -401,8 +397,7 @@ app.put('/updateMark', async (req, res) => {
     const regNumbers = Object.keys(updates);
 
     try {
-        for (const regNo of regNumbers) 
-        {
+        for (const regNo of regNumbers) {
             const updateData = updates[regNo];
             let updateFields = {};
 
@@ -466,7 +461,7 @@ app.put('/updateMark', async (req, res) => {
         }
 
         res.status(200).send({ success: true, message: 'Marks updated successfully' });
-        
+
     }
     catch (error) {
         console.error("Error updating marks:", error);
@@ -493,8 +488,7 @@ sequelize_conn.authenticate()
 
 // Route to handle Course Mapping file upload
 
-app.post('/upload1', upload.single('file'), async (req, res) => 
-{
+app.post('/upload1', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -519,7 +513,7 @@ app.post('/upload1', upload.single('file'), async (req, res) =>
         await coursemapping.bulkCreate(course, {});
 
         res.status(200).send('Course Mapping Data imported successfully');
-    } 
+    }
     catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
@@ -530,8 +524,7 @@ app.post('/upload1', upload.single('file'), async (req, res) =>
 
 // Route to handle Staff Master file upload
 
-app.post('/upload2', upload.single('file'), async (req, res) => 
-{
+app.post('/upload2', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -550,7 +543,7 @@ app.post('/upload2', upload.single('file'), async (req, res) =>
         await staffmaster.bulkCreate(staff, {});
 
         res.status(200).send('Staff Master Data imported successfully');
-    } 
+    }
     catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
@@ -561,8 +554,7 @@ app.post('/upload2', upload.single('file'), async (req, res) =>
 
 // Route to handle Student Master file upload
 
-app.post('/upload3', upload.single('file'), async (req, res) => 
-{
+app.post('/upload3', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -585,7 +577,7 @@ app.post('/upload3', upload.single('file'), async (req, res) =>
         await studentmaster.bulkCreate(students, {});
 
         res.status(200).send('Student Master Data imported successfully');
-    } 
+    }
     catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
@@ -594,8 +586,7 @@ app.post('/upload3', upload.single('file'), async (req, res) =>
 
 // ---------------------------------------------------------------------------------- //
 
-app.post('/upload4', upload.single('file'), async (req, res) => 
-{
+app.post('/upload4', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -615,7 +606,7 @@ app.post('/upload4', upload.single('file'), async (req, res) =>
         await scope.bulkCreate(scopes, {});
 
         res.status(200).send('Student Master Data imported successfully');
-    } 
+    }
     catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
@@ -624,8 +615,7 @@ app.post('/upload4', upload.single('file'), async (req, res) =>
 
 // ---------------------------------------------------------------------------------- //
 
-app.post('/upload5', upload.single('file'), async (req, res) => 
-{
+app.post('/upload5', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -660,7 +650,7 @@ app.post('/upload5', upload.single('file'), async (req, res) =>
         await markentry.bulkCreate(mark, {});
 
         res.status(200).send('Student Master Data imported successfully');
-    } 
+    }
     catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
