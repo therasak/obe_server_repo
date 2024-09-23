@@ -8,6 +8,7 @@ const studentmaster = require('./models/studentmaster');
 const department = require('./models/department');
 const course = require('./models/course');
 const scope = require('./models/scope');
+const report = require('./models/report');
 const markentry = require('./models/markentry');
 const coursemapping = require('./models/coursemapping');
 const XLSX = require('xlsx');
@@ -688,4 +689,270 @@ app.post('/upload5', upload.single('file'), async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// -------------------------------Report--------------------------------------------------- //
+
+
+// app.put('/report', async (req, res) => {
+//     const { activeSection, courseCode, deptName, semester, section, category, button_value } = req.body;
+
+//     console.log(activeSection);
+//     console.log(section);
+//     console.log(semester);
+//     console.log(courseCode);
+//     console.log(deptName);
+//     console.log(category);
+//     console.log(button_value);
+
+//     // Initialize fields as null or default values
+//     let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
+//     if (button_value === "0") {
+//         switch (activeSection) {
+//             case "1":
+//                 cia_1 = 1;
+
+//                 break;
+//             case "2":
+//                 cia_2 = 1;
+//                 break;
+//             case "3":
+//                 ass_1 = 1;
+//                 break;
+//             case "4":
+//                 ass_2 = 1;
+//                 break;
+//             case "5":
+//                 ese = 1;
+//                 break;
+//             default:
+//                 return res.status(400).json({ error: 'Invalid activeSection value' });
+//         }
+//     }
+//     else if(button_value === "1")
+//     {
+//         switch (activeSection) {
+//             case "1":
+//                 cia_1 = 2;
+//                 break;
+//             case "2":
+//                 cia_2 = 2;
+//                 break;
+//             case "3":
+//                 ass_1 = 2;
+//                 break;
+//             case "4":
+//                 ass_2 = 2;
+//                 break;
+//             case "5":
+//                 ese = 2;
+//                 break;
+//             default:
+//                 return res.status(400).json({ error: 'Invalid activeSection value' });
+//         }
+//     }
+//     else
+//     {
+//         console.log("error");
+//     }
+//     // Set values based on the activeSection value
+
+
+//     try {
+//         // Check if the report already exists
+//         const existingReport = await report.findOne({
+//             where: {
+//                 course_code: courseCode,
+//                 section: section,
+//                 // semester: semester,
+//                 category: category,
+//                 dept_name: deptName
+//             }
+//         });
+
+//         if (existingReport) {
+//             // Update the existing report
+//             // existingReport.cia_1 = cia_1;
+//             // existingReport.cia_2 = cia_2;
+//             // existingReport.ass_1 = ass_1;
+//             // existingReport.ass_2 = ass_2;
+//             // existingReport.ese = ese;
+//             if(button_value === '1')
+//             switch (activeSection) {
+//                 case "1":
+//                     existingReport.cia_1 = 1;
+//                     break;
+//                 case "2":
+//                     existingReport.cia_2 = 1;
+//                     break;
+//                 case "3":
+//                     existingReport.ass_1 = 1;
+//                     break;
+//                 case "4":
+//                     existingReport.ass_2 = 1;
+//                     break;
+//                 case "5":
+//                     existingReport.ese = 1;
+//                     break;
+//                 default:
+//                     return res.status(400).json({ error: 'Invalid activeSection value' });
+//             }
+
+//             await existingReport.save();
+
+//             console.log(existingReport);
+//             return res.status(200).json({
+//                 message: 'Report updated successfully',
+//                 report: existingReport
+//             });
+//         } else {
+//             // Create a new report entry
+//             const newReport = await report.create({
+//                 course_code: courseCode,
+//                 category: category,
+//                 section: section,
+//                 // semester: semester,
+//                 dept_name: deptName,
+//                 cia_1: cia_1,
+//                 cia_2: cia_2,
+//                 ass_1: ass_1,
+//                 ass_2: ass_2,
+//                 ese: ese
+//             });
+
+//             console.log(newReport);
+//             return res.status(201).json({
+//                 message: 'New report created successfully',
+//                 report: newReport
+//             });
+//         }
+//         res.json(scopeDetails);
+//     }
+//     catch (err) {
+//         console.error('Error creating/updating report:', err);
+//         return res.status(500).json({ error: 'An error occurred while creating/updating the report.' });
+//     }
+// });
+
+
+/*---------------------------------------------------------------------------------------------------- */
+
+app.put('/report', async (req, res) => {
+    const { activeSection, courseCode, deptName, semester, section, category, button_value } = req.body;
+
+    console.log(activeSection);
+    console.log(section);
+    console.log(semester);
+    console.log(courseCode);
+    console.log(deptName);
+    console.log(category);
+    console.log(button_value);
+
+    try {
+        // Check if the report already exists
+        const existingReport = await report.findOne({
+            where: {
+                course_code: courseCode,
+                section: section,
+                // semester: semester,
+                category: category,
+                dept_name: deptName
+            }
+        });
+
+        let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;  // Declare variables here
+
+        if (existingReport) {
+            console.log('findValue:', existingReport);
+            if (button_value === "0") {
+                console.log(activeSection);
+                console.log(button_value);
+                switch (activeSection) {
+                    case "1":
+                        existingReport.cia_1 = 1;
+                        console.log('cia_1', cia_1);
+                        break;
+                    case "2":
+                        existingReport.cia_2 = 1;
+                        break;
+                    case "3":
+                        existingReport.ass_1 = 1;
+                        break;
+                    case "4":
+                        existingReport.ass_2 = 1;
+                        break;
+                    case "5":
+                        existingReport.ese = 1;
+                        break;
+                    default:
+                        console.log('Invalid activeSection');
+                        break;
+                }
+                console.log("1", cia_1, '2', cia_2, '3', ass_1, '4', ass_2, '5', ese);
+                await existingReport.save();
+
+            } else if (button_value === "1") {
+                switch (activeSection) {
+                    case "1":
+                        existingReport.cia_1 = 2;
+                        break;
+                    case "2":
+                        existingReport.cia_2 = 2;
+                        break;
+                    case "3":
+                        existingReport.ass_1 = 2;
+                        break;
+                    case "4":
+                        existingReport.ass_2 = 2;
+                        break;
+                    case "5":
+                        existingReport.ese = 2;
+                        break;
+                    default:
+                        console.log('Invalid activeSection');
+                        break;
+                }
+                await existingReport.save();
+                console.log("1", cia_1, '2', cia_2, '3', ass_1, '4', ass_2, '5', ese);
+            }
+
+            res.status(200).json({ cia_1, cia_2, ass_1, ass_2, ese });
+        } else {
+            const newReport = await report.create({
+                course_code: courseCode,
+                category: category,
+                section: section,
+                // semester: semester,
+                dept_name: deptName,
+                cia_1: 0,
+                cia_2: 0,
+                ass_1: 0,
+                ass_2: 0,
+                ese: 0
+            });
+
+            res.status(201).json(newReport);
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/getreport', async (req, res) => {
+    const { courseCode, deptName, semester, section, category } = req.query; 
+    console.log(courseCode);
+    console.log(deptName);
+    console.log(semester);
+    console.log(section);
+    console.log(category);
+
+    const checkActive = await report.findOne({
+        where: { 
+            course_code: courseCode,
+            section: section,
+            category: category,
+            dept_name: deptName
+        }
+    });
+    console.log(checkActive);
+    res.json(checkActive);
+})
