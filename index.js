@@ -848,27 +848,36 @@ app.put('/report', async (req, res) => {
 
     try {
         // Check if the report already exists
-        const existingReport = await report.findOne({
-            where: {
-                course_code: courseCode,
-                section: section,
-                // semester: semester,
-                category: category,
-                dept_name: deptName
-            }
-        });
+        // const existingReport = await report.findOne({
+        //     where: {
+        //         course_code: courseCode,
+        //         section: section,
+        //         // semester: semester,
+        //         category: category,
+        //         dept_name: deptName
+        //     }
+        // });
 
         let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;  // Declare variables here
 
-        if (existingReport) {
-            console.log('findValue:', existingReport);
-            if (button_value === "0") {
-                console.log(activeSection);
-                console.log(button_value);
+
+        // console.log('findValue:', existingReport);
+        if (button_value === "0") {
+            console.log(activeSection);
+            console.log(button_value);
+            const existingReport = await report.findOne({
+                where: {
+                    course_code: courseCode,
+                    section: section,
+                    // semester: semester,
+                    category: category,
+                    dept_name: deptName
+                }
+            });
+            if (existingReport) {
                 switch (activeSection) {
                     case "1":
                         existingReport.cia_1 = 1;
-                        console.log('cia_1', cia_1);
                         break;
                     case "2":
                         existingReport.cia_2 = 1;
@@ -886,10 +895,39 @@ app.put('/report', async (req, res) => {
                         console.log('Invalid activeSection');
                         break;
                 }
-                console.log("1", cia_1, '2', cia_2, '3', ass_1, '4', ass_2, '5', ese);
                 await existingReport.save();
-
-            } else if (button_value === "1") {
+        
+                // Log the updated values
+                console.log("cia_1", existingReport.cia_1, "cia_2", existingReport.cia_2, 
+                            "ass_1", existingReport.ass_1, "ass_2", existingReport.ass_2, 
+                            "ese", existingReport.ese);
+            } else {
+                // Create a new record if not found
+                const newReport = await report.create({
+                    course_code: courseCode,
+                    section: section,
+                    category: category,
+                    dept_name: deptName,
+                    // Initialize all fields based on activeSection
+                    cia_1: activeSection === "1" ? 1 : null,
+                    cia_2: activeSection === "2" ? 1 : null,
+                    ass_1: activeSection === "3" ? 1 : null,
+                    ass_2: activeSection === "4" ? 1 : null,
+                    ese: activeSection === "5" ? 1 : null,
+                });
+                console.log('New report created:', newReport);
+            }
+        } else if (button_value === "1") {
+            const existingReport = await report.findOne({
+                where: {
+                    course_code: courseCode,
+                    section: section,
+                    // semester: semester,
+                    category: category,
+                    dept_name: deptName
+                }
+            });
+            if (existingReport) {
                 switch (activeSection) {
                     case "1":
                         existingReport.cia_1 = 2;
@@ -911,26 +949,30 @@ app.put('/report', async (req, res) => {
                         break;
                 }
                 await existingReport.save();
-                console.log("1", cia_1, '2', cia_2, '3', ass_1, '4', ass_2, '5', ese);
+        
+                // Log the updated values
+                console.log("cia_1", existingReport.cia_1, "cia_2", existingReport.cia_2, 
+                            "ass_1", existingReport.ass_1, "ass_2", existingReport.ass_2, 
+                            "ese", existingReport.ese);
+            } else {
+                // Create a new record if not found
+                const newReport = await report.create({
+                    course_code: courseCode,
+                    section: section,
+                    category: category,
+                    dept_name: deptName,
+                    // Initialize all fields based on activeSection
+                    cia_1: activeSection === "1" ? 2 : null,
+                    cia_2: activeSection === "2" ? 2 : null,
+                    ass_1: activeSection === "3" ? 2 : null,
+                    ass_2: activeSection === "4" ? 2 : null,
+                    ese: activeSection === "5" ? 2 : null,
+                });
+                console.log('New report created:', newReport);
             }
-
-            res.status(200).json({ cia_1, cia_2, ass_1, ass_2, ese });
-        } else {
-            const newReport = await report.create({
-                course_code: courseCode,
-                category: category,
-                section: section,
-                // semester: semester,
-                dept_name: deptName,
-                cia_1: 0,
-                cia_2: 0,
-                ass_1: 0,
-                ass_2: 0,
-                ese: 0
-            });
-
-            res.status(201).json(newReport);
         }
+        res.status(200).json({ cia_1, cia_2, ass_1, ass_2, ese });
+
     } catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
@@ -938,7 +980,7 @@ app.put('/report', async (req, res) => {
 });
 
 app.get('/getreport', async (req, res) => {
-    const { courseCode, deptName, semester, section, category } = req.query; 
+    const { courseCode, deptName, semester, section, category } = req.query;
     console.log(courseCode);
     console.log(deptName);
     console.log(semester);
@@ -946,7 +988,7 @@ app.get('/getreport', async (req, res) => {
     console.log(category);
 
     const checkActive = await report.findOne({
-        where: { 
+        where: {
             course_code: courseCode,
             section: section,
             category: category,
