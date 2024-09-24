@@ -10,23 +10,23 @@ const scope = sequelize_conn.define('scope',
     },
     dashboard : {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     course_list: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     report : {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     upload_files : {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     logout: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     }
 }, 
 {

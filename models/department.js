@@ -10,23 +10,23 @@ const department = sequelize_conn.define('department',
     },
     dept_name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     graduate: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     category: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     programme: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     dept_hod: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     }
 }, 
 {

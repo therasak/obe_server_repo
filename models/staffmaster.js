@@ -10,19 +10,19 @@ const staffmaster = sequelize_conn.define('staffmaster',
     },
     staff_name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     staff_pass: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     staff_dept: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     category:{
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     }
 }, 
 {
