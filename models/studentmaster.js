@@ -10,27 +10,27 @@ const studentmaster = sequelize_conn.define('studentmaster',
     },
     stu_name : {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     course_id : {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     category : {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     semester: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     section: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     batch : {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     mentor : {
         type: DataTypes.STRING,

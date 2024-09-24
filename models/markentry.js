@@ -11,27 +11,27 @@ const markentry = sequelize_conn.define('markentry',
     },
     batch: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     category: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     course_id: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     reg_no: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     course_code: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     semester: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     c1_lot: {
         type: DataTypes.INTEGER,

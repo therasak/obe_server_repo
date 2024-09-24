@@ -10,23 +10,23 @@ const course = sequelize_conn.define('course',
     },
     course_title: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     dept_id: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     course_part: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     cia_mark: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     ese_mark: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: true
     }
 }, 
 {

@@ -11,47 +11,47 @@ const coursemapping = sequelize_conn.define('coursemapping',
         },
         category: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         batch: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         course_id: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         degree: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         branch: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         semester: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: true
         },
         section: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         course_code: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         staff_id: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         staff_name: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         course_title: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         }
     },
     {

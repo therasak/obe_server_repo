@@ -6,25 +6,25 @@ const report= sequelize_conn.define('report',
     {
         s_no: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            primaryKey: true,
+            allowNull: true,
+            primaryKey: false,
             autoIncrement: true
         },
         course_code: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
         },
         category : {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         section : {
             type : DataTypes.STRING,
-            allowNull:false
+            allowNull:true
         },
         dept_name : {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         cia_1 : {
             type: DataTypes.INTEGER,
