@@ -25,10 +25,6 @@ app.use(express.json());
 // async function dbconncheck() 
 // {
 //     try {
-//         // // Authenticate the connection
-//         // await sequelize_conn.authenticate();
-//         // console.log('Database Synced');
-
 //         // Synchronize the staffmaster model
 //         await staffmaster.sync();
 //         console.log('Staffmaster Table Synced');
@@ -37,25 +33,29 @@ app.use(express.json());
 //         await studentmaster.sync();
 //         console.log('Studentmaster Table Synced');
 
-//         // // Synchronize the course model
-//         // await course.sync();
-//         // console.log('Course Table Synced');
+//         // Synchronize the course model
+//         await course.sync();
+//         console.log('Course Table Synced');
 
 //         // Synchronize the coursemapping model
 //         await coursemapping.sync();
-//         console.log('Coursemapping Table Synced');
+//         console.log('Course Mapping Table Synced');
 
 //         // Synchronize the scope model
 //         await scope.sync();
 //         console.log('Scope Table Synced');
 
-//         // // Synchronize the department model
-//         // await department.sync();
-//         // console.log('Deparment Table Synced');
+//         // Synchronize the department model
+//         await department.sync();
+//         console.log('Deparment Table Synced');
 
 //         // Synchronize the markentry model
 //         await markentry.sync();
 //         console.log('Markentry Table created');
+
+//         // Synchronize the markentry model
+//         await report.sync();
+//         console.log('Report Table created');
 //     } 
 //     catch (error) {
 //         console.log('Error Occurred:', error.message);
@@ -275,7 +275,8 @@ app.use(express.json());
 
 // Validation Coding
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => 
+{
     const { staff_id, staff_pass } = req.body;
 
     try {
@@ -305,7 +306,8 @@ app.post('/login', async (req, res) => {
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemap', async (req, res) => {
+app.post('/coursemap', async (req, res) => 
+{
     const { staff_id } = req.body;
 
     try {
@@ -323,7 +325,8 @@ app.post('/coursemap', async (req, res) => {
 
 // Students Data Fetching Coding
 
-app.post('/studentdetails', async (req, res) => {
+app.post('/studentdetails', async (req, res) => 
+{
     const { course_id, stu_section, stu_semester, stu_category, stu_course_code, activeSection } = req.body;
 
     try {
@@ -338,7 +341,6 @@ app.post('/studentdetails', async (req, res) => {
 
         const registerNumbers = studentDetails.map(student => student.reg_no);
 
-        // Retrieve markentry data based on activeSection
         let markFields = {};
         switch (activeSection) {
             case '1':
@@ -375,8 +377,8 @@ app.post('/studentdetails', async (req, res) => {
             attributes: ['reg_no', 'stu_name']
         });
 
-        // Combine student names with their marks
-        const studentData = stud_name.map(student => {
+        const studentData = stud_name.map(student => 
+        {
             const marks = stud_reg.find(mark => mark.reg_no === student.reg_no) || {};
             return {
                 reg_no: student.reg_no,
@@ -389,6 +391,7 @@ app.post('/studentdetails', async (req, res) => {
         });
 
         res.json(studentData);
+
     }
     catch (err) {
         console.error('Error fetching data:', err);
@@ -400,7 +403,8 @@ app.post('/studentdetails', async (req, res) => {
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => {
+app.get('/scope/:staffId', async (req, res) => 
+{
     const { staffId } = req.params;
 
     try {
@@ -422,9 +426,9 @@ app.get('/scope/:staffId', async (req, res) => {
 
 // Mark Updation Coding
 
-app.put('/updateMark', async (req, res) => {
+app.put('/updateMark', async (req, res) => 
+{
     const { updates, activeSection, courseCode } = req.body;
-
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
 
@@ -491,9 +495,7 @@ app.put('/updateMark', async (req, res) => {
                 }
             });
         }
-
         res.status(200).send({ success: true, message: 'Marks updated successfully' });
-
     }
     catch (error) {
         console.error("Error updating marks:", error);
@@ -503,24 +505,10 @@ app.put('/updateMark', async (req, res) => {
 
 // ---------------------------------------------------------------------------------- //
 
-// Database Authenticate Coding
-
-sequelize_conn.authenticate()
-    .then(() => {
-        console.log('Database Connected');
-        app.listen(5000, () => {
-            console.log('Server running on http://localhost:5000');
-        });
-    })
-    .catch(err => {
-        console.error('Unable to connect to the Database:', err);
-    });
-
-// ---------------------------------------------------------------------------------- //
-
 // Route to handle Course Mapping file upload
 
-app.post('/upload1', upload.single('file'), async (req, res) => {
+app.post('/upload1', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -541,10 +529,9 @@ app.post('/upload1', upload.single('file'), async (req, res) => {
             staff_name: row.staff_name,
             course_title: row.course_title
         }));
-
         await coursemapping.bulkCreate(course, {});
 
-        res.status(200).send('Course Mapping Data imported successfully');
+        res.status(200).send('Course Mapping Data imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -556,7 +543,8 @@ app.post('/upload1', upload.single('file'), async (req, res) => {
 
 // Route to handle Staff Master file upload
 
-app.post('/upload2', upload.single('file'), async (req, res) => {
+app.post('/upload2', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -574,7 +562,7 @@ app.post('/upload2', upload.single('file'), async (req, res) => {
 
         await staffmaster.bulkCreate(staff, {});
 
-        res.status(200).send('Staff Master Data imported successfully');
+        res.status(200).send('Staff Master Data imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -586,7 +574,8 @@ app.post('/upload2', upload.single('file'), async (req, res) => {
 
 // Route to handle Student Master file upload
 
-app.post('/upload3', upload.single('file'), async (req, res) => {
+app.post('/upload3', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -608,7 +597,7 @@ app.post('/upload3', upload.single('file'), async (req, res) => {
 
         await studentmaster.bulkCreate(students, {});
 
-        res.status(200).send('Student Master Data imported successfully');
+        res.status(200).send('Student Master Data imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -618,7 +607,10 @@ app.post('/upload3', upload.single('file'), async (req, res) => {
 
 // ---------------------------------------------------------------------------------- //
 
-app.post('/upload4', upload.single('file'), async (req, res) => {
+// Route to handle Scope file upload
+
+app.post('/upload4', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -637,7 +629,7 @@ app.post('/upload4', upload.single('file'), async (req, res) => {
 
         await scope.bulkCreate(scopes, {});
 
-        res.status(200).send('Student Master Data imported successfully');
+        res.status(200).send('Scope Table imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -647,7 +639,10 @@ app.post('/upload4', upload.single('file'), async (req, res) => {
 
 // ---------------------------------------------------------------------------------- //
 
-app.post('/upload5', upload.single('file'), async (req, res) => {
+// Route to handle Mark Entry file upload
+
+app.post('/upload5', upload.single('file'), async (req, res) => 
+{
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -681,7 +676,7 @@ app.post('/upload5', upload.single('file'), async (req, res) => {
 
         await markentry.bulkCreate(mark, {});
 
-        res.status(200).send('Student Master Data imported successfully');
+        res.status(200).send('Mark Entry Data imported successfully');
     }
     catch (error) {
         console.error(error);
@@ -689,193 +684,34 @@ app.post('/upload5', upload.single('file'), async (req, res) => {
     }
 });
 
-// -------------------------------Report--------------------------------------------------- //
+// ---------------------------------------------------------------------------------- //
 
+// Route to handle Report
 
-// app.put('/report', async (req, res) => {
-//     const { activeSection, courseCode, deptName, semester, section, category, button_value } = req.body;
-
-//     console.log(activeSection);
-//     console.log(section);
-//     console.log(semester);
-//     console.log(courseCode);
-//     console.log(deptName);
-//     console.log(category);
-//     console.log(button_value);
-
-//     // Initialize fields as null or default values
-//     let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
-//     if (button_value === "0") {
-//         switch (activeSection) {
-//             case "1":
-//                 cia_1 = 1;
-
-//                 break;
-//             case "2":
-//                 cia_2 = 1;
-//                 break;
-//             case "3":
-//                 ass_1 = 1;
-//                 break;
-//             case "4":
-//                 ass_2 = 1;
-//                 break;
-//             case "5":
-//                 ese = 1;
-//                 break;
-//             default:
-//                 return res.status(400).json({ error: 'Invalid activeSection value' });
-//         }
-//     }
-//     else if(button_value === "1")
-//     {
-//         switch (activeSection) {
-//             case "1":
-//                 cia_1 = 2;
-//                 break;
-//             case "2":
-//                 cia_2 = 2;
-//                 break;
-//             case "3":
-//                 ass_1 = 2;
-//                 break;
-//             case "4":
-//                 ass_2 = 2;
-//                 break;
-//             case "5":
-//                 ese = 2;
-//                 break;
-//             default:
-//                 return res.status(400).json({ error: 'Invalid activeSection value' });
-//         }
-//     }
-//     else
-//     {
-//         console.log("error");
-//     }
-//     // Set values based on the activeSection value
-
-
-//     try {
-//         // Check if the report already exists
-//         const existingReport = await report.findOne({
-//             where: {
-//                 course_code: courseCode,
-//                 section: section,
-//                 // semester: semester,
-//                 category: category,
-//                 dept_name: deptName
-//             }
-//         });
-
-//         if (existingReport) {
-//             // Update the existing report
-//             // existingReport.cia_1 = cia_1;
-//             // existingReport.cia_2 = cia_2;
-//             // existingReport.ass_1 = ass_1;
-//             // existingReport.ass_2 = ass_2;
-//             // existingReport.ese = ese;
-//             if(button_value === '1')
-//             switch (activeSection) {
-//                 case "1":
-//                     existingReport.cia_1 = 1;
-//                     break;
-//                 case "2":
-//                     existingReport.cia_2 = 1;
-//                     break;
-//                 case "3":
-//                     existingReport.ass_1 = 1;
-//                     break;
-//                 case "4":
-//                     existingReport.ass_2 = 1;
-//                     break;
-//                 case "5":
-//                     existingReport.ese = 1;
-//                     break;
-//                 default:
-//                     return res.status(400).json({ error: 'Invalid activeSection value' });
-//             }
-
-//             await existingReport.save();
-
-//             console.log(existingReport);
-//             return res.status(200).json({
-//                 message: 'Report updated successfully',
-//                 report: existingReport
-//             });
-//         } else {
-//             // Create a new report entry
-//             const newReport = await report.create({
-//                 course_code: courseCode,
-//                 category: category,
-//                 section: section,
-//                 // semester: semester,
-//                 dept_name: deptName,
-//                 cia_1: cia_1,
-//                 cia_2: cia_2,
-//                 ass_1: ass_1,
-//                 ass_2: ass_2,
-//                 ese: ese
-//             });
-
-//             console.log(newReport);
-//             return res.status(201).json({
-//                 message: 'New report created successfully',
-//                 report: newReport
-//             });
-//         }
-//         res.json(scopeDetails);
-//     }
-//     catch (err) {
-//         console.error('Error creating/updating report:', err);
-//         return res.status(500).json({ error: 'An error occurred while creating/updating the report.' });
-//     }
-// });
-
-
-/*---------------------------------------------------------------------------------------------------- */
-
-app.put('/report', async (req, res) => {
+app.put('/report', async (req, res) => 
+{
     const { activeSection, courseCode, deptName, semester, section, category, button_value } = req.body;
 
-    console.log(activeSection);
-    console.log(section);
-    console.log(semester);
-    console.log(courseCode);
-    console.log(deptName);
-    console.log(category);
-    console.log(button_value);
-
     try {
-        // Check if the report already exists
-        // const existingReport = await report.findOne({
-        //     where: {
-        //         course_code: courseCode,
-        //         section: section,
-        //         // semester: semester,
-        //         category: category,
-        //         dept_name: deptName
-        //     }
-        // });
+       
+        let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
 
-        let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;  // Declare variables here
-
-
-        // console.log('findValue:', existingReport);
-        if (button_value === "0") {
-            console.log(activeSection);
-            console.log(button_value);
+        if (button_value === "0") 
+        {
+            // console.log(activeSection);
+            // console.log(button_value);
             const existingReport = await report.findOne({
                 where: {
                     course_code: courseCode,
                     section: section,
-                    // semester: semester,
                     category: category,
                     dept_name: deptName
                 }
             });
-            if (existingReport) {
-                switch (activeSection) {
+            if (existingReport) 
+            {
+                switch (activeSection) 
+                {
                     case "1":
                         existingReport.cia_1 = 1;
                         break;
@@ -896,39 +732,37 @@ app.put('/report', async (req, res) => {
                         break;
                 }
                 await existingReport.save();
-        
-                // Log the updated values
-                console.log("cia_1", existingReport.cia_1, "cia_2", existingReport.cia_2, 
-                            "ass_1", existingReport.ass_1, "ass_2", existingReport.ass_2, 
-                            "ese", existingReport.ese);
-            } else {
-                // Create a new record if not found
+            } 
+            else 
+            {
                 const newReport = await report.create({
                     course_code: courseCode,
                     section: section,
                     category: category,
                     dept_name: deptName,
-                    // Initialize all fields based on activeSection
                     cia_1: activeSection === "1" ? 1 : null,
                     cia_2: activeSection === "2" ? 1 : null,
                     ass_1: activeSection === "3" ? 1 : null,
                     ass_2: activeSection === "4" ? 1 : null,
                     ese: activeSection === "5" ? 1 : null,
                 });
-                console.log('New report created:', newReport);
+                // console.log('New report created:', newReport);
             }
-        } else if (button_value === "1") {
+        } 
+        else if (button_value === "1") 
+        {
             const existingReport = await report.findOne({
                 where: {
                     course_code: courseCode,
                     section: section,
-                    // semester: semester,
                     category: category,
                     dept_name: deptName
                 }
             });
-            if (existingReport) {
-                switch (activeSection) {
+            if (existingReport) 
+            {
+                switch (activeSection) 
+                {
                     case "1":
                         existingReport.cia_1 = 2;
                         break;
@@ -949,44 +783,38 @@ app.put('/report', async (req, res) => {
                         break;
                 }
                 await existingReport.save();
-        
-                // Log the updated values
-                console.log("cia_1", existingReport.cia_1, "cia_2", existingReport.cia_2, 
-                            "ass_1", existingReport.ass_1, "ass_2", existingReport.ass_2, 
-                            "ese", existingReport.ese);
-            } else {
-                // Create a new record if not found
+            } 
+            else {
                 const newReport = await report.create({
                     course_code: courseCode,
                     section: section,
                     category: category,
                     dept_name: deptName,
-                    // Initialize all fields based on activeSection
                     cia_1: activeSection === "1" ? 2 : null,
                     cia_2: activeSection === "2" ? 2 : null,
                     ass_1: activeSection === "3" ? 2 : null,
                     ass_2: activeSection === "4" ? 2 : null,
                     ese: activeSection === "5" ? 2 : null,
                 });
-                console.log('New report created:', newReport);
+                // console.log('New Report Created:', newReport);
             }
         }
         res.status(200).json({ cia_1, cia_2, ass_1, ass_2, ese });
-
-    } catch (err) {
+    } 
+    catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
     }
 });
 
-app.get('/getreport', async (req, res) => {
-    const { courseCode, deptName, semester, section, category } = req.query;
-    console.log(courseCode);
-    console.log(deptName);
-    console.log(semester);
-    console.log(section);
-    console.log(category);
+// ---------------------------------------------------------------------------------- //
 
+// Route to handle Get Report
+
+app.get('/getreport', async (req, res) => 
+{
+    const { courseCode, deptName, semester, section, category } = req.query;
+    
     const checkActive = await report.findOne({
         where: {
             course_code: courseCode,
@@ -995,6 +823,23 @@ app.get('/getreport', async (req, res) => {
             dept_name: deptName
         }
     });
-    console.log(checkActive);
+    // console.log(checkActive);
     res.json(checkActive);
 })
+
+// ---------------------------------------------------------------------------------- //
+
+// Database Authenticate Coding
+
+sequelize_conn.authenticate()
+    .then(() => {
+        console.log('Database Connected');
+        app.listen(5000, () => {
+            console.log('Server running on http://localhost:5000');
+        });
+    })
+    .catch(err => {
+        console.error('Unable to connect to the Database:', err);
+    });
+
+// ---------------------------------------------------------------------------------- //
