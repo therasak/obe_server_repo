@@ -275,8 +275,7 @@ app.use(express.json());
 
 // Validation Coding
 
-app.post('/login', async (req, res) => 
-{
+app.post('/login', async (req, res) => {
     const { staff_id, staff_pass } = req.body;
 
     try {
@@ -306,8 +305,7 @@ app.post('/login', async (req, res) =>
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemap', async (req, res) => 
-{
+app.post('/coursemap', async (req, res) => {
     const { staff_id } = req.body;
 
     try {
@@ -325,8 +323,7 @@ app.post('/coursemap', async (req, res) =>
 
 // Students Data Fetching Coding
 
-app.post('/studentdetails', async (req, res) => 
-{
+app.post('/studentdetails', async (req, res) => {
     const { course_id, stu_section, stu_semester, stu_category, stu_course_code, activeSection } = req.body;
 
     try {
@@ -377,8 +374,7 @@ app.post('/studentdetails', async (req, res) =>
             attributes: ['reg_no', 'stu_name']
         });
 
-        const studentData = stud_name.map(student => 
-        {
+        const studentData = stud_name.map(student => {
             const marks = stud_reg.find(mark => mark.reg_no === student.reg_no) || {};
             return {
                 reg_no: student.reg_no,
@@ -403,8 +399,7 @@ app.post('/studentdetails', async (req, res) =>
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => 
-{
+app.get('/scope/:staffId', async (req, res) => {
     const { staffId } = req.params;
 
     try {
@@ -426,8 +421,7 @@ app.get('/scope/:staffId', async (req, res) =>
 
 // Mark Updation Coding
 
-app.put('/updateMark', async (req, res) => 
-{
+app.put('/updateMark', async (req, res) => {
     const { updates, activeSection, courseCode } = req.body;
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
@@ -507,8 +501,7 @@ app.put('/updateMark', async (req, res) =>
 
 // Route to handle Course Mapping file upload
 
-app.post('/upload1', upload.single('file'), async (req, res) => 
-{
+app.post('/upload1', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -543,8 +536,7 @@ app.post('/upload1', upload.single('file'), async (req, res) =>
 
 // Route to handle Staff Master file upload
 
-app.post('/upload2', upload.single('file'), async (req, res) => 
-{
+app.post('/upload2', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -574,8 +566,7 @@ app.post('/upload2', upload.single('file'), async (req, res) =>
 
 // Route to handle Student Master file upload
 
-app.post('/upload3', upload.single('file'), async (req, res) => 
-{
+app.post('/upload3', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -609,8 +600,7 @@ app.post('/upload3', upload.single('file'), async (req, res) =>
 
 // Route to handle Scope file upload
 
-app.post('/upload4', upload.single('file'), async (req, res) => 
-{
+app.post('/upload4', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -641,8 +631,9 @@ app.post('/upload4', upload.single('file'), async (req, res) =>
 
 // Route to handle Mark Entry file upload
 
-app.post('/upload5', upload.single('file'), async (req, res) => 
-{
+
+
+app.post('/upload5', upload.single('file'), async (req, res) => {
     try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
@@ -676,9 +667,60 @@ app.post('/upload5', upload.single('file'), async (req, res) =>
 
         await markentry.bulkCreate(mark, {});
 
-        res.status(200).send('Mark Entry Data imported successfully');
+        res.status(200).send('Student Master Data imported successfully');
     }
     catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+
+// ---------------------------------------------------------------------------------- //
+
+// Route to handle Department Mark Entry file upload
+
+app.post('/upload6', upload.single('file'), async (req, res) => {
+    try {
+        const file = req.file;
+        const workbook = XLSX.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        // Iterate over each row in the Excel file
+        for (const row of rows) {
+            const { reg_no, course_code } = row;
+
+            // Check if the record exists
+            const existingEntry = await markentry.findOne({
+                where: {
+                    reg_no: reg_no,
+                    course_code: course_code
+                }
+            });
+
+            const updatedData = {
+                course_id: row.course_id,
+                c1_lot: row.c1_lot,
+                c1_hot: row.c1_hot,
+                c1_mot: row.c1_mot,
+                c1_total: row.c1_total,
+            };
+
+            if (existingEntry) {
+                // Update existing record
+                await markentry.update(updatedData, {
+                    where: {
+                        reg_no: reg_no,
+                        course_code: course_code
+                    }
+                });
+            }
+        }
+
+        res.status(200).send('Student Master Data imported successfully');
+    } catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
@@ -688,16 +730,14 @@ app.post('/upload5', upload.single('file'), async (req, res) =>
 
 // Route to handle Report
 
-app.put('/report', async (req, res) => 
-{
+app.put('/report', async (req, res) => {
     const { activeSection, courseCode, deptName, semester, section, category, button_value } = req.body;
 
     try {
-       
+
         let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
 
-        if (button_value === "0") 
-        {
+        if (button_value === "0") {
             // console.log(activeSection);
             // console.log(button_value);
             const existingReport = await report.findOne({
@@ -708,10 +748,8 @@ app.put('/report', async (req, res) =>
                     dept_name: deptName
                 }
             });
-            if (existingReport) 
-            {
-                switch (activeSection) 
-                {
+            if (existingReport) {
+                switch (activeSection) {
                     case "1":
                         existingReport.cia_1 = 1;
                         break;
@@ -732,9 +770,8 @@ app.put('/report', async (req, res) =>
                         break;
                 }
                 await existingReport.save();
-            } 
-            else 
-            {
+            }
+            else {
                 const newReport = await report.create({
                     course_code: courseCode,
                     section: section,
@@ -748,9 +785,8 @@ app.put('/report', async (req, res) =>
                 });
                 // console.log('New report created:', newReport);
             }
-        } 
-        else if (button_value === "1") 
-        {
+        }
+        else if (button_value === "1") {
             const existingReport = await report.findOne({
                 where: {
                     course_code: courseCode,
@@ -759,10 +795,8 @@ app.put('/report', async (req, res) =>
                     dept_name: deptName
                 }
             });
-            if (existingReport) 
-            {
-                switch (activeSection) 
-                {
+            if (existingReport) {
+                switch (activeSection) {
                     case "1":
                         existingReport.cia_1 = 2;
                         break;
@@ -783,7 +817,7 @@ app.put('/report', async (req, res) =>
                         break;
                 }
                 await existingReport.save();
-            } 
+            }
             else {
                 const newReport = await report.create({
                     course_code: courseCode,
@@ -800,7 +834,7 @@ app.put('/report', async (req, res) =>
             }
         }
         res.status(200).json({ cia_1, cia_2, ass_1, ass_2, ese });
-    } 
+    }
     catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
@@ -811,10 +845,9 @@ app.put('/report', async (req, res) =>
 
 // Route to handle Get Report
 
-app.get('/getreport', async (req, res) => 
-{
+app.get('/getreport', async (req, res) => {
     const { courseCode, deptName, semester, section, category } = req.query;
-    
+
     const checkActive = await report.findOne({
         where: {
             course_code: courseCode,
