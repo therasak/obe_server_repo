@@ -17,6 +17,12 @@ const upload = multer({ dest: 'uploads' })
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
+require('dotenv').config();
+
+const port = process.env.PORT || 5000;
+const clientUrl = process.env.CLIENT_URL;
+const secretKey = process.env.SECRET_KEY;
+
 
 // ---------------------------------------------------------------------------------- //
 
@@ -867,8 +873,8 @@ app.get('/getreport', async (req, res) => {
 sequelize_conn.authenticate()
     .then(() => {
         console.log('Database Connected');
-        app.listen(5000, () => {
-            console.log('Server running on http://localhost:5000');
+        app.listen(port, () => {
+            console.log(`Server running on http:/localhost:${port}`);
         });
     })
     .catch(err => {
