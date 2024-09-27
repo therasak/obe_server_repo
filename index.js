@@ -412,9 +412,6 @@ app.get('/scope/:staffId', async (req, res) => {
         const scopeDetails = await scope.findOne({
             where: { staff_id: staffId }
         });
-        if (scopeDetails.length === 0) {
-            return res.status(404).json({ error: 'No records found for the given staff ID.' });
-        }
         res.json(scopeDetails);
     }
     catch (err) {
@@ -437,49 +434,47 @@ app.put('/updateMark', async (req, res) => {
             const updateData = updates[regNo];
             let updateFields = {};
 
+            // Helper function to assign null if the value is empty or undefined
+            const setField = (value) => value === '' || value === undefined ? null : value;
+
             switch (examType) {
                 case '1':
                     updateFields = {
-                        c1_lot: updateData.lot || 0,
-                        c1_hot: updateData.hot || 0,
-                        c1_mot: updateData.mot || 0,
-                        c1_total: updateData.total || 0
+                        c1_lot: setField(updateData.lot),
+                        c1_hot: setField(updateData.hot),
+                        c1_mot: setField(updateData.mot),
+                        c1_total: setField(updateData.total)
                     };
-                    // console.log("CIA 1 marks being updated for", regNo);
                     break;
 
                 case '2':
                     updateFields = {
-                        c2_lot: updateData.lot || 0,
-                        c2_hot: updateData.hot || 0,
-                        c2_mot: updateData.mot || 0,
-                        c2_total: updateData.total || 0
+                        c2_lot: setField(updateData.lot),
+                        c2_hot: setField(updateData.hot),
+                        c2_mot: setField(updateData.mot),
+                        c2_total: setField(updateData.total)
                     };
-                    // console.log("CIA 2 marks being updated for", regNo);
                     break;
 
                 case '3':
                     updateFields = {
-                        a1_lot: updateData.lot || 0
+                        a1_lot: setField(updateData.lot)
                     };
-                    // console.log("ASS-1 marks being updated for", regNo);
                     break;
 
                 case '4':
                     updateFields = {
-                        a2_lot: updateData.lot || 0
+                        a2_lot: setField(updateData.lot)
                     };
-                    // console.log("ASS-2 marks being updated for", regNo);
                     break;
 
                 case '5':
                     updateFields = {
-                        ese_lot: updateData.lot || 0,
-                        ese_hot: updateData.hot || 0,
-                        ese_mot: updateData.mot || 0,
-                        ese_total: updateData.total || 0
+                        ese_lot: setField(updateData.lot),
+                        ese_hot: setField(updateData.hot),
+                        ese_mot: setField(updateData.mot),
+                        ese_total: setField(updateData.total)
                     };
-                    // console.log("ESE marks being updated for", regNo);
                     break;
 
                 default:
@@ -488,6 +483,7 @@ app.put('/updateMark', async (req, res) => {
                     return;
             }
 
+            // Update the database with the fields
             await markentry.update(updateFields, {
                 where: {
                     reg_no: regNo,
@@ -502,6 +498,7 @@ app.put('/updateMark', async (req, res) => {
         res.status(500).send({ success: false, error: "Failed to update marks" });
     }
 });
+
 
 // ---------------------------------------------------------------------------------- //
 
