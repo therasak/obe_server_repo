@@ -424,7 +424,8 @@ app.get('/scope/:staffId', async (req, res) => {
 
 // Mark Updation Coding
 
-app.put('/updateMark', async (req, res) => {
+app.put('/updateMark', async (req, res) => 
+{
     const { updates, activeSection, courseCode } = req.body;
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
@@ -498,6 +499,7 @@ app.put('/updateMark', async (req, res) => {
         res.status(500).send({ success: false, error: "Failed to update marks" });
     }
 });
+
 
 
 // ---------------------------------------------------------------------------------- //
