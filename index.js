@@ -390,6 +390,45 @@ app.get('/download/mark', async (req, res) => {
 
 
 
+// Download Excel File Format For reports
+
+app.get('/download/report', async (req, res) => {
+    try {
+        const reportData = await report.findAll();
+        const formattedData = [
+            ['SNO', 'COURSE_CODE', 'CATEGORY', 'SECTION', 'DEPT_NAME', 'CIA_1', 'CIA_2', 'ASS_1', 'ASS_2', 'ESE'],
+
+            ...reportData.map(reports => [
+                reports.s_no,
+                reports.course_code,
+                reports.category,
+                reports.section,
+                reports.dept_name,
+                reports.cia_1,
+                reports.cia_2,
+                reports.ass_1,
+                reports.ass_2,
+                reports.ese
+            ])
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Report Data');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename=mark_data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
+
 
 // ---------------------------------------------------------------------------------- //
 
@@ -756,7 +795,7 @@ app.post('/upload5', upload.single('file'), async (req, res) => {
 
         await markentry.bulkCreate(mark, {});
 
-        res.status(200).send('Student Master Data imported successfully');
+        res.status(200).send('Mark Entry Data imported successfully');
     }
     catch (error) {
         console.error(error);
@@ -808,7 +847,7 @@ app.post('/upload6', upload.single('file'), async (req, res) => {
             }
         }
 
-        res.status(200).send('Student Master Data imported successfully');
+        res.status(200).send('Department Mark Data imported successfully');
     } catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
@@ -816,6 +855,42 @@ app.post('/upload6', upload.single('file'), async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------------- //
+
+// Route to handle Reports file upload
+
+app.post('/upload7', upload.single('file'), async (req, res) => {
+    try {
+        const file = req.file;
+        const workbook = XLSX.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        const reports = rows.map(row => ({
+            sno: row.s_no,
+            course_code: row.course_code,
+            category: row.category,
+            section: row.section,
+            dept_name: row.dept_name,
+            cia_1: row.cia_1,
+            cia_2: row.cia_2,
+            ass_1: row.ass_1,
+            ass2: row.ass_2,
+            ese: row.ese
+        }));
+
+        await report.bulkCreate(reports, {});
+
+        res.status(200).send('Report Data imported successfully');
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('An error occurred');
+    }
+});
+
+// ---------------------------------------------------------------------------------- //
+
 
 // Route to handle Report
 
