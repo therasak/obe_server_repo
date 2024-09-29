@@ -309,6 +309,91 @@ app.post('/login', async (req, res) => {
 
 // ---------------------------------------------------------------------------------- //
 
+// Download Excel File Format For staffmaster 
+app.get('/download/staff', async (req, res) => {
+    try {
+        const staffData = await staffmaster.findAll();
+        const formattedData = [
+            ['Staff ID', 'Staff Name', 'Staff Password', 'Staff Department', 'Category'],
+            ...staffData.map(staff => [
+                staff.staff_id,
+                staff.staff_name,
+                staff.staff_pass,
+                staff.staff_dept,
+                staff.category
+            ])
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Staff Data');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename=staff_data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
+// Download Excel File Format For markentry
+
+app.get('/download/mark', async (req, res) => {
+    try {
+        const markData = await markentry.findAll();
+        const formattedData = [
+            ['SNO', 'BATCH', 'CATEGORY', 'COURSE_ID', 'REG_NO', 'COURSE_CODE', 'SEMESTER', 'C1_LOT', 'C1_HOT', 'C1_MOT', 'C1_TOTAL',
+                'C2_LOT', 'C2_HOT', 'C2_MOT', 'C2_TOTAL', 'A1_LOT', 'A2_LOT', 'ESE_LOT', 'ESE_HOT', 'ESE_MOT', 'ESE_TOTAL'],
+
+            ...markData.map(student => [
+                student.s_no,
+                student.batch,
+                student.category,
+                student.course_id,
+                student.reg_no,
+                student.course_code,
+                student.semester,
+                student.c1_lot,
+                student.c1_hot,
+                student.c1_mot,
+                student.c1_total,
+                student.c2_lot,
+                student.c2_hot,
+                student.c2_mot,
+                student.c2_total,
+                student.a1_lot,
+                student.a2_lot,
+                student.ese_lot,
+                student.ese_hot,
+                student.ese_mot,
+                student.ese_total
+            ])
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Mark Data');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename=mark_data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
+
+// ---------------------------------------------------------------------------------- //
+
+
 // Course Mapping Details Getting Coding
 
 app.post('/coursemap', async (req, res) => {
@@ -424,8 +509,7 @@ app.get('/scope/:staffId', async (req, res) => {
 
 // Mark Updation Coding
 
-app.put('/updateMark', async (req, res) => 
-{
+app.put('/updateMark', async (req, res) => {
     const { updates, activeSection, courseCode } = req.body;
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
