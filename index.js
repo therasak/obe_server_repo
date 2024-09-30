@@ -11,6 +11,7 @@ const scope = require('./models/scope');
 const report = require('./models/report');
 const markentry = require('./models/markentry');
 const coursemapping = require('./models/coursemapping');
+const academic = require('./models/academic');
 const XLSX = require('xlsx');
 const app = express();
 const upload = multer({ dest: 'uploads' })
@@ -28,47 +29,50 @@ const secretKey = process.env.SECRET_KEY;
 
 // Tables ( Model ) Synchronization Coding
 
-// async function dbconncheck() 
-// {
-//     try {
-//         // Synchronize the staffmaster model
-//         await staffmaster.sync();
-//         console.log('Staffmaster Table Synced');
+async function dbconncheck() {
+    try {
+        // Synchronize the staffmaster model
+        await staffmaster.sync();
+        console.log('Staffmaster Table Synced');
 
-//         // Synchronize the studentmaster model
-//         await studentmaster.sync();
-//         console.log('Studentmaster Table Synced');
+        // Synchronize the studentmaster model
+        await studentmaster.sync();
+        console.log('Studentmaster Table Synced');
 
-//         // Synchronize the course model
-//         await course.sync();
-//         console.log('Course Table Synced');
+        // Synchronize the course model
+        await course.sync();
+        console.log('Course Table Synced');
 
-//         // Synchronize the coursemapping model
-//         await coursemapping.sync();
-//         console.log('Course Mapping Table Synced');
+        // Synchronize the academic model
+        await academic.sync();
+        console.log('academic Table Synced');
 
-//         // Synchronize the scope model
-//         await scope.sync();
-//         console.log('Scope Table Synced');
+        // Synchronize the coursemapping model
+        await coursemapping.sync();
+        console.log('Course Mapping Table Synced');
 
-//         // Synchronize the department model
-//         await department.sync();
-//         console.log('Deparment Table Synced');
+        // Synchronize the scope model
+        await scope.sync();
+        console.log('Scope Table Synced');
 
-//         // Synchronize the markentry model
-//         await markentry.sync();
-//         console.log('Markentry Table created');
+        // Synchronize the department model
+        await department.sync();
+        console.log('Deparment Table Synced');
 
-//         // Synchronize the markentry model
-//         await report.sync();
-//         console.log('Report Table created');
-//     } 
-//     catch (error) {
-//         console.log('Error Occurred:', error.message);
-//     }
-// }
+        // Synchronize the markentry model
+        await markentry.sync();
+        console.log('Markentry Table created');
 
-// dbconncheck();
+        // Synchronize the markentry model
+        await report.sync();
+        console.log('Report Table created');
+    }
+    catch (error) {
+        console.log('Error Occurred:', error.message);
+    }
+}
+
+dbconncheck();
 
 // ---------------------------------------------------------------------------------- //
 
@@ -878,4 +882,36 @@ sequelize_conn.authenticate()
         console.error('Unable to connect to the Database:', err);
     });
 
-// ---------------------------------------------------------------------------------- //
+// ---------------------------------  academic  ------------------------------------------------- //
+
+app.put('/academic', async (req, res) => {
+    const { academicsem } = req.body;
+    console.log(academicsem)
+    await academic.update(
+        { active_sem: 0 },
+        { where: {} } 
+    );
+
+    const academicupdate = await academic.findOne({
+        where: {
+            academic_year: academicsem,
+           
+        }
+    });
+    // console.log(academicsem);
+    res.json(academicupdate);
+
+    academicupdate.active_sem = 1;
+
+    academicupdate.save();
+})
+
+
+/*------------------------------------staff manage ------------------------------------------------------------------ */
+
+app.get('/staffdetails', async (req, res) => {
+
+    const staffDetails = await staffmaster.findAll();
+    // console.log('staffDetails', staffDetails)
+    res.json(staffDetails);
+})
