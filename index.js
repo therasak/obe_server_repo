@@ -915,3 +915,5 @@ app.get('/staffdetails', async (req, res) => {
     // console.log('staffDetails', staffDetails)
     res.json(staffDetails);
 })
+
+/*------------------------------------staff manage ------------------------------------------------------------------ */
