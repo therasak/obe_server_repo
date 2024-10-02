@@ -29,50 +29,50 @@ const secretKey = process.env.SECRET_KEY;
 
 // Tables ( Model ) Synchronization Coding
 
-async function dbconncheck() {
-    try {
-        // Synchronize the staffmaster model
-        await staffmaster.sync();
-        console.log('Staffmaster Table Synced');
+// async function dbconncheck() {
+//     try {
+//         // Synchronize the staffmaster model
+//         await staffmaster.sync();
+//         console.log('Staffmaster Table Synced');
 
-        // Synchronize the studentmaster model
-        await studentmaster.sync();
-        console.log('Studentmaster Table Synced');
+//         // Synchronize the studentmaster model
+//         await studentmaster.sync();
+//         console.log('Studentmaster Table Synced');
 
-        // Synchronize the course model
-        await course.sync();
-        console.log('Course Table Synced');
+//         // Synchronize the course model
+//         await course.sync();
+//         console.log('Course Table Synced');
 
-        // Synchronize the academic model
-        await academic.sync();
-        console.log('academic Table Synced');
+//         // Synchronize the academic model
+//         await academic.sync();
+//         console.log('academic Table Synced');
 
-        // Synchronize the coursemapping model
-        await coursemapping.sync();
-        console.log('Course Mapping Table Synced');
+//         // Synchronize the coursemapping model
+//         await coursemapping.sync();
+//         console.log('Course Mapping Table Synced');
 
-        // Synchronize the scope model
-        await scope.sync();
-        console.log('Scope Table Synced');
+//         // Synchronize the scope model
+//         await scope.sync();
+//         console.log('Scope Table Synced');
 
-        // Synchronize the department model
-        await department.sync();
-        console.log('Deparment Table Synced');
+//         // Synchronize the department model
+//         await department.sync();
+//         console.log('Deparment Table Synced');
 
-        // Synchronize the markentry model
-        await markentry.sync();
-        console.log('Markentry Table created');
+//         // Synchronize the markentry model
+//         await markentry.sync();
+//         console.log('Markentry Table created');
 
-        // Synchronize the markentry model
-        await report.sync();
-        console.log('Report Table created');
-    }
-    catch (error) {
-        console.log('Error Occurred:', error.message);
-    }
-}
+//         // Synchronize the markentry model
+//         await report.sync();
+//         console.log('Report Table created');
+//     }
+//     catch (error) {
+//         console.log('Error Occurred:', error.message);
+//     }
+// }
 
-dbconncheck();
+// dbconncheck();
 
 // ---------------------------------------------------------------------------------- //
 
