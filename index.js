@@ -1077,4 +1077,14 @@ app.get('/staffdetails', async (req, res) => {
     res.json(staffDetails);
 })
 
-/*------------------------------------staff manage ------------------------------------------------------------------ */
+/*------------------------------------scope ------------------------------------------------------------------ */
+app.get('/scopeset', async (req, res) => {
+    try {
+        const scopeData = await scope.findAll();
+        console.log(scopeData);
+        res.json(scopeData);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'An error occurred while fetching data.' });
+    }
+});
