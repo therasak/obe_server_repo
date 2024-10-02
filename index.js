@@ -1085,6 +1085,26 @@ app.get('/scopeset', async (req, res) => {
         res.json(scopeData);
     }
     catch (err) {
-        res.status(500).json({ error: 'An error occurred while fetching data.' });
+        res.status(500).json({ error: 'An error occurred while fetching data.'});
+    }
+});
+
+app.put('/updateScope', async (req, res) => {
+    const { updates } = req.body;  // Receiving the update data
+    const staffIds = Object.keys(updates);  // Extract staff IDs from the updates
+
+    try {
+        for (const staffId of staffIds) {
+            const updateData = updates[staffId];
+            await scope.update(updateData, {
+                where: {
+                    staff_id: staffId,
+                }
+            });
+        }
+        res.status(200).send({ success: true, message: 'Scope data updated successfully' });
+    } catch (error) {
+        console.error("Error updating scope data:", error);
+        res.status(500).send({ success: false, error: "Failed to update scope data" });
     }
 });
