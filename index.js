@@ -25,11 +25,12 @@ const clientUrl = process.env.CLIENT_URL;
 const secretKey = process.env.SECRET_KEY;
 
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Tables ( Model ) Synchronization Coding
 
-// async function dbconncheck() {
+// async function dbconncheck() 
+// {
 //     try {
 //         // Synchronize the staffmaster model
 //         await staffmaster.sync();
@@ -74,7 +75,7 @@ const secretKey = process.env.SECRET_KEY;
 
 // dbconncheck();
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Import Staff Data Into Database
 
@@ -111,7 +112,7 @@ const secretKey = process.env.SECRET_KEY;
 // staffImportData();
 
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Import Course Mapping Data Into Database
 
@@ -153,7 +154,7 @@ const secretKey = process.env.SECRET_KEY;
 
 // courseMappingImportData();
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Import Student Tables Data Into Database
 
@@ -193,7 +194,7 @@ const secretKey = process.env.SECRET_KEY;
 
 // studentImportData();
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Markenty Table Data Insertion
 
@@ -244,7 +245,7 @@ const secretKey = process.env.SECRET_KEY;
 
 // markEntryImportData();
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Scope Table Data Insertion
 
@@ -281,11 +282,12 @@ const secretKey = process.env.SECRET_KEY;
 
 // scopeImportData();
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Validation Coding
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => 
+{
     const { staff_id, staff_pass } = req.body;
 
     try {
@@ -311,15 +313,18 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Download Excel File Format For staffmaster 
-app.get('/download/staff', async (req, res) => {
+// Download Excel File Format For Staff Master 
+
+app.get('/download/staff', async (req, res) => 
+{
     try {
         const staffData = await staffmaster.findAll();
         const formattedData = [
             ['Staff ID', 'Staff Name', 'Staff Password', 'Staff Department', 'Category'],
-            ...staffData.map(staff => [
+            ...staffData.map(staff => 
+            [
                 staff.staff_id,
                 staff.staff_name,
                 staff.staff_pass,
@@ -336,24 +341,27 @@ app.get('/download/staff', async (req, res) => {
         res.setHeader('Content-Disposition', 'attachment; filename=staff_data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
 });
 
+// ------------------------------------------------------------------------------------------------------- //
 
+// Download Excel File Format For Mark Entry
 
-// Download Excel File Format For markentry
-
-app.get('/download/mark', async (req, res) => {
+app.get('/download/mark', async (req, res) => 
+{
     try {
         const markData = await markentry.findAll();
         const formattedData = [
             ['SNO', 'BATCH', 'CATEGORY', 'COURSE_ID', 'REG_NO', 'COURSE_CODE', 'SEMESTER', 'C1_LOT', 'C1_HOT', 'C1_MOT', 'C1_TOTAL',
                 'C2_LOT', 'C2_HOT', 'C2_MOT', 'C2_TOTAL', 'A1_LOT', 'A2_LOT', 'ESE_LOT', 'ESE_HOT', 'ESE_MOT', 'ESE_TOTAL'],
 
-            ...markData.map(student => [
+            ...markData.map(student => 
+            [
                 student.s_no,
                 student.batch,
                 student.category,
@@ -386,23 +394,26 @@ app.get('/download/mark', async (req, res) => {
         res.setHeader('Content-Disposition', 'attachment; filename=mark_data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
 });
 
+// ------------------------------------------------------------------------------------------------------- //
 
+// Download Excel File Format For Report
 
-// Download Excel File Format For reports
-
-app.get('/download/report', async (req, res) => {
+app.get('/download/report', async (req, res) => 
+{
     try {
         const reportData = await report.findAll();
         const formattedData = [
             ['SNO', 'COURSE_CODE', 'CATEGORY', 'SECTION', 'DEPT_NAME', 'CIA_1', 'CIA_2', 'ASS_1', 'ASS_2', 'ESE'],
 
-            ...reportData.map(reports => [
+            ...reportData.map(reports => 
+            [
                 reports.s_no,
                 reports.course_code,
                 reports.category,
@@ -424,22 +435,19 @@ app.get('/download/report', async (req, res) => {
         res.setHeader('Content-Disposition', 'attachment; filename=mark_data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
 });
 
-
-
-
-
-// ---------------------------------------------------------------------------------- //
-
+// ------------------------------------------------------------------------------------------------------- //
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemap', async (req, res) => {
+app.post('/coursemap', async (req, res) => 
+{
     const { staff_id } = req.body;
 
     try {
@@ -453,14 +461,16 @@ app.post('/coursemap', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Students Data Fetching Coding
 
-app.post('/studentdetails', async (req, res) => {
+app.post('/studentdetails', async (req, res) => 
+{
     const { course_id, stu_section, stu_semester, stu_category, stu_course_code, activeSection } = req.body;
 
-    try {
+    try 
+    {
         const studentDetails = await studentmaster.findAll({
             where: {
                 course_id: course_id,
@@ -473,7 +483,9 @@ app.post('/studentdetails', async (req, res) => {
         const registerNumbers = studentDetails.map(student => student.reg_no);
 
         let markFields = {};
-        switch (activeSection) {
+
+        switch (activeSection) 
+        {
             case '1':
                 markFields = ['c1_lot', 'c1_mot', 'c1_hot', 'c1_total'];
                 break;
@@ -508,7 +520,8 @@ app.post('/studentdetails', async (req, res) => {
             attributes: ['reg_no', 'stu_name']
         });
 
-        const studentData = stud_name.map(student => {
+        const studentData = stud_name.map(student => 
+        {
             const marks = stud_reg.find(mark => mark.reg_no === student.reg_no) || {};
             return {
                 reg_no: student.reg_no,
@@ -519,9 +532,7 @@ app.post('/studentdetails', async (req, res) => {
                 total: marks[`${activeSection === '1' ? 'c1_total' : activeSection === '2' ? 'c2_total' : 'ese_total'}`] ?? (0 || '')
             };
         });
-        console.log(studentData)
         res.json(studentData);
-
     }
     catch (err) {
         console.error('Error fetching data:', err);
@@ -529,11 +540,12 @@ app.post('/studentdetails', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => {
+app.get('/scope/:staffId', async (req, res) => 
+{
     const { staffId } = req.params;
 
     try {
@@ -548,26 +560,30 @@ app.get('/scope/:staffId', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Mark Updation Coding
 
-app.put('/updateMark', async (req, res) => {
+app.put('/updateMark', async (req, res) => 
+{
     const { updates, activeSection, courseCode } = req.body;
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
 
-    try {
-        for (const regNo of regNumbers) {
+    try 
+    {
+        for (const regNo of regNumbers) 
+        {
             const updateData = updates[regNo];
             let updateFields = {};
 
-            // Helper function to assign null if the value is empty or undefined
             const setField = (value) => value === '' || value === undefined ? null : value;
 
-            switch (examType) {
+            switch (examType) 
+            {
                 case '1':
-                    updateFields = {
+                    updateFields = 
+                    {
                         c1_lot: setField(updateData.lot),
                         c1_hot: setField(updateData.hot),
                         c1_mot: setField(updateData.mot),
@@ -576,7 +592,8 @@ app.put('/updateMark', async (req, res) => {
                     break;
 
                 case '2':
-                    updateFields = {
+                    updateFields = 
+                    {
                         c2_lot: setField(updateData.lot),
                         c2_hot: setField(updateData.hot),
                         c2_mot: setField(updateData.mot),
@@ -585,19 +602,22 @@ app.put('/updateMark', async (req, res) => {
                     break;
 
                 case '3':
-                    updateFields = {
+                    updateFields = 
+                    {
                         a1_lot: setField(updateData.lot)
                     };
                     break;
 
                 case '4':
-                    updateFields = {
+                    updateFields = 
+                    {
                         a2_lot: setField(updateData.lot)
                     };
                     break;
 
                 case '5':
-                    updateFields = {
+                    updateFields = 
+                    {
                         ese_lot: setField(updateData.lot),
                         ese_hot: setField(updateData.hot),
                         ese_mot: setField(updateData.mot),
@@ -611,7 +631,6 @@ app.put('/updateMark', async (req, res) => {
                     return;
             }
 
-            // Update the database with the fields
             await markentry.update(updateFields, {
                 where: {
                     reg_no: regNo,
@@ -627,14 +646,14 @@ app.put('/updateMark', async (req, res) => {
     }
 });
 
+// ------------------------------------------------------------------------------------------------------- //
 
+// Route to handle Course Mapping File Upload
 
-// ---------------------------------------------------------------------------------- //
-
-// Route to handle Course Mapping file upload
-
-app.post('/upload1', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload1', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -656,7 +675,7 @@ app.post('/upload1', upload.single('file'), async (req, res) => {
         }));
         await coursemapping.bulkCreate(course, {});
 
-        res.status(200).send('Course Mapping Data imported Successfully');
+        res.status(200).send('Course Mapping Data Imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -664,12 +683,14 @@ app.post('/upload1', upload.single('file'), async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Staff Master file upload
+// Route to handle Staff Master File Upload
 
-app.post('/upload2', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload2', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -686,7 +707,7 @@ app.post('/upload2', upload.single('file'), async (req, res) => {
 
         await staffmaster.bulkCreate(staff, {});
 
-        res.status(200).send('Staff Master Data imported Successfully');
+        res.status(200).send('Staff Master Data Imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -694,12 +715,14 @@ app.post('/upload2', upload.single('file'), async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Student Master file upload
+// Route to handle Student Master File Upload
 
-app.post('/upload3', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload3', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -720,7 +743,7 @@ app.post('/upload3', upload.single('file'), async (req, res) => {
 
         await studentmaster.bulkCreate(students, {});
 
-        res.status(200).send('Student Master Data imported Successfully');
+        res.status(200).send('Student Master Data Imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -728,12 +751,14 @@ app.post('/upload3', upload.single('file'), async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Scope file upload
+// Route to handle Scope File Upload
 
-app.post('/upload4', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload4', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -751,7 +776,7 @@ app.post('/upload4', upload.single('file'), async (req, res) => {
 
         await scope.bulkCreate(scopes, {});
 
-        res.status(200).send('Scope Table imported Successfully');
+        res.status(200).send('Scope Table Imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -759,14 +784,14 @@ app.post('/upload4', upload.single('file'), async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Mark Entry file upload
+// Route to handle Mark Entry File Upload
 
-
-
-app.post('/upload5', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload5', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -798,8 +823,7 @@ app.post('/upload5', upload.single('file'), async (req, res) => {
         }));
 
         await markentry.bulkCreate(mark, {});
-
-        res.status(200).send('Mark Entry Data imported successfully');
+        res.status(200).send('Mark Entry Data Imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -807,24 +831,24 @@ app.post('/upload5', upload.single('file'), async (req, res) => {
     }
 });
 
+// ------------------------------------------------------------------------------------------------------- //
 
-// ---------------------------------------------------------------------------------- //
+// Route to handle Department Mark Entry File Upload
 
-// Route to handle Department Mark Entry file upload
-
-app.post('/upload6', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload6', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet);
 
-        // Iterate over each row in the Excel file
-        for (const row of rows) {
+        for (const row of rows) 
+        {
             const { reg_no, course_code } = row;
 
-            // Check if the record exists
             const existingEntry = await markentry.findOne({
                 where: {
                     reg_no: reg_no,
@@ -840,8 +864,8 @@ app.post('/upload6', upload.single('file'), async (req, res) => {
                 c1_total: row.c1_total,
             };
 
-            if (existingEntry) {
-                // Update existing record
+            if (existingEntry) 
+            {
                 await markentry.update(updatedData, {
                     where: {
                         reg_no: reg_no,
@@ -850,20 +874,22 @@ app.post('/upload6', upload.single('file'), async (req, res) => {
                 });
             }
         }
-
-        res.status(200).send('Department Mark Data imported successfully');
-    } catch (error) {
+        res.status(200).send('Department Mark Data Imported Successfully');
+    } 
+    catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Reports file upload
+// Route to handle Reports File Upload
 
-app.post('/upload7', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload7', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -885,7 +911,7 @@ app.post('/upload7', upload.single('file'), async (req, res) => {
 
         await report.bulkCreate(reports, {});
 
-        res.status(200).send('Report Data imported successfully');
+        res.status(200).send('Report Data Imported Successfully');
     }
     catch (error) {
         console.error(error);
@@ -893,21 +919,20 @@ app.post('/upload7', upload.single('file'), async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
-
+// ------------------------------------------------------------------------------------------------------- //
 
 // Route to handle Report
 
-app.put('/report', async (req, res) => {
+app.put('/report', async (req, res) =>
+{
     const { activeSection, courseCode, deptName, semester, section, category, button_value } = req.body;
 
-    try {
-
+    try 
+    {
         let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
 
-        if (button_value === "0") {
-            // console.log(activeSection);
-            // console.log(button_value);
+        if (button_value === "0") 
+        {
             const existingReport = await report.findOne({
                 where: {
                     course_code: courseCode,
@@ -916,8 +941,10 @@ app.put('/report', async (req, res) => {
                     dept_name: deptName
                 }
             });
-            if (existingReport) {
-                switch (activeSection) {
+            if (existingReport) 
+            {
+                switch (activeSection) 
+                {
                     case "1":
                         existingReport.cia_1 = 1;
                         break;
@@ -951,10 +978,10 @@ app.put('/report', async (req, res) => {
                     ass_2: activeSection === "4" ? 1 : null,
                     ese: activeSection === "5" ? 1 : null,
                 });
-                // console.log('New report created:', newReport);
             }
         }
-        else if (button_value === "1") {
+        else if (button_value === "1") 
+        {
             const existingReport = await report.findOne({
                 where: {
                     course_code: courseCode,
@@ -963,8 +990,10 @@ app.put('/report', async (req, res) => {
                     dept_name: deptName
                 }
             });
-            if (existingReport) {
-                switch (activeSection) {
+            if (existingReport) 
+            {
+                switch (activeSection) 
+                {
                     case "1":
                         existingReport.cia_1 = 2;
                         break;
@@ -998,7 +1027,6 @@ app.put('/report', async (req, res) => {
                     ass_2: activeSection === "4" ? 2 : null,
                     ese: activeSection === "5" ? 2 : null,
                 });
-                // console.log('New Report Created:', newReport);
             }
         }
         res.status(200).json({ cia_1, cia_2, ass_1, ass_2, ese });
@@ -1009,12 +1037,13 @@ app.put('/report', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Route to handle Get Report
 
-app.get('/getreport', async (req, res) => {
-    const { courseCode, deptName, semester, section, category } = req.query;
+app.get('/getreport', async (req, res) => 
+{
+    const { courseCode, deptName, section, category } = req.query;
 
     const checkActive = await report.findOne({
         where: {
@@ -1024,11 +1053,10 @@ app.get('/getreport', async (req, res) => {
             dept_name: deptName
         }
     });
-    // console.log(checkActive);
     res.json(checkActive);
 })
 
-// ---------------------------------------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
 // Database Authenticate Coding
 
@@ -1043,12 +1071,15 @@ sequelize_conn.authenticate()
         console.error('Unable to connect to the Database:', err);
     });
 
-// ---------------------------------  academic  ------------------------------------------------- //
+// ------------------------------------------------------------------------------------------------------- //
 
-app.put('/academic', async (req, res) => {
+// Academic Year Setting Coding
+
+app.put('/academic', async (req, res) => 
+{
     const { academicsem } = req.body;
     console.log(academicsem)
-    await academic.update(
+    await academic.update (
         { active_sem: 0 },
         { where: {} } 
     );
@@ -1059,42 +1090,47 @@ app.put('/academic', async (req, res) => {
            
         }
     });
-    // console.log(academicsem);
+
     res.json(academicupdate);
-
     academicupdate.active_sem = 1;
-
     academicupdate.save();
+
 })
 
+// ------------------------------------------------------------------------------------------------------- //
 
-/*------------------------------------staff manage ------------------------------------------------------------------ */
+// Staff Details Fetching Coding
 
-app.get('/staffdetails', async (req, res) => {
-
+app.get('/staffdetails', async (req, res) => 
+{
     const staffDetails = await staffmaster.findAll();
-    // console.log('staffDetails', staffDetails)
     res.json(staffDetails);
 })
 
-/*------------------------------------scope ------------------------------------------------------------------ */
-app.get('/scopeset', async (req, res) => {
-    try {
-        const scopeData = await scope.findAll();
-        console.log(scopeData);
-        res.json(scopeData);
-    }
-    catch (err) {
-        res.status(500).json({ error: 'An error occurred while fetching data.'});
-    }
+// ------------------------------------------------------------------------------------------------------- //
+
+// Staff Details Fetching Coding
+
+app.get('/scopeset', async (req, res) => 
+{
+    const scopeData = await scope.findAll();
+    res.json(scopeData);
+    
 });
 
-app.put('/updateScope', async (req, res) => {
-    const { updates } = req.body;  // Receiving the update data
-    const staffIds = Object.keys(updates);  // Extract staff IDs from the updates
+// ------------------------------------------------------------------------------------------------------- //
 
-    try {
-        for (const staffId of staffIds) {
+// Scope Updating Coding
+
+app.put('/updateScope', async (req, res) => 
+{
+    const { updates } = req.body;
+    const staffIds = Object.keys(updates);
+
+    try 
+    {
+        for (const staffId of staffIds) 
+        {
             const updateData = updates[staffId];
             await scope.update(updateData, {
                 where: {
@@ -1103,8 +1139,11 @@ app.put('/updateScope', async (req, res) => {
             });
         }
         res.status(200).send({ success: true, message: 'Scope data updated successfully' });
-    } catch (error) {
+    } 
+    catch (error) {
         console.error("Error updating scope data:", error);
-        res.status(500).send({ success: false, error: "Failed to update scope data" });
+        res.status(500).send({ success: false, error: "Failed to update Scope Data" });
     }
 });
+
+// ------------------------------------------------------------------------------------------------------- //
