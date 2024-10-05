@@ -82,21 +82,25 @@ const secretKey = process.env.SECRET_KEY;
 // const staffmasterDataXL = XLSX.readFile('C:\\Users\\ACER\\Music\\Haneef\\Documents\\Obe Data Files\\Main Data\\Staff Master.xlsx');
 // const staffmasterSheetNo = staffmasterDataXL.SheetNames[0];
 // const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
+
 // const staffdata = XLSX.utils.sheet_to_json(staffmasterWorksheet, { header: 1 });
 
-// const mappedStaffData = staffdata.slice(1).map((row) => ({
-//     staff_id: row[0],          
-//     staff_name: row[1],           
-//     staff_pass: row[2],       
-//     staff_dept: row[3],    
-//     category: row[4] 
-// }));
+// const mappedStaffData = staffdata.slice(1).map((row) => 
+// {
+//     if (row.length === 0) return null;
+//     return {
+//         staff_id: row[0],
+//         staff_name: row[1],
+//         staff_pass: row[2],
+//         staff_dept: row[3],
+//         category: row[4]
+//     };
+// }).filter(Boolean);
 
 // const staffImportData = async () => 
 // {
 //     try {
 //         const staffExistingRecords = await staffmaster.findAll();
-
 //         if (staffExistingRecords.length > 0) {
 //             await staffmaster.destroy({ where: {} });
 //             console.log('Existing records deleted.');
@@ -105,12 +109,11 @@ const secretKey = process.env.SECRET_KEY;
 //         console.log('Staff Master Data Inserted Successfully!');
 //     } 
 //     catch (err) {
-//         console.error('Error Importing Data:', err.stack); // Log stack trace
+//         console.error('Error Importing Data:', err.stack);
 //     }
 // }
 
 // staffImportData();
-
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -935,7 +938,7 @@ app.post('/upload7', upload.single('file'), async (req, res) =>
 
 app.put('/report', async (req, res) =>
 {
-    const { activeSection, courseCode, deptName, semester, section, category, button_value } = req.body;
+    const { activeSection, courseCode, deptName, section, category, button_value } = req.body;
 
     try 
     {
@@ -1097,7 +1100,6 @@ app.put('/academic', async (req, res) =>
     const academicupdate = await academic.findOne({
         where: {
             academic_year: academicsem,
-           
         }
     });
 
