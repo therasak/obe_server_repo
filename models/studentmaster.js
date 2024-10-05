@@ -39,6 +39,10 @@ const studentmaster = sequelize_conn.define('studentmaster',
     emis : {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    active_sem : {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, 
 {

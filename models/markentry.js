@@ -88,6 +88,10 @@ const markentry = sequelize_conn.define('markentry',
     ese_total: {
         type: DataTypes.INTEGER,
         allowNull: true
+    },
+    active_sem : {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 },
 {

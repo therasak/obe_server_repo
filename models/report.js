@@ -44,7 +44,11 @@ const report = sequelize_conn.define('report',
 	ese: {
 		type: DataTypes.INTEGER,
 		allowNull: true
-	}
+	},
+	active_sem: {
+        type: DataTypes.STRING,
+        allowNull: true
+    }
 },
 {
 	timestamps: false,

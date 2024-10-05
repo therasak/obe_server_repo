@@ -15,7 +15,7 @@ const academic = require('./models/academic');
 const XLSX = require('xlsx');
 const app = express();
 const upload = multer({ dest: 'uploads' })
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
 app.use(cors());
 app.use(express.json());
 require('dotenv').config();
@@ -40,13 +40,13 @@ const secretKey = process.env.SECRET_KEY;
 //         await studentmaster.sync();
 //         console.log('Studentmaster Table Synced');
 
-//         // Synchronize the course model
-//         await course.sync();
-//         console.log('Course Table Synced');
+//         // // Synchronize the course model
+//         // await course.sync();
+//         // console.log('Course Table Synced');
 
 //         // Synchronize the academic model
 //         await academic.sync();
-//         console.log('academic Table Synced');
+//         console.log('Academic Table Synced');
 
 //         // Synchronize the coursemapping model
 //         await coursemapping.sync();
@@ -56,17 +56,17 @@ const secretKey = process.env.SECRET_KEY;
 //         await scope.sync();
 //         console.log('Scope Table Synced');
 
-//         // Synchronize the department model
-//         await department.sync();
-//         console.log('Deparment Table Synced');
+//         // // Synchronize the department model
+//         // await department.sync();
+//         // console.log('Deparment Table Synced');
 
 //         // Synchronize the markentry model
 //         await markentry.sync();
-//         console.log('Markentry Table created');
+//         console.log('Markentry Table Synced');
 
 //         // Synchronize the markentry model
 //         await report.sync();
-//         console.log('Report Table created');
+//         console.log('Report Table Synced');
 //     }
 //     catch (error) {
 //         console.log('Error Occurred:', error.message);
@@ -79,7 +79,7 @@ const secretKey = process.env.SECRET_KEY;
 
 // Import Staff Data Into Database
 
-// const staffmasterDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Staff Master.XLSX');
+// const staffmasterDataXL = XLSX.readFile('C:\\Users\\ACER\\Music\\Haneef\\Documents\\Obe Data Files\\Main Data\\Staff Master.xlsx');
 // const staffmasterSheetNo = staffmasterDataXL.SheetNames[0];
 // const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
 // const staffdata = XLSX.utils.sheet_to_json(staffmasterWorksheet, { header: 1 });
@@ -102,7 +102,7 @@ const secretKey = process.env.SECRET_KEY;
 //             console.log('Existing records deleted.');
 //         }
 //         await staffmaster.bulkCreate(mappedStaffData, { ignoreDuplicates: true });
-//         console.log('Staff Master data inserted successfully!');
+//         console.log('Staff Master Data Inserted Successfully!');
 //     } 
 //     catch (err) {
 //         console.error('Error Importing Data:', err.stack); // Log stack trace
@@ -145,7 +145,7 @@ const secretKey = process.env.SECRET_KEY;
 //         }
 //         await sequelize_conn.query('ALTER TABLE coursemapping AUTO_INCREMENT = 1');
 //         await coursemapping.bulkCreate(mappedCourseMappingData, { ignoreDuplicates: true });
-//         console.log('Course Mapping data inserted successfully!');
+//         console.log('Course Mapping Data Inserted Successfully!');
 //     } 
 //     catch (err) {
 //         console.error('Error Importing Data :', err);
@@ -185,7 +185,7 @@ const secretKey = process.env.SECRET_KEY;
 //             console.log('Existing records deleted.');
 //         }
 //         await studentmaster.bulkCreate(mappedStudentData, { ignoreDuplicates: true });
-//         console.log('Student Master data inserted successfully!');
+//         console.log('Student Master Data Inserted Successfully!');
 //     } 
 //     catch (err) {
 //         console.error('Error Importing Data:', err);
@@ -236,7 +236,7 @@ const secretKey = process.env.SECRET_KEY;
 //         }
 //         await sequelize_conn.query('ALTER TABLE markentry AUTO_INCREMENT = 1');
 //         await markentry.bulkCreate(mappedMarkEntryData, { ignoreDuplicates: true });
-//         console.log('Mark Entry data inserted successfully!');
+//         console.log('Mark Entry Data Inserted Successfully!');
 //     } 
 //     catch (err) {
 //         console.error('Error Importing Data :', err);
@@ -249,21 +249,31 @@ const secretKey = process.env.SECRET_KEY;
 
 // Scope Table Data Insertion
 
-// const scopeDataXL = XLSX.readFile('C:\\Users\\Lenovo PC\\OneDrive\\Documents\\Obe Data Files\\Scope.XLSX');
+// const scopeDataXL = XLSX.readFile('C:\\Users\\ACER\\Music\\Haneef\\Documents\\Obe Data Files\\Main Data\\Scope.xlsx');
 // const scopeSheetNo = scopeDataXL.SheetNames[0];
 // const scopeWorksheet = scopeDataXL.Sheets[scopeSheetNo];
 // const scopedata = XLSX.utils.sheet_to_json(scopeWorksheet, { header: 1 });
 
 // const mappedScopeData = scopedata.slice(1).map((row) => ({
 //     staff_id: row[0],        
-//     dashboard: row[1],       
-//     course_list: row[2],     
-//     report: row[3],          
-//     upload_files: row[4],   
-//     logout: row[5]           
+//     role: row[1],
+//     dashboard: row[2],       
+//     course_list: row[3],     
+//     course_outcome: row[4],  
+//     student_outcome: row[5], 
+//     program_outcome: row[6], 
+//     program_specific_outcome: row[7], 
+//     mentor_report: row[8],   
+//     hod_report: row[9],      
+//     report: row[10],         
+//     input_files: row[11],    
+//     manage: row[12],
+//     relationship_matrix: row[13],
+//     settings: row[14]     
 // }));
 
-// const scopeImportData = async () => {
+// const scopeImportData = async () => 
+// {
 //     try {
 //         const scopeExistingRecords = await scope.findAll();
 
@@ -273,7 +283,7 @@ const secretKey = process.env.SECRET_KEY;
 //         }
 
 //         await scope.bulkCreate(mappedScopeData, { ignoreDuplicates: true });
-//         console.log('Scope data inserted successfully!');
+//         console.log('Scope Data Inserted Successfully!');
 //     } 
 //     catch (err) {
 //         console.error('Error Importing Scope Data:', err.stack);
@@ -1115,7 +1125,6 @@ app.get('/scopeset', async (req, res) =>
 {
     const scopeData = await scope.findAll();
     res.json(scopeData);
-    
 });
 
 // ------------------------------------------------------------------------------------------------------- //
