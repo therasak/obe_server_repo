@@ -1096,17 +1096,14 @@ app.put('/academic', async (req, res) =>
         { active_sem: 0 },
         { where: {} } 
     );
-
     const academicupdate = await academic.findOne({
         where: {
             academic_year: academicsem,
         }
     });
-
     res.json(academicupdate);
     academicupdate.active_sem = 1;
     academicupdate.save();
-
 })
 
 // ------------------------------------------------------------------------------------------------------- //
