@@ -79,39 +79,41 @@ const secretKey = process.env.SECRET_KEY;
 
 // Import Staff Data Into Database
 
-const staffmasterDataXL = XLSX.readFile('C:\\Users\\HP\\Music\\Obe Data Files\\Main Data\\Staff Master.xlsx');
-const staffmasterSheetNo = staffmasterDataXL.SheetNames[0];
-const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
+// const staffmasterDataXL = XLSX.readFile('C:\\Users\\HP\\Music\\Obe Data Files\\Main Data\\Staff Master.xlsx');
+// const staffmasterSheetNo = staffmasterDataXL.SheetNames[0];
+// const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
 
-const staffdata = XLSX.utils.sheet_to_json(staffmasterWorksheet, { header: 1 });
+// const staffdata = XLSX.utils.sheet_to_json(staffmasterWorksheet, { header: 1 });
 
-const mappedStaffData = staffdata.slice(1).map((row) => {
-    if (row.length === 0) return null;
-    return {
-        staff_id: row[0],
-        staff_name: row[1],
-        staff_pass: row[2],
-        staff_dept: row[3],
-        category: row[4]
-    };
-}).filter(Boolean);
+// const mappedStaffData = staffdata.slice(1).map((row) => 
+// {
+//     if (row.length === 0) return null;
+//     return {
+//         staff_id: row[0],
+//         staff_name: row[1],
+//         staff_pass: row[2],
+//         staff_dept: row[3],
+//         category: row[4]
+//     };
+// }).filter(Boolean);
 
-const staffImportData = async () => {
-    try {
-        const staffExistingRecords = await staffmaster.findAll();
-        if (staffExistingRecords.length > 0) {
-            await staffmaster.destroy({ where: {} });
-            console.log('Existing records deleted.');
-        }
-        await staffmaster.bulkCreate(mappedStaffData, { ignoreDuplicates: true });
-        console.log('Staff Master Data Inserted Successfully!');
-    }
-    catch (err) {
-        console.error('Error Importing Data:', err.stack);
-    }
-}
+// const staffImportData = async () => 
+// {
+//     try {
+//         const staffExistingRecords = await staffmaster.findAll();
+//         if (staffExistingRecords.length > 0) {
+//             await staffmaster.destroy({ where: {} });
+//             console.log('Existing records deleted.');
+//         }
+//         await staffmaster.bulkCreate(mappedStaffData, { ignoreDuplicates: true });
+//         console.log('Staff Master Data Inserted Successfully!');
+//     }
+//     catch (err) {
+//         console.error('Error Importing Data:', err.stack);
+//     }
+// }
 
-staffImportData();
+// staffImportData();
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -250,53 +252,55 @@ staffImportData();
 
 // Scope Table Data Insertion
 
-const scopeDataXL = XLSX.readFile('C:\\Users\\HP\\Music\\Obe Data Files\\Main Data\\Scope.xlsx');
-const scopeSheetNo = scopeDataXL.SheetNames[0];
-const scopeWorksheet = scopeDataXL.Sheets[scopeSheetNo];
-const scopedata = XLSX.utils.sheet_to_json(scopeWorksheet, { header: 1 });
+// const scopeDataXL = XLSX.readFile('C:\\Users\\HP\\Music\\Obe Data Files\\Main Data\\Scope.xlsx');
+// const scopeSheetNo = scopeDataXL.SheetNames[0];
+// const scopeWorksheet = scopeDataXL.Sheets[scopeSheetNo];
+// const scopedata = XLSX.utils.sheet_to_json(scopeWorksheet, { header: 1 });
 
-const mappedScopeData = scopedata.slice(1).map((row) => ({
-    staff_id: row[0],
-    role: row[1],
-    dashboard: row[2],
-    course_list: row[3],
-    course_outcome: row[4],
-    student_outcome: row[5],
-    program_outcome: row[6],
-    program_specific_outcome: row[7],
-    mentor_report: row[8],
-    hod_report: row[9],
-    report: row[10],
-    input_files: row[11],
-    manage: row[12],
-    relationship_matrix: row[13],
-    settings: row[14]
-}));
+// const mappedScopeData = scopedata.slice(1).map((row) => ({
+//     staff_id: row[0],
+//     role: row[1],
+//     dashboard: row[2],
+//     course_list: row[3],
+//     course_outcome: row[4],
+//     student_outcome: row[5],
+//     program_outcome: row[6],
+//     program_specific_outcome: row[7],
+//     mentor_report: row[8],
+//     hod_report: row[9],
+//     report: row[10],
+//     input_files: row[11],
+//     manage: row[12],
+//     relationship_matrix: row[13],
+//     settings: row[14]
+// }));
 
-const scopeImportData = async () => {
-    try {
-        const scopeExistingRecords = await scope.findAll();
+// const scopeImportData = async () => 
+// {
+//     try {
+//         const scopeExistingRecords = await scope.findAll();
 
-        if (scopeExistingRecords.length > 0) {
-            await scope.destroy({ where: {} });
-            console.log('Existing scope records deleted.');
-        }
+//         if (scopeExistingRecords.length > 0) {
+//             await scope.destroy({ where: {} });
+//             console.log('Existing scope records deleted.');
+//         }
 
-        await scope.bulkCreate(mappedScopeData, { ignoreDuplicates: true });
-        console.log('Scope Data Inserted Successfully!');
-    }
-    catch (err) {
-        console.error('Error Importing Scope Data:', err.stack);
-    }
-}
+//         await scope.bulkCreate(mappedScopeData, { ignoreDuplicates: true });
+//         console.log('Scope Data Inserted Successfully!');
+//     }
+//     catch (err) {
+//         console.error('Error Importing Scope Data:', err.stack);
+//     }
+// }
 
-scopeImportData();
+// scopeImportData();
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Validation Coding
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => 
+{
     const { staff_id, staff_pass } = req.body;
 
     try {
@@ -326,8 +330,10 @@ app.post('/login', async (req, res) => {
 
 // Download Excel File Format For Staff Master 
 
-app.get('/download/staff', async (req, res) => {
-    try {
+app.get('/download/staff', async (req, res) => 
+{
+    try 
+    {
         const staffData = await staffmaster.findAll();
         const formattedData = [
             ['Staff ID', 'Staff Name', 'Staff Password', 'Staff Department', 'Category'],
@@ -360,8 +366,10 @@ app.get('/download/staff', async (req, res) => {
 
 // Download Excel File Format For Mark Entry
 
-app.get('/download/mark', async (req, res) => {
-    try {
+app.get('/download/mark', async (req, res) => 
+{
+    try 
+    {
         const markData = await markentry.findAll();
         const formattedData = [
             ['SNO', 'BATCH', 'CATEGORY', 'COURSE_ID', 'REG_NO', 'COURSE_CODE', 'SEMESTER', 'C1_LOT', 'C1_HOT', 'C1_MOT', 'C1_TOTAL',
@@ -412,8 +420,10 @@ app.get('/download/mark', async (req, res) => {
 
 // Download Excel File Format For Report
 
-app.get('/download/report', async (req, res) => {
-    try {
+app.get('/download/report', async (req, res) => 
+{
+    try 
+    {
         const reportData = await report.findAll();
         const formattedData = [
             ['SNO', 'COURSE_CODE', 'CATEGORY', 'SECTION', 'DEPT_NAME', 'CIA_1', 'CIA_2', 'ASS_1', 'ASS_2', 'ESE'],
@@ -452,7 +462,8 @@ app.get('/download/report', async (req, res) => {
 
 // Course Mapping Details Getting Coding
 
-app.post('/coursemap', async (req, res) => {
+app.post('/coursemap', async (req, res) => 
+{
     const { staff_id } = req.body;
 
     try {
@@ -470,10 +481,12 @@ app.post('/coursemap', async (req, res) => {
 
 // Students Data Fetching Coding
 
-app.post('/studentdetails', async (req, res) => {
+app.post('/studentdetails', async (req, res) => 
+{
     const { course_id, stu_section, stu_semester, stu_category, stu_course_code, activeSection } = req.body;
 
-    try {
+    try 
+    {
         const studentDetails = await studentmaster.findAll({
             where: {
                 course_id: course_id,
@@ -522,7 +535,8 @@ app.post('/studentdetails', async (req, res) => {
             attributes: ['reg_no', 'stu_name']
         });
 
-        const studentData = stud_name.map(student => {
+        const studentData = stud_name.map(student => 
+        {
             const marks = stud_reg.find(mark => mark.reg_no === student.reg_no) || {};
             return {
                 reg_no: student.reg_no,
@@ -545,7 +559,8 @@ app.post('/studentdetails', async (req, res) => {
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => {
+app.get('/scope/:staffId', async (req, res) => 
+{
     const { staffId } = req.params;
 
     try {
@@ -564,12 +579,14 @@ app.get('/scope/:staffId', async (req, res) => {
 
 // Mark Updation Coding
 
-app.put('/updateMark', async (req, res) => {
+app.put('/updateMark', async (req, res) => 
+{
     const { updates, activeSection, courseCode } = req.body;
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
 
-    try {
+    try
+    {
         for (const regNo of regNumbers) {
             const updateData = updates[regNo];
             let updateFields = {};
@@ -646,27 +663,26 @@ app.put('/updateMark', async (req, res) => {
 
 // Route to handle Course Mapping File Upload
 
-app.post('/upload1', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload1', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet);
 
-        // Fetch the currently active academic year (the value of active_sem)
         const activeAcademic = await academic.findOne({
-            where: { active_sem: 1 } // Assuming 1 indicates that the semester is active
+            where: { active_sem: 1 }
         });
 
         if (!activeAcademic) {
             return res.status(400).send('No active academic year found');
         }
 
-        // The active semester stored in the database
-        const activeSemester = activeAcademic.academic_year; // e.g., 'Apr-2024' or 'Nov-2024'
+        const activeSemester = activeAcademic.academic_year;
 
-        // Map each row from the Excel file to a course object
         const course = rows.map(row => ({
             category: row.category,
             batch: row.batch,
@@ -679,13 +695,14 @@ app.post('/upload1', upload.single('file'), async (req, res) => {
             staff_id: row.staff_id,
             staff_name: row.staff_name,
             course_title: row.course_title,
-            active_sem: activeSemester // Store the active semester here
+            active_sem: activeSemester
         }));
 
-        await coursemapping.bulkCreate(course); // Bulk insert into the coursemapping table
+        await coursemapping.bulkCreate(course);
 
         res.status(200).send('Course Mapping Data Imported Successfully');
-    } catch (error) {
+    }
+    catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
@@ -696,8 +713,10 @@ app.post('/upload1', upload.single('file'), async (req, res) => {
 
 // Route to handle Staff Master File Upload
 
-app.post('/upload2', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload2', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -726,13 +745,25 @@ app.post('/upload2', upload.single('file'), async (req, res) => {
 
 // Route to handle Student Master File Upload
 
-app.post('/upload3', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload3', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        const activeAcademic = await academic.findOne({
+            where: { active_sem: 1 }
+        });
+
+        if (!activeAcademic) {
+            return res.status(400).send('No active academic year found');
+        }
+
+        const activeSemester = activeAcademic.academic_year;
 
         const students = rows.map(row => ({
             reg_no: row.reg_no,
@@ -743,7 +774,8 @@ app.post('/upload3', upload.single('file'), async (req, res) => {
             section: row.section,
             batch: row.batch,
             mentor: row.mentor,
-            emis: row.emis
+            emis: row.emis,
+            active_sem: activeSemester
         }));
 
         await studentmaster.bulkCreate(students, {});
@@ -760,8 +792,10 @@ app.post('/upload3', upload.single('file'), async (req, res) => {
 
 // Route to handle Scope File Upload
 
-app.post('/upload4', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload4', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -791,13 +825,24 @@ app.post('/upload4', upload.single('file'), async (req, res) => {
 
 // Route to handle Mark Entry File Upload
 
-app.post('/upload5', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload5', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        const activeAcademic = await academic.findOne({
+            where: { active_sem: 1 }
+        });
+
+        if (!activeAcademic) {
+            return res.status(400).send('No active academic year found');
+        }
+        const activeSemester = activeAcademic.academic_year;
 
         const mark = rows.map(row => ({
             batch: row.batch,
@@ -819,7 +864,8 @@ app.post('/upload5', upload.single('file'), async (req, res) => {
             ese_lot: row.ese_lot,
             ese_hot: row.ese_hot,
             ese_mot: row.ese_mot,
-            ese_total: row.ese_total
+            ese_total: row.ese_total,
+            active_sem: activeSemester
 
         }));
 
@@ -836,8 +882,10 @@ app.post('/upload5', upload.single('file'), async (req, res) => {
 
 // Route to handle Department Mark Entry File Upload
 
-app.post('/upload6', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload6', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -883,13 +931,25 @@ app.post('/upload6', upload.single('file'), async (req, res) => {
 
 // Route to handle Reports File Upload
 
-app.post('/upload7', upload.single('file'), async (req, res) => {
-    try {
+app.post('/upload7', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        const activeAcademic = await academic.findOne({
+            where: { active_sem: 1 }
+        });
+
+        if (!activeAcademic) {
+            return res.status(400).send('No active academic year found');
+        }
+
+        const activeSemester = activeAcademic.academic_year;
 
         const reports = rows.map(row => ({
             sno: row.s_no,
@@ -901,7 +961,8 @@ app.post('/upload7', upload.single('file'), async (req, res) => {
             cia_2: row.cia_2,
             ass_1: row.ass_1,
             ass2: row.ass_2,
-            ese: row.ese
+            ese: row.ese,
+            active_sem: activeSemester
         }));
 
         await report.bulkCreate(reports, {});
@@ -918,13 +979,15 @@ app.post('/upload7', upload.single('file'), async (req, res) => {
 
 // Route to handle Report
 
-app.put('/report', async (req, res) => {
+app.put('/report', async (req, res) => 
+{
     const { activeSection, courseCode, deptName, section, category, button_value } = req.body;
-
-    try {
+    try 
+    {
         let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
 
-        if (button_value === "0") {
+        if (button_value === "0") 
+        {
             const existingReport = await report.findOne({
                 where: {
                     course_code: courseCode,
@@ -933,8 +996,10 @@ app.put('/report', async (req, res) => {
                     dept_name: deptName
                 }
             });
-            if (existingReport) {
-                switch (activeSection) {
+            if (existingReport) 
+            {
+                switch (activeSection) 
+                {
                     case "1":
                         existingReport.cia_1 = 1;
                         break;
@@ -956,7 +1021,8 @@ app.put('/report', async (req, res) => {
                 }
                 await existingReport.save();
             }
-            else {
+            else 
+            {
                 const newReport = await report.create({
                     course_code: courseCode,
                     section: section,
@@ -970,7 +1036,8 @@ app.put('/report', async (req, res) => {
                 });
             }
         }
-        else if (button_value === "1") {
+        else if (button_value === "1") 
+        {
             const existingReport = await report.findOne({
                 where: {
                     course_code: courseCode,
@@ -979,7 +1046,8 @@ app.put('/report', async (req, res) => {
                     dept_name: deptName
                 }
             });
-            if (existingReport) {
+            if (existingReport) 
+            {
                 switch (activeSection) {
                     case "1":
                         existingReport.cia_1 = 2;
@@ -1002,7 +1070,8 @@ app.put('/report', async (req, res) => {
                 }
                 await existingReport.save();
             }
-            else {
+            else 
+            {
                 const newReport = await report.create({
                     course_code: courseCode,
                     section: section,
@@ -1028,9 +1097,9 @@ app.put('/report', async (req, res) => {
 
 // Route to handle Get Report
 
-app.get('/getreport', async (req, res) => {
+app.get('/getreport', async (req, res) => 
+{
     const { courseCode, deptName, section, category } = req.query;
-
     const checkActive = await report.findOne({
         where: {
             course_code: courseCode,
@@ -1061,28 +1130,42 @@ sequelize_conn.authenticate()
 
 // Academic Year Setting Coding
 
-app.put('/academic', async (req, res) => {
+app.put('/academic', async (req, res) => 
+{
     const { academicsem } = req.body;
-    console.log(academicsem)
-    await academic.update(
-        { active_sem: 0 },
-        { where: {} }
-    );
-    const academicupdate = await academic.findOne({
-        where: {
-            academic_year: academicsem,
+    try {
+        await academic.update(
+            { active_sem: 0 },
+            { where: {} }
+        );
+
+        const academicupdate = await academic.findOne({
+            where: {
+                academic_year: academicsem,
+            }
+        });
+
+        if (academicupdate) {
+            academicupdate.active_sem = 1;
+            await academicupdate.save();
+            res.json(academicupdate);
         }
-    });
-    res.json(academicupdate);
-    academicupdate.active_sem = 1;
-    academicupdate.save();
-})
+        else {
+            res.status(404).json({ error: "Academic year not found" });
+        }
+    }
+    catch (error) {
+        console.error('Error: ', error);
+        res.status(500).json({ error: "Something went wrong with the server" });
+    }
+});
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Staff Details Fetching Coding
 
-app.get('/staffdetails', async (req, res) => {
+app.get('/staffdetails', async (req, res) => 
+{
     const staffDetails = await staffmaster.findAll();
     res.json(staffDetails);
 })
@@ -1091,7 +1174,8 @@ app.get('/staffdetails', async (req, res) => {
 
 // Staff Details Fetching Coding
 
-app.get('/scopeset', async (req, res) => {
+app.get('/scopeset', async (req, res) => 
+{
     const scopeData = await scope.findAll();
     res.json(scopeData);
 });
@@ -1100,11 +1184,12 @@ app.get('/scopeset', async (req, res) => {
 
 // Scope Updating Coding
 
-app.put('/updateScope', async (req, res) => {
+app.put('/updateScope', async (req, res) => 
+{
     const { updates } = req.body;
     const staffIds = Object.keys(updates);
-
-    try {
+    try 
+    {
         for (const staffId of staffIds) {
             const updateData = updates[staffId];
             await scope.update(updateData, {
