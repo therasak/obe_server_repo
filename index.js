@@ -307,7 +307,8 @@ app.post('/login', async (req, res) =>
         const user = await staffmaster.findOne({
             where: { staff_id: staff_id }
         });
-        if (user) {
+        if (user) 
+        {
             if (user.staff_pass === staff_pass) {
                 return res.json({ success: true, message: "Login Successful" });
             }
@@ -464,11 +465,14 @@ app.get('/download/report', async (req, res) =>
 
 app.post('/coursemap', async (req, res) => 
 {
-    const { staff_id } = req.body;
+    const { staff_id, academic_year} = req.body;
 
     try {
         const courseMapping = await coursemapping.findAll({
-            where: { staff_id: staff_id }
+            where: { 
+                staff_id: staff_id,
+                active_sem: academic_year
+            }
         });
         res.json(courseMapping);
     }
@@ -483,14 +487,13 @@ app.post('/coursemap', async (req, res) =>
 
 app.post('/studentdetails', async (req, res) => 
 {
-    const { course_id, stu_section, stu_semester, stu_category, stu_course_code, activeSection } = req.body;
+    const { course_id, stu_section, stu_category, stu_course_code, activeSection, academic_year } = req.body;
 
     try 
     {
         const studentDetails = await studentmaster.findAll({
             where: {
                 course_id: course_id,
-                semester: stu_semester,
                 section: stu_section,
                 category: stu_category
             }
@@ -500,7 +503,8 @@ app.post('/studentdetails', async (req, res) =>
 
         let markFields = {};
 
-        switch (activeSection) {
+        switch (activeSection) 
+        {
             case '1':
                 markFields = ['c1_lot', 'c1_mot', 'c1_hot', 'c1_total'];
                 break;
@@ -523,7 +527,8 @@ app.post('/studentdetails', async (req, res) =>
         const stud_reg = await markentry.findAll({
             where: {
                 course_code: stu_course_code,
-                reg_no: registerNumbers
+                reg_no: registerNumbers,
+                active_sem: academic_year
             },
             attributes: ['reg_no', ...markFields]
         });
@@ -581,13 +586,14 @@ app.get('/scope/:staffId', async (req, res) =>
 
 app.put('/updateMark', async (req, res) => 
 {
-    const { updates, activeSection, courseCode } = req.body;
+    const { updates, activeSection, courseCode, academicYear } = req.body;
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
 
     try
     {
-        for (const regNo of regNumbers) {
+        for (const regNo of regNumbers) 
+        {
             const updateData = updates[regNo];
             let updateFields = {};
 
@@ -647,7 +653,8 @@ app.put('/updateMark', async (req, res) =>
             await markentry.update(updateFields, {
                 where: {
                     reg_no: regNo,
-                    course_code: courseCode
+                    course_code: courseCode,
+                    active_sem: academicYear
                 }
             });
         }
@@ -678,7 +685,7 @@ app.post('/upload1', upload.single('file'), async (req, res) =>
         });
 
         if (!activeAcademic) {
-            return res.status(400).send('No active academic year found');
+            return res.status(400).send('No Active Academic Year Found');
         }
 
         const activeSemester = activeAcademic.academic_year;
@@ -760,7 +767,7 @@ app.post('/upload3', upload.single('file'), async (req, res) =>
         });
 
         if (!activeAcademic) {
-            return res.status(400).send('No active academic year found');
+            return res.status(400).send('No Active Academic Year Found');
         }
 
         const activeSemester = activeAcademic.academic_year;
@@ -840,7 +847,7 @@ app.post('/upload5', upload.single('file'), async (req, res) =>
         });
 
         if (!activeAcademic) {
-            return res.status(400).send('No active academic year found');
+            return res.status(400).send('No Active Academic Year Found');
         }
         const activeSemester = activeAcademic.academic_year;
 
@@ -946,7 +953,7 @@ app.post('/upload7', upload.single('file'), async (req, res) =>
         });
 
         if (!activeAcademic) {
-            return res.status(400).send('No active academic year found');
+            return res.status(400).send('No Active Academic Year Found');
         }
 
         const activeSemester = activeAcademic.academic_year;
@@ -981,7 +988,7 @@ app.post('/upload7', upload.single('file'), async (req, res) =>
 
 app.put('/report', async (req, res) => 
 {
-    const { activeSection, courseCode, deptName, section, category, button_value } = req.body;
+    const { activeSection, courseCode, deptName, category, button_value, section, academicYear } = req.body;
     try 
     {
         let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
@@ -993,7 +1000,9 @@ app.put('/report', async (req, res) =>
                     course_code: courseCode,
                     section: section,
                     category: category,
-                    dept_name: deptName
+                    dept_name: deptName,
+                    section: section,
+                    active_sem: academicYear
                 }
             });
             if (existingReport) 
@@ -1028,6 +1037,7 @@ app.put('/report', async (req, res) =>
                     section: section,
                     category: category,
                     dept_name: deptName,
+                    active_sem: academicYear,
                     cia_1: activeSection === "1" ? 1 : null,
                     cia_2: activeSection === "2" ? 1 : null,
                     ass_1: activeSection === "3" ? 1 : null,
@@ -1043,7 +1053,8 @@ app.put('/report', async (req, res) =>
                     course_code: courseCode,
                     section: section,
                     category: category,
-                    dept_name: deptName
+                    dept_name: deptName,
+                    active_sem: academicYear
                 }
             });
             if (existingReport) 
@@ -1077,6 +1088,7 @@ app.put('/report', async (req, res) =>
                     section: section,
                     category: category,
                     dept_name: deptName,
+                    active_sem: academicYear,
                     cia_1: activeSection === "1" ? 2 : null,
                     cia_2: activeSection === "2" ? 2 : null,
                     ass_1: activeSection === "3" ? 2 : null,
@@ -1099,13 +1111,14 @@ app.put('/report', async (req, res) =>
 
 app.get('/getreport', async (req, res) => 
 {
-    const { courseCode, deptName, section, category } = req.query;
+    const { courseCode, deptName, section, category, academicYear } = req.query;
     const checkActive = await report.findOne({
         where: {
             course_code: courseCode,
             section: section,
             category: category,
-            dept_name: deptName
+            dept_name: deptName,
+            active_sem: academicYear
         }
     });
     res.json(checkActive);
@@ -1133,7 +1146,8 @@ sequelize_conn.authenticate()
 app.put('/academic', async (req, res) => 
 {
     const { academicsem } = req.body;
-    try {
+    try 
+    {
         await academic.update(
             { active_sem: 0 },
             { where: {} }
@@ -1164,6 +1178,19 @@ app.put('/academic', async (req, res) =>
 
 // Staff Details Fetching Coding
 
+app.post('/activesem', async (req, res) => 
+{
+    const activeAcademic = await academic.findOne({
+        where: { active_sem: 1 }
+    });
+    res.json(activeAcademic);
+    // console.log("Active Sem : ", activeAcademic)
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Staff Details Fetching Coding
+
 app.get('/staffdetails', async (req, res) => 
 {
     const staffDetails = await staffmaster.findAll();
@@ -1172,7 +1199,7 @@ app.get('/staffdetails', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Staff Details Fetching Coding
+// Scope Setting Coding
 
 app.get('/scopeset', async (req, res) => 
 {
