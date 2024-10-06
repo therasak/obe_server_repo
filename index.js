@@ -79,7 +79,7 @@ const secretKey = process.env.SECRET_KEY;
 
 // Import Staff Data Into Database
 
-// const staffmasterDataXL = XLSX.readFile('C:\\Users\\HP\\Music\\Obe Data Files\\Main Data\\Staff Master.xlsx');
+// const staffmasterDataXL = XLSX.readFile('C:\\Users\\ACER\\Music\\Haneef\\Documents\\Obe Data Files\\Main Data\\Staff Master.xlsx');
 // const staffmasterSheetNo = staffmasterDataXL.SheetNames[0];
 // const staffmasterWorksheet = staffmasterDataXL.Sheets[staffmasterSheetNo];
 
@@ -252,7 +252,7 @@ const secretKey = process.env.SECRET_KEY;
 
 // Scope Table Data Insertion
 
-// const scopeDataXL = XLSX.readFile('C:\\Users\\HP\\Music\\Obe Data Files\\Main Data\\Scope.xlsx');
+// const scopeDataXL = XLSX.readFile('C:\\Users\\ACER\\Music\\Haneef\\Documents\\Obe Data Files\\Main Data\\Scope.xlsx');
 // const scopeSheetNo = scopeDataXL.SheetNames[0];
 // const scopeWorksheet = scopeDataXL.Sheets[scopeSheetNo];
 // const scopedata = XLSX.utils.sheet_to_json(scopeWorksheet, { header: 1 });
