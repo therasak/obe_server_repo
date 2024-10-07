@@ -1234,3 +1234,93 @@ app.put('/updateScope', async (req, res) =>
 });
 
 // ------------------------------------------------------------------------------------------------------- //
+
+// StudentPiechart Coding
+
+app.get('/studentpiechart', async (req, res) => {
+    try {
+        const studentPieData = await studentmaster.findAll();
+        
+        // Create a map to hold the counts for each category
+        const categoryCounts = {};
+
+        studentPieData.forEach(student => {
+            const category = student.category; // Get the category of each student
+            if (category) { // Ensure category is not null
+                if (!categoryCounts[category]) {
+                    categoryCounts[category] = 0; // Initialize if it doesn't exist
+                }
+                categoryCounts[category]++; // Increment the count for this category
+            }
+        });
+
+        // Transform the counts into an array suitable for the frontend
+        const result = Object.keys(categoryCounts).map(key => ({
+            type: key,
+            count: categoryCounts[key]
+        }));
+
+        res.json({ data: result }); // Send the data as a JSON response
+    } catch (error) {
+        console.error('Error fetching student pie data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//StaffPiechart coding
+
+app.get('/staffpiechart', async (req, res) => {
+    try {
+        const staffData = await staffmaster.findAll();
+
+        // Create a map to hold the counts for each category
+        const categoryCounts = {};
+
+        staffData.forEach(staff => {
+            const category = staff.category; // Get the category of each staff member
+            if (category) { // Ensure category is not null
+                if (!categoryCounts[category]) {
+                    categoryCounts[category] = 0; // Initialize if it doesn't exist
+                }
+                categoryCounts[category]++; // Increment the count for this category
+            }
+        });
+
+        // Transform the counts into an array suitable for the frontend
+        const result = Object.keys(categoryCounts).map(key => ({
+            type: key,
+            count: categoryCounts[key]
+        }));
+
+        res.json({ data: result }); // Send the data as a JSON response
+    } catch (error) {
+        console.error('Error fetching staff pie data:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+//staff and studentcount coding 
+
+// Assuming you have models for studentmaster and staffmaster
+// const studentmaster = require('./models/studentmaster');
+// const staffmaster = require('./models/staffmaster');
+// Assuming you have a course model
+// const course = require('./models/course');
+
+app.get('/counts', async (req, res) => {
+    try {
+        const studentCount = await studentmaster.count();
+        const staffCount = await staffmaster.count();
+
+        res.json({
+            studentCount,
+            staffCount,
+        });
+    } catch (error) {
+        console.error('Error fetching counts:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
