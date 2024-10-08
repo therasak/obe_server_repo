@@ -1313,14 +1313,26 @@ app.get('/counts', async (req, res) => {
         const studentCount = await studentmaster.count();
         const staffCount = await staffmaster.count();
 
+        // Count unique course codes (for total courses)
+        const uniqueCourseCount = await coursemapping.count({
+            distinct: true,
+            col: 'course_code'
+        });
+
+        // Count unique course IDs (for total programs)
+        const uniqueProgramCount = await coursemapping.count({
+            distinct: true,
+            col: 'course_id'
+        });
+
         res.json({
             studentCount,
             staffCount,
+            courseCount: uniqueCourseCount, // Unique course code count for total courses
+            programCount: uniqueProgramCount // Unique course ID count for total programs
         });
     } catch (error) {
         console.error('Error fetching counts:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
-
