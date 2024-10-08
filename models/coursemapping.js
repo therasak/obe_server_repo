@@ -25,7 +25,7 @@ const coursemapping = sequelize_conn.define('coursemapping',
         type: DataTypes.STRING,
         allowNull: true
     },
-    branch: {
+    dept_name: {
         type: DataTypes.STRING,
         allowNull: true
     },

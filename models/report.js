@@ -9,6 +9,10 @@ const report = sequelize_conn.define('report',
 		primaryKey: true,
 		autoIncrement: true
 	},
+	staff_id: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
 	course_code: {
 		type: DataTypes.STRING,
 		allowNull: true,
@@ -27,21 +31,41 @@ const report = sequelize_conn.define('report',
 	},
 	cia_1: {
 		type: DataTypes.INTEGER,
-		allowNull: true
+		allowNull: false
 	},
 	cia_2: {
 		type: DataTypes.INTEGER,
-		allowNull: true
+		allowNull: false
 	},
 	ass_1: {
 		type: DataTypes.INTEGER,
-		allowNull: true
+		allowNull: false
 	},
 	ass_2: {
 		type: DataTypes.INTEGER,
-		allowNull: true
+		allowNull: false
 	},
 	ese: {
+		type: DataTypes.INTEGER,
+		allowNull: false
+	},
+	l_c1: {
+		type: DataTypes.INTEGER,
+		allowNull: true
+	},
+	l_c2: {
+		type: DataTypes.INTEGER,
+		allowNull: true
+	},
+	l_a1: {
+		type: DataTypes.INTEGER,
+		allowNull: true
+	},
+	l_a2: {
+		type: DataTypes.INTEGER,
+		allowNull: true
+	},
+	l_ese: {
 		type: DataTypes.INTEGER,
 		allowNull: true
 	},
