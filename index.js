@@ -329,6 +329,48 @@ app.post('/login', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
+// Download Excel File Format For Course Mapping 
+
+app.get('/download/coursemap', async (req, res) => {
+    try {
+        const courseData = await coursemapping.findAll(); // Fetch data from the coursemapping table
+        
+        // Define the header row for the Excel file
+        const formattedData = [
+            ['Category', 'Batch', 'Course ID', 'Degree', 'Department Name', 'Semester', 
+             'Section', 'Course Code', 'Staff ID', 'Staff Name', 'Course Title', 'Active Semester'],
+            ...courseData.map(course => [
+                course.category,
+                course.batch,
+                course.course_id,
+                course.degree,
+                course.dept_name,
+                course.semester,
+                course.section,
+                course.course_code,
+                course.staff_id,
+                course.staff_name,
+                course.course_title,
+                course.active_sem
+            ])
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Course Mapping Data');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename=coursemapping_data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// ------------------------------------------------------------------------------------------------------- //
+
 // Download Excel File Format For Staff Master 
 
 app.get('/download/staff', async (req, res) => 
@@ -365,53 +407,40 @@ app.get('/download/staff', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Download Excel File Format For Mark Entry
+// Download Excel File Format For Student Master
 
-app.get('/download/mark', async (req, res) => 
-{
-    try 
-    {
-        const markData = await markentry.findAll();
+
+app.get('/download/studentmaster', async (req, res) => {
+    try {
+        const studentData = await studentmaster.findAll(); // Fetch data from the studentmaster table
+        
+        // Define the header row for the Excel file
         const formattedData = [
-            ['SNO', 'BATCH', 'CATEGORY', 'COURSE_ID', 'REG_NO', 'COURSE_CODE', 'SEMESTER', 'C1_LOT', 'C1_HOT', 'C1_MOT', 'C1_TOTAL',
-                'C2_LOT', 'C2_HOT', 'C2_MOT', 'C2_TOTAL', 'A1_LOT', 'A2_LOT', 'ESE_LOT', 'ESE_HOT', 'ESE_MOT', 'ESE_TOTAL'],
-
-            ...markData.map(student =>
-                [
-                    student.s_no,
-                    student.batch,
-                    student.category,
-                    student.course_id,
-                    student.reg_no,
-                    student.course_code,
-                    student.semester,
-                    student.c1_lot,
-                    student.c1_hot,
-                    student.c1_mot,
-                    student.c1_total,
-                    student.c2_lot,
-                    student.c2_hot,
-                    student.c2_mot,
-                    student.c2_total,
-                    student.a1_lot,
-                    student.a2_lot,
-                    student.ese_lot,
-                    student.ese_hot,
-                    student.ese_mot,
-                    student.ese_total
-                ])
+            ['Registration No', 'Student Name', 'Course ID', 'Category', 'Semester', 
+             'Section', 'Batch', 'Mentor', 'EMIS', 'Active Semester'],
+            ...studentData.map(student => [
+                student.reg_no,
+                student.stu_name,
+                student.course_id,
+                student.category,
+                student.semester,
+                student.section,
+                student.batch,
+                student.mentor,
+                student.emis,
+                student.active_sem // Include the active semester if needed
+            ])
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Mark Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Student Master Data');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename=mark_data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename=studentmaster_data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
@@ -419,29 +448,176 @@ app.get('/download/mark', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Download Excel File Format For Report
+// Download Excel File Format For Scope
 
-app.get('/download/report', async (req, res) => 
-{
-    try 
-    {
-        const reportData = await report.findAll();
+app.get('/download/scope', async (req, res) => {
+    try {
+        const scopeData = await scope.findAll(); // Fetch data from the scope table
+
+        // Define the header row for the Excel file
         const formattedData = [
-            ['SNO', 'COURSE_CODE', 'CATEGORY', 'SECTION', 'DEPT_NAME', 'CIA_1', 'CIA_2', 'ASS_1', 'ASS_2', 'ESE'],
+            ['STAFF_ID', 'ROLE', 'DASHBOARD', 'COURSE_LIST', 'COURSE_OUTCOME', 
+             'STUDENT_OUTCOME', 'PROGRAM_OUTCOME', 'PROGRAM_SPECIFIC_OUTCOME', 
+             'MENTOR_REPORT', 'HOD_REPORT', 'REPORT', 'INPUT_FILES', 
+             'MANAGE', 'RELATIONSHIP_MATRIX', 'SETTINGS', 'LOGOUT'],
+            ...scopeData.map(scope => [
+                scope.staff_id,
+                scope.role,
+                scope.dashboard,
+                scope.course_list,
+                scope.course_outcome,
+                scope.student_outcome,
+                scope.program_outcome,
+                scope.program_specific_outcome,
+                scope.mentor_report,
+                scope.hod_report,
+                scope.report,
+                scope.input_files,
+                scope.manage,
+                scope.relationship_matrix,
+                scope.settings,
+                scope.logout
+            ])
+        ];
 
-            ...reportData.map(reports =>
-                [
-                    reports.s_no,
-                    reports.course_code,
-                    reports.category,
-                    reports.section,
-                    reports.dept_name,
-                    reports.cia_1,
-                    reports.cia_2,
-                    reports.ass_1,
-                    reports.ass_2,
-                    reports.ese
-                ])
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Scope Data');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+
+        res.setHeader('Content-Disposition', 'attachment; filename=scope_data.xlsx'); // Set the filename for the download
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// ------------------------------------------------------------------------------------------------------- //
+
+
+// Download Excel File Format For Student Mark Entry
+
+app.get('/download/mark', async (req, res) => 
+    {
+        try 
+        {
+            const markData = await markentry.findAll();
+            const formattedData = [
+                ['SNO', 'BATCH', 'CATEGORY', 'COURSE_ID', 'REG_NO', 'COURSE_CODE', 'SEMESTER', 'C1_LOT', 'C1_HOT', 'C1_MOT', 'C1_TOTAL',
+                    'C2_LOT', 'C2_HOT', 'C2_MOT', 'C2_TOTAL', 'A1_LOT', 'A2_LOT', 'ESE_LOT', 'ESE_HOT', 'ESE_MOT', 'ESE_TOTAL'],
+    
+                ...markData.map(student =>
+                    [
+                        student.s_no,
+                        student.batch,
+                        student.category,
+                        student.course_id,
+                        student.reg_no,
+                        student.course_code,
+                        student.semester,
+                        student.c1_lot,
+                        student.c1_hot,
+                        student.c1_mot,
+                        student.c1_total,
+                        student.c2_lot,
+                        student.c2_hot,
+                        student.c2_mot,
+                        student.c2_total,
+                        student.a1_lot,
+                        student.a2_lot,
+                        student.ese_lot,
+                        student.ese_hot,
+                        student.ese_mot,
+                        student.ese_total
+                    ])
+            ];
+    
+            const ws = XLSX.utils.aoa_to_sheet(formattedData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Mark Data');
+    
+            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+            res.setHeader('Content-Disposition', 'attachment; filename=mark_data.xlsx');
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.send(excelBuffer);
+        }
+        catch (error) {
+            console.error('Error generating Excel file:', error);
+            res.status(500).send('Server error');
+        }
+    });
+    
+    // ------------------------------------------------------------------------------------------------------- //
+    
+
+// Download Excel File Format For Dept Mark Entry
+
+app.get('/download/deptmarkentry', async (req, res) => {
+    try {
+        const markData = await markentry.findAll(); // Fetch data from the markentry table
+        
+        // Define the header row for the Excel file
+        const formattedData = [
+            ['Registration No', 'Course Code', 'Course ID', 'C1 LOT', 'C1 HOT', 
+             'C1 MOT', 'C1 Total'],
+            ...markData.map(entry => [
+                entry.reg_no,
+                entry.course_code,
+                entry.course_id,
+                entry.c1_lot,
+                entry.c1_hot,
+                entry.c1_mot,
+                entry.c1_total
+            ])
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Dept Mark Entry Data');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename=markentry_data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+});
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Download Excel File Format For Reports
+app.get('/download/report', async (req, res) => {
+    try {
+        const reportData = await report.findAll(); // Fetch data from the report table
+
+        // Define the header row for the Excel file
+        const formattedData = [
+            ['STAFF_ID', 'COURSE_CODE', 'CATEGORY', 'SECTION', 'DEPT_NAME', 
+             'CIA_1', 'CIA_2', 'ASS_1', 'ASS_2', 'ESE', 
+             'L_C1', 'L_C2', 'L_A1', 'L_A2', 'L_ESE', 'ACTIVE_SEM'],
+            ...reportData.map(reports => [
+                reports.staff_id,
+                reports.course_code,
+                reports.category,
+                reports.section,
+                reports.dept_name,
+                reports.cia_1,
+                reports.cia_2,
+                reports.ass_1,
+                reports.ass_2,
+                reports.ese,
+                reports.l_c1,
+                reports.l_c2,
+                reports.l_a1,
+                reports.l_a2,
+                reports.l_ese,
+                reports.active_sem
+            ])
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
@@ -449,17 +625,19 @@ app.get('/download/report', async (req, res) =>
         XLSX.utils.book_append_sheet(wb, ws, 'Report Data');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename=mark_data.xlsx');
+
+        res.setHeader('Content-Disposition', 'attachment; filename=report_data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    }
-    catch (error) {
+    } catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
 });
 
+
 // ------------------------------------------------------------------------------------------------------- //
+
 
 // Course Mapping Details Getting Coding
 
@@ -670,10 +848,8 @@ app.put('/updateMark', async (req, res) =>
 
 // Route to handle Course Mapping File Upload
 
-app.post('/upload1', upload.single('file'), async (req, res) => 
-{
-    try 
-    {
+app.post('/coursemapping', upload.single('file'), async (req, res) => {
+    try {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -690,12 +866,13 @@ app.post('/upload1', upload.single('file'), async (req, res) =>
 
         const activeSemester = activeAcademic.academic_year;
 
+        // Prepare data for course mapping
         const course = rows.map(row => ({
             category: row.category,
             batch: row.batch,
             course_id: row.course_id,
             degree: row.degree,
-            branch: row.branch,
+            dept_name: row.dept_name,
             semester: row.semester,
             section: row.section,
             course_code: row.course_code,
@@ -705,22 +882,34 @@ app.post('/upload1', upload.single('file'), async (req, res) =>
             active_sem: activeSemester
         }));
 
+        // Bulk insert into course mapping
         await coursemapping.bulkCreate(course);
 
-        res.status(200).send('Course Mapping Data Imported Successfully');
-    }
-    catch (error) {
+        // Prepare data for reports, including active_sem
+        const reportData = rows.map(row => ({
+            staff_id: row.staff_id,
+            course_code: row.course_code,
+            category: row.category,
+            section: row.section,
+            dept_name: row.dept_name,
+            active_sem: activeSemester // Store active_sem in reports table
+        }));
+
+        // Bulk insert into reports
+        await report.bulkCreate(reportData, { ignoreDuplicates: true });
+
+        res.status(200).send('Course Mapping Data and Report Data Imported Successfully');
+    } catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
 });
 
-
 // ------------------------------------------------------------------------------------------------------- //
 
 // Route to handle Staff Master File Upload
 
-app.post('/upload2', upload.single('file'), async (req, res) => 
+app.post('/staffmaster', upload.single('file'), async (req, res) => 
 {
     try 
     {
@@ -752,7 +941,7 @@ app.post('/upload2', upload.single('file'), async (req, res) =>
 
 // Route to handle Student Master File Upload
 
-app.post('/upload3', upload.single('file'), async (req, res) => 
+app.post('/studentmaster', upload.single('file'), async (req, res) => 
 {
     try 
     {
@@ -798,12 +987,14 @@ app.post('/upload3', upload.single('file'), async (req, res) =>
 // ------------------------------------------------------------------------------------------------------- //
 
 // Route to handle Scope File Upload
-
-app.post('/upload4', upload.single('file'), async (req, res) => 
-{
-    try 
-    {
+app.post('/scope', upload.single('file'), async (req, res) => {
+    try {
         const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('No file uploaded.');
+        }
+
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
@@ -811,19 +1002,28 @@ app.post('/upload4', upload.single('file'), async (req, res) =>
 
         const scopes = rows.map(row => ({
             staff_id: row.staff_id,
+            role: row.role, 
             dashboard: row.dashboard,
             course_list: row.course_list,
+            course_outcome: row.course_outcome,
+            student_outcome: row.student_outcome,
+            program_outcome: row.program_outcome,
+            program_specific_outcome: row.program_specific_outcome,
+            mentor_report: row.mentor_report,
+            hod_report: row.hod_report,
             report: row.report,
-            upload_files: row.upload_files,
+            input_files: row.input_files,
+            manage: row.manage,
+            relationship_matrix: row.relationship_matrix,
+            settings: row.settings,
             logout: row.logout
         }));
 
         await scope.bulkCreate(scopes, {});
 
         res.status(200).send('Scope Table Imported Successfully');
-    }
-    catch (error) {
-        console.error(error);
+    } catch (error) {
+        console.error("Error in upload4:", error);
         res.status(500).send('An error occurred');
     }
 });
@@ -832,7 +1032,7 @@ app.post('/upload4', upload.single('file'), async (req, res) =>
 
 // Route to handle Mark Entry File Upload
 
-app.post('/upload5', upload.single('file'), async (req, res) => 
+app.post('/markentry', upload.single('file'), async (req, res) => 
 {
     try 
     {
@@ -889,7 +1089,7 @@ app.post('/upload5', upload.single('file'), async (req, res) =>
 
 // Route to handle Department Mark Entry File Upload
 
-app.post('/upload6', upload.single('file'), async (req, res) => 
+app.post('/deptmarkentry', upload.single('file'), async (req, res) => 
 {
     try 
     {
@@ -938,7 +1138,7 @@ app.post('/upload6', upload.single('file'), async (req, res) =>
 
 // Route to handle Reports File Upload
 
-app.post('/upload7', upload.single('file'), async (req, res) => 
+app.post('/report', upload.single('file'), async (req, res) => 
 {
     try 
     {
