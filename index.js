@@ -329,13 +329,14 @@ app.post('/login', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Download Excel File Format For Course Mapping 
+// Course Mapping Downlaod Excel 
 
-app.get('/download/coursemap', async (req, res) => {
-    try {
-        const courseData = await coursemapping.findAll(); // Fetch data from the coursemapping table
+app.get('/download/coursemap', async (req, res) => 
+{
+    try 
+    {
+        const courseData = await coursemapping.findAll();
         
-        // Define the header row for the Excel file
         const formattedData = [
             ['Category', 'Batch', 'Course ID', 'Degree', 'Department Name', 'Semester', 
              'Section', 'Course Code', 'Staff ID', 'Staff Name', 'Course Title', 'Active Semester'],
@@ -358,12 +359,12 @@ app.get('/download/coursemap', async (req, res) => {
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Course Mapping Data');
-
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename=coursemapping_data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Course Mapping Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
@@ -371,7 +372,7 @@ app.get('/download/coursemap', async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Download Excel File Format For Staff Master 
+// Staff Master Download Excel
 
 app.get('/download/staff', async (req, res) => 
 {
@@ -393,9 +394,8 @@ app.get('/download/staff', async (req, res) =>
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Staff Data');
-
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename=staff_data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Staff Master Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -407,14 +407,15 @@ app.get('/download/staff', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Download Excel File Format For Student Master
+// Student Master Excel Download
 
 
-app.get('/download/studentmaster', async (req, res) => {
-    try {
-        const studentData = await studentmaster.findAll(); // Fetch data from the studentmaster table
-        
-        // Define the header row for the Excel file
+app.get('/download/studentmaster', async (req, res) => 
+{
+    try 
+    {
+        const studentData = await studentmaster.findAll();
+
         const formattedData = [
             ['Registration No', 'Student Name', 'Course ID', 'Category', 'Semester', 
              'Section', 'Batch', 'Mentor', 'EMIS', 'Active Semester'],
@@ -428,19 +429,19 @@ app.get('/download/studentmaster', async (req, res) => {
                 student.batch,
                 student.mentor,
                 student.emis,
-                student.active_sem // Include the active semester if needed
+                student.active_sem
             ])
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Student Master Data');
-
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename=studentmaster_data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Student Master Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
@@ -448,13 +449,13 @@ app.get('/download/studentmaster', async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Download Excel File Format For Scope
+// Scope Excel Download
 
-app.get('/download/scope', async (req, res) => {
+app.get('/download/scope', async (req, res) => 
+{
     try {
-        const scopeData = await scope.findAll(); // Fetch data from the scope table
+        const scopeData = await scope.findAll();
 
-        // Define the header row for the Excel file
         const formattedData = [
             ['STAFF_ID', 'ROLE', 'DASHBOARD', 'COURSE_LIST', 'COURSE_OUTCOME', 
              'STUDENT_OUTCOME', 'PROGRAM_OUTCOME', 'PROGRAM_SPECIFIC_OUTCOME', 
@@ -483,13 +484,12 @@ app.get('/download/scope', async (req, res) => {
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Scope Data');
-
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-
-        res.setHeader('Content-Disposition', 'attachment; filename=scope_data.xlsx'); // Set the filename for the download
+        res.setHeader('Content-Disposition', 'attachment; filename = Scope Data.xlsx'); 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
@@ -498,68 +498,67 @@ app.get('/download/scope', async (req, res) => {
 // ------------------------------------------------------------------------------------------------------- //
 
 
-// Download Excel File Format For Student Mark Entry
+// Student Mark Entry Excel Download
 
 app.get('/download/mark', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const markData = await markentry.findAll();
-            const formattedData = [
-                ['SNO', 'BATCH', 'CATEGORY', 'COURSE_ID', 'REG_NO', 'COURSE_CODE', 'SEMESTER', 'C1_LOT', 'C1_HOT', 'C1_MOT', 'C1_TOTAL',
-                    'C2_LOT', 'C2_HOT', 'C2_MOT', 'C2_TOTAL', 'A1_LOT', 'A2_LOT', 'ESE_LOT', 'ESE_HOT', 'ESE_MOT', 'ESE_TOTAL'],
-    
-                ...markData.map(student =>
-                    [
-                        student.s_no,
-                        student.batch,
-                        student.category,
-                        student.course_id,
-                        student.reg_no,
-                        student.course_code,
-                        student.semester,
-                        student.c1_lot,
-                        student.c1_hot,
-                        student.c1_mot,
-                        student.c1_total,
-                        student.c2_lot,
-                        student.c2_hot,
-                        student.c2_mot,
-                        student.c2_total,
-                        student.a1_lot,
-                        student.a2_lot,
-                        student.ese_lot,
-                        student.ese_hot,
-                        student.ese_mot,
-                        student.ese_total
-                    ])
-            ];
-    
-            const ws = XLSX.utils.aoa_to_sheet(formattedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Mark Data');
-    
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-            res.setHeader('Content-Disposition', 'attachment; filename=mark_data.xlsx');
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            res.send(excelBuffer);
-        }
-        catch (error) {
-            console.error('Error generating Excel file:', error);
-            res.status(500).send('Server error');
-        }
-    });
-    
-    // ------------------------------------------------------------------------------------------------------- //
-    
+        const markData = await markentry.findAll();
+        const formattedData = [
+            ['SNO', 'BATCH', 'CATEGORY', 'COURSE_ID', 'REG_NO', 'COURSE_CODE', 'SEMESTER', 'C1_LOT', 'C1_HOT', 'C1_MOT', 'C1_TOTAL',
+                'C2_LOT', 'C2_HOT', 'C2_MOT', 'C2_TOTAL', 'A1_LOT', 'A2_LOT', 'ESE_LOT', 'ESE_HOT', 'ESE_MOT', 'ESE_TOTAL'],
 
-// Download Excel File Format For Dept Mark Entry
+            ...markData.map(student =>
+                [
+                    student.s_no,
+                    student.batch,
+                    student.category,
+                    student.course_id,
+                    student.reg_no,
+                    student.course_code,
+                    student.semester,
+                    student.c1_lot,
+                    student.c1_hot,
+                    student.c1_mot,
+                    student.c1_total,
+                    student.c2_lot,
+                    student.c2_hot,
+                    student.c2_mot,
+                    student.c2_total,
+                    student.a1_lot,
+                    student.a2_lot,
+                    student.ese_lot,
+                    student.ese_hot,
+                    student.ese_mot,
+                    student.ese_total
+                ])
+        ];
 
-app.get('/download/deptmarkentry', async (req, res) => {
-    try {
-        const markData = await markentry.findAll(); // Fetch data from the markentry table
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Mark Data');
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename = Mark Entry Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    }
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+});
+    
+// ------------------------------------------------------------------------------------------------------- //
+    
+// Dept Mark Entry Excel Download
+
+app.get('/download/deptmarkentry', async (req, res) => 
+{
+    try 
+    {
+        const markData = await markentry.findAll();
         
-        // Define the header row for the Excel file
         const formattedData = [
             ['Registration No', 'Course Code', 'Course ID', 'C1 LOT', 'C1 HOT', 
              'C1 MOT', 'C1 Total'],
@@ -577,12 +576,12 @@ app.get('/download/deptmarkentry', async (req, res) => {
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Dept Mark Entry Data');
-
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename=markentry_data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Dept Mark Entry.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
@@ -590,12 +589,14 @@ app.get('/download/deptmarkentry', async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Download Excel File Format For Reports
-app.get('/download/report', async (req, res) => {
-    try {
-        const reportData = await report.findAll(); // Fetch data from the report table
+// Report Excel Download
 
-        // Define the header row for the Excel file
+app.get('/download/report', async (req, res) => 
+{
+    try 
+    {
+        const reportData = await report.findAll();
+
         const formattedData = [
             ['STAFF_ID', 'COURSE_CODE', 'CATEGORY', 'SECTION', 'DEPT_NAME', 
              'CIA_1', 'CIA_2', 'ASS_1', 'ASS_2', 'ESE', 
@@ -623,13 +624,12 @@ app.get('/download/report', async (req, res) => {
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Report Data');
-
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-
-        res.setHeader('Content-Disposition', 'attachment; filename=report_data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Report Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
@@ -637,7 +637,6 @@ app.get('/download/report', async (req, res) => {
 
 
 // ------------------------------------------------------------------------------------------------------- //
-
 
 // Course Mapping Details Getting Coding
 
@@ -846,10 +845,12 @@ app.put('/updateMark', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Course Mapping File Upload
+// Course Mapping File Upload
 
-app.post('/coursemapping', upload.single('file'), async (req, res) => {
-    try {
+app.post('/coursemapping', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
@@ -866,7 +867,6 @@ app.post('/coursemapping', upload.single('file'), async (req, res) => {
 
         const activeSemester = activeAcademic.academic_year;
 
-        // Prepare data for course mapping
         const course = rows.map(row => ({
             category: row.category,
             batch: row.batch,
@@ -882,24 +882,22 @@ app.post('/coursemapping', upload.single('file'), async (req, res) => {
             active_sem: activeSemester
         }));
 
-        // Bulk insert into course mapping
         await coursemapping.bulkCreate(course);
 
-        // Prepare data for reports, including active_sem
         const reportData = rows.map(row => ({
             staff_id: row.staff_id,
             course_code: row.course_code,
             category: row.category,
             section: row.section,
             dept_name: row.dept_name,
-            active_sem: activeSemester // Store active_sem in reports table
+            active_sem: activeSemester
         }));
 
-        // Bulk insert into reports
         await report.bulkCreate(reportData, { ignoreDuplicates: true });
 
-        res.status(200).send('Course Mapping Data and Report Data Imported Successfully');
-    } catch (error) {
+        res.status(200).send('Course Mapping Data Imported Successfully');
+    } 
+    catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
@@ -907,7 +905,7 @@ app.post('/coursemapping', upload.single('file'), async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Staff Master File Upload
+// Staff Master File Upload
 
 app.post('/staffmaster', upload.single('file'), async (req, res) => 
 {
@@ -939,7 +937,7 @@ app.post('/staffmaster', upload.single('file'), async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Student Master File Upload
+// Student Master File Upload
 
 app.post('/studentmaster', upload.single('file'), async (req, res) => 
 {
@@ -986,13 +984,16 @@ app.post('/studentmaster', upload.single('file'), async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Scope File Upload
-app.post('/scope', upload.single('file'), async (req, res) => {
-    try {
+// Scope File Upload
+
+app.post('/scope', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
 
         if (!file) {
-            return res.status(400).send('No file uploaded.');
+            return res.status(400).send('No File Uploaded.');
         }
 
         const workbook = XLSX.readFile(file.path);
@@ -1022,7 +1023,8 @@ app.post('/scope', upload.single('file'), async (req, res) => {
         await scope.bulkCreate(scopes, {});
 
         res.status(200).send('Scope Table Imported Successfully');
-    } catch (error) {
+    } 
+    catch (error) {
         console.error("Error in upload4:", error);
         res.status(500).send('An error occurred');
     }
@@ -1030,7 +1032,7 @@ app.post('/scope', upload.single('file'), async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Mark Entry File Upload
+// Mark Entry File Upload
 
 app.post('/markentry', upload.single('file'), async (req, res) => 
 {
@@ -1087,7 +1089,7 @@ app.post('/markentry', upload.single('file'), async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Department Mark Entry File Upload
+// Department Mark Entry File Upload
 
 app.post('/deptmarkentry', upload.single('file'), async (req, res) => 
 {
@@ -1099,9 +1101,9 @@ app.post('/deptmarkentry', upload.single('file'), async (req, res) =>
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet);
 
-        for (const row of rows) {
+        for (const row of rows) 
+        {
             const { reg_no, course_code } = row;
-
             const existingEntry = await markentry.findOne({
                 where: {
                     reg_no: reg_no,
@@ -1136,7 +1138,7 @@ app.post('/deptmarkentry', upload.single('file'), async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Reports File Upload
+// Report File Upload
 
 app.post('/report', upload.single('file'), async (req, res) => 
 {
@@ -1184,7 +1186,7 @@ app.post('/report', upload.single('file'), async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Report
+// Report Creating Code
 
 app.put('/report', async (req, res) => 
 {
@@ -1193,36 +1195,38 @@ app.put('/report', async (req, res) =>
     {
         let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
 
-        if (button_value === "0") 
+        const valueToSet = button_value === "0" ? 1 : 2;
+
+        const existingReports = await report.findAll({
+            where: {
+                course_code: courseCode,
+                section: section,
+                category: category,
+                dept_name: deptName,
+                active_sem: academicYear
+            }
+        });
+
+        if (existingReports.length > 0) 
         {
-            const existingReport = await report.findOne({
-                where: {
-                    course_code: courseCode,
-                    section: section,
-                    category: category,
-                    dept_name: deptName,
-                    section: section,
-                    active_sem: academicYear
-                }
-            });
-            if (existingReport) 
+            for (const existingReport of existingReports) 
             {
                 switch (activeSection) 
                 {
                     case "1":
-                        existingReport.cia_1 = 1;
+                        existingReport.cia_1 = valueToSet;
                         break;
                     case "2":
-                        existingReport.cia_2 = 1;
+                        existingReport.cia_2 = valueToSet;
                         break;
                     case "3":
-                        existingReport.ass_1 = 1;
+                        existingReport.ass_1 = valueToSet;
                         break;
                     case "4":
-                        existingReport.ass_2 = 1;
+                        existingReport.ass_2 = valueToSet;
                         break;
                     case "5":
-                        existingReport.ese = 1;
+                        existingReport.ese = valueToSet;
                         break;
                     default:
                         console.log('Invalid activeSection');
@@ -1230,84 +1234,52 @@ app.put('/report', async (req, res) =>
                 }
                 await existingReport.save();
             }
-            else 
-            {
-                const newReport = await report.create({
-                    course_code: courseCode,
-                    section: section,
-                    category: category,
-                    dept_name: deptName,
-                    active_sem: academicYear,
-                    cia_1: activeSection === "1" ? 1 : null,
-                    cia_2: activeSection === "2" ? 1 : null,
-                    ass_1: activeSection === "3" ? 1 : null,
-                    ass_2: activeSection === "4" ? 1 : null,
-                    ese: activeSection === "5" ? 1 : null,
-                });
-            }
-        }
-        else if (button_value === "1") 
+        } 
+        else 
         {
-            const existingReport = await report.findOne({
-                where: {
-                    course_code: courseCode,
-                    section: section,
-                    category: category,
-                    dept_name: deptName,
-                    active_sem: academicYear
-                }
+            await report.create({
+                course_code: courseCode,
+                section: section,
+                category: category,
+                dept_name: deptName,
+                active_sem: academicYear,
+                cia_1: activeSection === "1" ? valueToSet : null,
+                cia_2: activeSection === "2" ? valueToSet : null,
+                ass_1: activeSection === "3" ? valueToSet : null,
+                ass_2: activeSection === "4" ? valueToSet : null,
+                ese: activeSection === "5" ? valueToSet : null
             });
-            if (existingReport) 
-            {
-                switch (activeSection) {
-                    case "1":
-                        existingReport.cia_1 = 2;
-                        break;
-                    case "2":
-                        existingReport.cia_2 = 2;
-                        break;
-                    case "3":
-                        existingReport.ass_1 = 2;
-                        break;
-                    case "4":
-                        existingReport.ass_2 = 2;
-                        break;
-                    case "5":
-                        existingReport.ese = 2;
-                        break;
-                    default:
-                        console.log('Invalid activeSection');
-                        break;
-                }
-                await existingReport.save();
-            }
-            else 
-            {
-                const newReport = await report.create({
-                    course_code: courseCode,
-                    section: section,
-                    category: category,
-                    dept_name: deptName,
-                    active_sem: academicYear,
-                    cia_1: activeSection === "1" ? 2 : null,
-                    cia_2: activeSection === "2" ? 2 : null,
-                    ass_1: activeSection === "3" ? 2 : null,
-                    ass_2: activeSection === "4" ? 2 : null,
-                    ese: activeSection === "5" ? 2 : null,
-                });
-            }
         }
+
+        const updatedReports = await report.findAll({
+            where: {
+                course_code: courseCode,
+                section: section,
+                category: category,
+                dept_name: deptName,
+                active_sem: academicYear
+            }
+        });
+
+        updatedReports.forEach(r => {
+            cia_1 = Math.max(cia_1, r.cia_1 || 0);
+            cia_2 = Math.max(cia_2, r.cia_2 || 0);
+            ass_1 = Math.max(ass_1, r.ass_1 || 0);
+            ass_2 = Math.max(ass_2, r.ass_2 || 0);
+            ese = Math.max(ese, r.ese || 0);
+        });
+
         res.status(200).json({ cia_1, cia_2, ass_1, ass_2, ese });
-    }
+    } 
     catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
     }
-});
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Route to handle Get Report
+// Getting Report Coding
 
 app.get('/getreport', async (req, res) => 
 {
@@ -1384,7 +1356,6 @@ app.post('/activesem', async (req, res) =>
         where: { active_sem: 1 }
     });
     res.json(activeAcademic);
-    // console.log("Active Sem : ", activeAcademic)
 })
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -1417,7 +1388,8 @@ app.put('/updateScope', async (req, res) =>
     const staffIds = Object.keys(updates);
     try 
     {
-        for (const staffId of staffIds) {
+        for (const staffId of staffIds) 
+        {
             const updateData = updates[staffId];
             await scope.update(updateData, {
                 where: {
@@ -1435,91 +1407,92 @@ app.put('/updateScope', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// StudentPiechart Coding
+// Student Piechart Coding
 
-app.get('/studentpiechart', async (req, res) => {
-    try {
+app.get('/studentpiechart', async (req, res) =>
+{
+    try 
+    {
         const studentPieData = await studentmaster.findAll();
         
-        // Create a map to hold the counts for each category
         const categoryCounts = {};
 
-        studentPieData.forEach(student => {
-            const category = student.category; // Get the category of each student
-            if (category) { // Ensure category is not null
+        studentPieData.forEach(student => 
+        {
+            const category = student.category; 
+            if (category) 
+            { 
                 if (!categoryCounts[category]) {
-                    categoryCounts[category] = 0; // Initialize if it doesn't exist
+                    categoryCounts[category] = 0; 
                 }
-                categoryCounts[category]++; // Increment the count for this category
+                categoryCounts[category]++;
             }
         });
 
-        // Transform the counts into an array suitable for the frontend
         const result = Object.keys(categoryCounts).map(key => ({
             type: key,
             count: categoryCounts[key]
         }));
 
-        res.json({ data: result }); // Send the data as a JSON response
-    } catch (error) {
+        res.json({ data: result });
+    } 
+    catch (error) {
         console.error('Error fetching student pie data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-//StaffPiechart coding
+// ------------------------------------------------------------------------------------------------------- //
 
-app.get('/staffpiechart', async (req, res) => {
-    try {
+//Staff Piechart coding
+
+app.get('/staffpiechart', async (req, res) => 
+{
+    try 
+    {
         const staffData = await staffmaster.findAll();
-
-        // Create a map to hold the counts for each category
         const categoryCounts = {};
 
         staffData.forEach(staff => {
-            const category = staff.category; // Get the category of each staff member
-            if (category) { // Ensure category is not null
+            const category = staff.category;
+            if (category) 
+            { 
                 if (!categoryCounts[category]) {
-                    categoryCounts[category] = 0; // Initialize if it doesn't exist
+                    categoryCounts[category] = 0;
                 }
-                categoryCounts[category]++; // Increment the count for this category
+                categoryCounts[category]++;
             }
         });
 
-        // Transform the counts into an array suitable for the frontend
         const result = Object.keys(categoryCounts).map(key => ({
             type: key,
             count: categoryCounts[key]
         }));
 
-        res.json({ data: result }); // Send the data as a JSON response
-    } catch (error) {
+        res.json({ data: result });
+    } 
+    catch (error) {
         console.error('Error fetching staff pie data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
+// ------------------------------------------------------------------------------------------------------- //
 
-//staff and studentcount coding 
+// Staff ,Student, Course, Programme Count Coding 
 
-// Assuming you have models for studentmaster and staffmaster
-// const studentmaster = require('./models/studentmaster');
-// const staffmaster = require('./models/staffmaster');
-// Assuming you have a course model
-// const course = require('./models/course');
-
-app.get('/counts', async (req, res) => {
-    try {
+app.get('/counts', async (req, res) => 
+{
+    try 
+    {
         const studentCount = await studentmaster.count();
         const staffCount = await staffmaster.count();
 
-        // Count unique course codes (for total courses)
         const uniqueCourseCount = await coursemapping.count({
             distinct: true,
             col: 'course_code'
         });
 
-        // Count unique course IDs (for total programs)
         const uniqueProgramCount = await coursemapping.count({
             distinct: true,
             col: 'course_id'
@@ -1528,11 +1501,14 @@ app.get('/counts', async (req, res) => {
         res.json({
             studentCount,
             staffCount,
-            courseCount: uniqueCourseCount, // Unique course code count for total courses
-            programCount: uniqueProgramCount // Unique course ID count for total programs
+            courseCount: uniqueCourseCount,
+            programCount: uniqueProgramCount
         });
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error fetching counts:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+// ------------------------------------------------------------------------------------------------------- //
