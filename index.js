@@ -1350,14 +1350,14 @@ app.put('/academic', async (req, res) =>
 
 // Staff Details Fetching Coding
 
-app.post('/activesem', async (req, res) => 
-{
+app.post('/activesem', async (req, res) => {
     const activeAcademic = await academic.findOne({
-        where: { active_sem: 1 }
+      where: { active_sem: 1 }
     });
-    res.json(activeAcademic);
-})
-
+    console.log(activeAcademic);  // Log the response
+    res.json({ academicYear: activeAcademic.active_sem });  // Make sure it's correctly formatted
+  });
+  
 // ------------------------------------------------------------------------------------------------------- //
 
 // Staff Details Fetching Coding
@@ -1548,3 +1548,73 @@ app.post('/newstaff', async (req, res) => {
         return res.status(500).json({ message: 'Database error' });
     }
 });
+
+////////////////////////////////////////////////////////////////////////////////
+
+app.get('/reportdata', async (req, res) => 
+    {
+        const scopeData = await report.findAll();
+        res.json(scopeData);
+    });
+// ------------------------------------------------------------------------------------------------------- //
+    
+    app.put('/updatereport', async (req, res) => {
+        const { updates } = req.body;
+        const staffIds = Object.keys(updates);
+    
+        try {
+            for (const staffId of staffIds) {
+                const updateData = updates[staffId];
+                const updateFields = {
+                    cia_1: updateData.cia_1 ? 1 : 0,
+                    cia_2: updateData.cia_2 ? 1 : 0,
+                    ass_1: updateData.ass_1 ? 1 : 0,
+                    ass_2: updateData.ass_2 ? 1 : 0,
+                    ese: updateData.ese ? 1 : 0
+                };
+    
+               
+                await markRelease.update(updateFields, {
+                    where: { staff_id: staffId }
+                });
+            }
+            res.status(200).send({ success: true, message: 'Data updated successfully' });
+        } catch (error) {
+            console.error("Error updating data:", error);
+            res.status(500).send({ success: false, error: "Failed to update data" });
+        }
+    });
+    
+// ------------------------------------------------------------------------------------------------------- //
+
+app.put('/updatemarkrelease', async (req, res) => {
+    const { updates } = req.body;
+    const regNumbers = Object.keys(updates); // Get the staff IDs (or registration numbers)
+
+    try {
+        for (const regNo of regNumbers) {
+            const updateData = updates[regNo];
+
+            
+            let updateFields = {
+                cia_1: updateData.cia_1,
+                cia_2: updateData.cia_2,
+                ass_1: updateData.ass_1,
+                ass_2: updateData.ass_2,
+                ese: updateData.ese
+            };
+
+           
+            await report.update(updateFields, {
+                where: { staff_id: regNo } 
+            });
+        }
+
+        res.status(200).send({ success: true, message: 'Mark release data updated successfully' });
+    } catch (error) {
+        console.error("Error updating mark release:", error);
+        res.status(500).send({ success: false, error: "Failed to update mark release data" });
+    }
+});
+
+      
