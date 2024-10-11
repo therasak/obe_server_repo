@@ -1514,10 +1514,9 @@ app.get('/counts', async (req, res) =>
 // ------------------------------------------------------------------------------------------------------- //
 
 app.post('/newstaff', async (req, res) => {
-    const { staff_id, staff_name, staff_dept, category, password, permissions } = req.body; // Include permissions
+    const { staff_id, staff_name, staff_dept, category, password, permissions } = req.body; 
 
     try {
-        // Create a new staff member
         const newStaff = await staffmaster.create({
             staff_id: staff_id,
             staff_name: staff_name,
@@ -1526,14 +1525,13 @@ app.post('/newstaff', async (req, res) => {
             staff_pass: password
         });
 
-        // Create a corresponding scope entry for permissions
         const newScope = await scope.create({
-            staff_id: staff_id, // Link the permission to the staff ID
+            staff_id: staff_id, 
             dashboard: permissions.dashboard ? 1 : 0,
             course_list: permissions.course ? 1 : 0,
-            course_outcome: permissions.co ? 1 : 0, // Renamed for uniqueness
-            student_outcome: permissions.so ? 1 : 0, // Renamed for uniqueness
-            program_outcome: permissions.po ? 1 : 0, // Renamed for uniqueness
+            course_outcome: permissions.co ? 1 : 0, 
+            student_outcome: permissions.so ? 1 : 0, 
+            program_outcome: permissions.po ? 1 : 0, 
             program_specific_outcome: permissions.pso ? 1 : 0,
             mentor_report: permissions.tutor ? 1 : 0,
             hod_report: permissions.hod ? 1 : 0,
