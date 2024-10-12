@@ -13,7 +13,7 @@ const academic = require('./models/academic');
 const DashBoard = require('./routes/dash');
 const CourseList = require('./routes/courselist');
 const ScopeManage = require('./routes/scopemanage');
-const FileUpload = require('./routes/fileupload.');
+const FileUpload = require('./routes/fileupload');
 const FileDownload = require('./routes/filedownload');
 const StatusReport = require('./routes/statusreport');
 
@@ -558,61 +558,3 @@ app.put('/updatemarkrelease', async (req, res) =>
 });
 
 // ------------------------------------------------------------------------------------------------------- //
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// app.post('/coursemap', async (req, res) => 
-// {
-//     const { academic_year } = req.body;
-//     console.log('academic_year:', academic_year);
-
-//     try {
-//         const courseDeptMapping = await coursemapping.findAll({
-//             where: {
-//                 active_sem: academic_year
-//             }
-//         });
-//         res.json(courseDeptMapping);
-//     }
-//     catch (err) {
-//         res.status(500).json({ error: 'An error occurred while Fetching Data.' });
-//     }
-// })
