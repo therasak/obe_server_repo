@@ -1,6 +1,6 @@
 const express = require ('express');
 const route = express.Router();
-const coursemapping = require('../models/coursemapping');
+const report = require('../models/report');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -10,17 +10,42 @@ route.post('/statusDeptName', async (req, res) =>
 {
     const { academicYear } = req.body;
     
-    try {
-        const courseDeptMapping = await coursemapping.findAll({
-            where: {
-                active_sem: academicYear
-            }
-        });
-        res.json(courseDeptMapping);
+    try 
+    {
+        const reportDeptMapping = await report.findAll({
+            where: { active_sem: academicYear },
+            attributes: ['dept_name']
+        })
+        const uniqueDeptNames = [...new Set(reportDeptMapping.map(item => item.dept_name))];
+        res.json(uniqueDeptNames); 
     }
     catch (err) {
         res.status(500).json({ error: 'An error occurred while Fetching Data.' });
     }
 })
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Department Status Report Fetching Coding
+
+route.post('/deptstatusreport', async (req, res) => 
+{
+    const { academic_year, dept_name } = req.body;
+    try 
+    {
+        const deptReportStatus = await report.findAll({
+            where: { 
+                active_sem: academic_year,
+                dept_name : dept_name
+            }
+        })
+        res.json(deptReportStatus);
+        console.log(deptReportStatus);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'An error occurred while Fetching Data.' });
+    }
+})
+    
 
 module.exports = route;

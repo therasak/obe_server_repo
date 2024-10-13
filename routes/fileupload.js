@@ -9,6 +9,8 @@ const coursemapping = require('../models/coursemapping');
 const report = require('../models/report');
 const studentmaster = require('../models/studentmaster');
 const staffmaster = require('../models/staffmaster');
+const markentry = require('../models/markentry');
+const scope = require('../models/scope');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -183,8 +185,7 @@ route.post('/scope', upload.single('file'), async (req, res) =>
             input_files: row.input_files,
             manage: row.manage,
             relationship_matrix: row.relationship_matrix,
-            settings: row.settings,
-            logout: row.logout
+            settings: row.settings
         }));
 
         await scope.bulkCreate(scopes, {});
@@ -312,6 +313,11 @@ route.post('/report', upload.single('file'), async (req, res) =>
     try 
     {
         const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('File Upload Failed');
+        }
+
         const workbook = XLSX.readFile(file.path);
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
@@ -327,8 +333,12 @@ route.post('/report', upload.single('file'), async (req, res) =>
 
         const activeSemester = activeAcademic.academic_year;
 
-        const reports = rows.map(row => ({
-            sno: row.s_no,
+        await report.destroy({ where: {}, truncate: true });
+
+        const reports = rows.map(row => (
+        {
+            sno: row.s_no, 
+            staff_id: row.staff_id,
             course_code: row.course_code,
             category: row.category,
             section: row.section,
@@ -336,18 +346,23 @@ route.post('/report', upload.single('file'), async (req, res) =>
             cia_1: row.cia_1,
             cia_2: row.cia_2,
             ass_1: row.ass_1,
-            ass2: row.ass_2,
+            ass_2: row.ass_2, 
             ese: row.ese,
-            active_sem: activeSemester
+            l_c1: row.l_c1,
+            l_c2: row.l_c2,
+            l_a1: row.l_a1,
+            l_a2: row.l_a2,
+            l_ese: row.l_ese,
+            active_sem: activeSemester 
         }));
 
-        await report.bulkCreate(reports, {});
+        await report.bulkCreate(reports);
 
-        res.status(200).send('Report Data Imported Successfully');
-    }
+        res.status(200).send('Report Data Imported and Replaced Successfully');
+    } 
     catch (error) {
-        console.error(error);
-        res.status(500).send('An error occurred');
+        console.error('Error processing report upload:', error);
+        res.status(500).send('An error occurred while processing the report');
     }
 });
 

@@ -279,10 +279,12 @@ route.get('/download/report', async (req, res) =>
         const reportData = await report.findAll();
 
         const formattedData = [
-            ['STAFF_ID', 'COURSE_CODE', 'CATEGORY', 'SECTION', 'DEPT_NAME', 
-                'CIA_1', 'CIA_2', 'ASS_1', 'ASS_2', 'ESE', 
-                'L_C1', 'L_C2', 'L_A1', 'L_A2', 'L_ESE', 'ACTIVE_SEM'],
-            ...reportData.map(reports => [
+            ['sno', 'staff_id', 'course_code', 'category', 'section', 'dept_name', 
+             'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese', 
+             'l_c1', 'l_c2', 'l_a1', 'l_a2', 'l_ese', 'active_sem'],
+            ...reportData.map((reports, index) => 
+            [
+                index + 1,
                 reports.staff_id,
                 reports.course_code,
                 reports.category,
@@ -300,12 +302,14 @@ route.get('/download/report', async (req, res) =>
                 reports.l_ese,
                 reports.active_sem
             ])
-        ];
+        ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Report Data');
+
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+
         res.setHeader('Content-Disposition', 'attachment; filename = Report Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
@@ -314,6 +318,6 @@ route.get('/download/report', async (req, res) =>
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
-})
+});
 
 module.exports = route;
