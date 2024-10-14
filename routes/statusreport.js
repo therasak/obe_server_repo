@@ -40,12 +40,10 @@ route.post('/deptstatusreport', async (req, res) =>
             }
         })
         res.json(deptReportStatus);
-        console.log(deptReportStatus);
     }
     catch (err) {
         res.status(500).json({ error: 'An error occurred while Fetching Data.' });
     }
 })
-    
 
 module.exports = route;
