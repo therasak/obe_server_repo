@@ -33,10 +33,10 @@ app.use(bodyParser.json({ limit: '10mb' }));
 
 require('dotenv').config();
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 const clientUrl = process.env.CLIENT_URL;
 const secretKey = process.env.SECRET_KEY;
-
+console.log(clientUrl)
 // ------------------------------------------------------------------------------------------------------- //
 
 // Tables ( Model ) Synchronization Coding
