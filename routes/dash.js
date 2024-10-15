@@ -65,7 +65,16 @@ route.get('/studentpiechart', async (req, res) =>
             count: categoryCounts[key]
         }));
 
-        res.json({ data: result });
+        const aided = await studentmaster.count({ where: {
+            category: 'AIDED'
+        }})
+        const sfm = await studentmaster.count({ where: {
+            category: 'SFM'
+        }})
+        const sfw = await studentmaster.count({ where: {
+            category: 'SFW'
+        }})
+        res.json({ data: result, aided, sfm, sfw });
     }
     catch (error) {
         console.error('Error fetching student pie data:', error);
@@ -100,7 +109,16 @@ route.get('/staffpiechart', async (req, res) =>
             count: categoryCounts[key]
         }));
 
-        res.json({ data: result });
+        const aided = await staffmaster.count({ where: {
+            category: 'AIDED'
+        }})
+        const sfm = await staffmaster.count({ where: {
+            category: 'SFM'
+        }})
+        const sfw = await staffmaster.count({ where: {
+            category: 'SFW'
+        }})
+        res.json({ data: result, aided, sfm, sfw });
     }
     catch (error) {
         console.error('Error fetching staff pie data:', error);
