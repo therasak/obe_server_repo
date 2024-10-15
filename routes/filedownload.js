@@ -7,6 +7,7 @@ const report = require('../models/report');
 const studentmaster = require('../models/studentmaster');
 const staffmaster = require('../models/staffmaster');
 const markentry = require('../models/markentry');
+const scope = require('../models/scope');
 
 // ------------------------------------------------------------------------------------------------------- //
 
