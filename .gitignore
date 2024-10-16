@@ -1,3 +1,9 @@
+# Ignored Files
+
 models/dbconnection.js
-.evn
-node_modules
+
+.env
+
+node_modules/
+
+uploads/
