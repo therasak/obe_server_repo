@@ -16,6 +16,7 @@ const ScopeManage = require('./routes/scopemanage');
 const FileUpload = require('./routes/fileupload');
 const FileDownload = require('./routes/filedownload');
 const StatusReport = require('./routes/statusreport');
+const Settings = require('./routes/settings');
 
 const app = express();
 app.use(cors());
@@ -28,6 +29,7 @@ app.use('/api', ScopeManage);
 app.use('/api', FileUpload);
 app.use('/api', FileDownload);
 app.use('/api', StatusReport);
+app.use('/api', Settings);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
@@ -36,7 +38,7 @@ require('dotenv').config();
 const port = process.env.PORT || 5001;
 const clientUrl = process.env.CLIENT_URL;
 const secretKey = process.env.SECRET_KEY;
-console.log(clientUrl)
+
 // ------------------------------------------------------------------------------------------------------- //
 
 // Tables ( Model ) Synchronization Coding
@@ -402,12 +404,12 @@ app.put('/academic', async (req, res) =>
             res.json(academicupdate);
         }
         else {
-            res.status(404).json({ error: "Academic year not found" });
+            res.status(404).json({ error: "Academic Year Not Found" });
         }
     }
     catch (error) {
         console.error('Error: ', error);
-        res.status(500).json({ error: "Something went wrong with the server" });
+        res.status(500).json({ error: "Something went wrong with the Server" });
     }
 });
 

@@ -132,55 +132,36 @@ route.get('/staffpiechart', async (req, res) =>
 
 route.post('/componentreport', async (req, res) => 
 {
-    try 
-    {
-        const componentData = await report.findAll();
-        if (componentData) 
-        {
-            const courseCodes = componentData.map(data => data.course_code);
+    try {
+            const totalCount = await report.count();
             const cia_1 = await report.count({
                 where: {
-                    course_code: courseCodes,
                     cia_1: '2'
-                },
-                distinct: true,
-                col: 'course_code'
+                }
             });
             const cia_2 = await report.count({
                 where: {
-                    course_code: courseCodes,
                     cia_2: '2'
-                },
-                distinct: true,
-                col: 'course_code'
+                }
             });
             const ass_1 = await report.count({
                 where: {
-                    course_code: courseCodes,
+                
                     ass_1: '2'
-                },
-                distinct: true,
-                col: 'course_code'
+                }
             });
             const ass_2 = await report.count({
                 where: {
-                    course_code: courseCodes,
                     ass_2: '2'
                 },
-                distinct: true,
-                col: 'course_code'
             });
             const ese = await report.count({
                 where: {
-                    course_code: courseCodes,
                     ese: '2'
                 },
-                distinct: true,
-                col: 'course_code'
             });
-            res.json({cia_1, cia_2, ass_1, ass_2, ese});
+            res.json({cia_1, cia_2, ass_1, ass_2, ese, totalCount});
         }
-    }
     catch (error) {
         console.error('Error fetching counts:', error);
         res.status(500).json({ error: 'Internal Server Error' });
