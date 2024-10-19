@@ -560,3 +560,41 @@ app.put('/updatemarkrelease', async (req, res) =>
 });
 
 // ------------------------------------------------------------------------------------------------------- //
+// update staf
+app.put('/staffupdate',async (req,res)=>{
+    const {newstaffid,newstaffname,newpassword,newdept,newcategory}=req.body;
+    try{
+        const updated_staff = await staffmaster.update(
+            { staff_name:newstaffname, 
+              staff_pass:newpassword,
+              staff_dept:newdept,
+              category:newcategory
+            },
+
+            { where: { staff_id: newstaffid } }
+        );
+
+        res.json({ message: 'Staff updated successfully' })
+    }
+    catch(err){
+        console.log("error while update")
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+// delete staff
+
+app.post('/staffdelete', async (req,res)=>{
+    const {deletestaffid}=req.body;
+    console.log(deletestaffid);
+    try{
+        const deleteresult = await staffmaster.destroy({
+            where: { staff_id: deletestaffid }
+        });
+        res.json({message:"staff successfully delete"})
+    }
+    catch(err)
+    {
+        console.log(err,"delete error")
+    }
+})
