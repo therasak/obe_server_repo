@@ -28,17 +28,28 @@ route.post('/statusDeptName', async (req, res) =>
 
 // Department Status Report Fetching Coding
 
+
 route.post('/deptstatusreport', async (req, res) => 
 {
     const { academic_year, dept_name } = req.body;
+
     try 
     {
-        const deptReportStatus = await report.findAll({
-            where: { 
-                active_sem: academic_year,
-                dept_name : dept_name
-            }
-        })
+        let deptReportStatus;
+
+        if (dept_name === "ALL") {
+            deptReportStatus = await report.findAll({
+                where: { active_sem: academic_year }
+            })
+        } 
+        else {
+            deptReportStatus = await report.findAll({
+                where: { 
+                    active_sem: academic_year,
+                    dept_name: dept_name
+                }
+            })
+        }
         res.json(deptReportStatus);
     }
     catch (err) {
