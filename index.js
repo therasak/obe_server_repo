@@ -567,3 +567,42 @@ app.post('/staffdelete', async (req,res)=>{
         console.log(err,"delete error")
     }
 })
+
+
+app.post('/newstaff', async (req, res) => {
+    const { staff_id, staff_name, staff_dept, category, password, permissions } = req.body; // Include permissions
+
+    try {
+        // Create a new staff member
+        const newStaff = await staffmaster.create({
+            staff_id: staff_id,
+            staff_name: staff_name,
+            staff_dept: staff_dept,
+            category: category,
+            staff_pass: password
+        });
+
+        // Create a corresponding scope entry for permissions
+        const newScope = await scope.create({
+            staff_id: staff_id, // Link the permission to the staff ID
+            dashboard: permissions.dashboard ? 1 : 0,
+            course_list: permissions.course ? 1 : 0,
+            course_outcome: permissions.co ? 1 : 0, // Renamed for uniqueness
+            student_outcome: permissions.so ? 1 : 0, // Renamed for uniqueness
+            program_outcome: permissions.po ? 1 : 0, // Renamed for uniqueness
+            program_specific_outcome: permissions.pso ? 1 : 0,
+            mentor_report: permissions.tutor ? 1 : 0,
+            hod_report: permissions.hod ? 1 : 0,
+            report: permissions.report ? 1 : 0,
+            input_files: permissions.input ? 1 : 0,
+            manage: permissions.manage ? 1 : 0,
+            relationship_matrix: permissions.rsm ? 1 : 0,
+            settings: permissions.setting ? 1 : 0,
+        });
+
+        return res.json({ message: 'New staff and permissions added successfully' });
+    } catch (err) {
+        console.error('Error inserting data into the database:', err);
+        return res.status(500).json({ message: 'Database error' });
+    }
+});
