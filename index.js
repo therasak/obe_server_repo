@@ -439,24 +439,24 @@ app.get('/staffdetails', async (req, res) =>
 
 // Staff Creating Coding
 
-app.get('/reportdata', async (req, res) => {
-    try {
-        const reportData = await report.findAll({
-            include: [
-                {
-                    model: coursemapping,
-                    attributes: ['staff_name', 'course_id'],
-                    required: true, 
-                }
-            ],
-            attributes: ['staff_id', 'category', 'section', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'], 
-        });
-        res.json(reportData);
-    } catch (error) {
-        console.error("Error fetching report data:", error);
-        res.status(500).send({ success: false, error: "Failed to fetch report data" });
-    }
-});
+// app.get('/reportdata', async (req, res) => {
+//     try {
+//         const reportData = await report.findAll({
+//             include: [
+//                 {
+//                     model: coursemapping,
+//                     attributes: ['staff_name', 'course_id'],
+//                     required: true, 
+//                 }
+//             ],
+//             attributes: ['staff_id', 'category', 'section', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'], 
+//         });
+//         res.json(reportData);
+//     } catch (error) {
+//         console.error("Error fetching report data:", error);
+//         res.status(500).send({ success: false, error: "Failed to fetch report data" });
+//     }
+// });
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -604,5 +604,92 @@ app.post('/newstaff', async (req, res) => {
     } catch (err) {
         console.error('Error inserting data into the database:', err);
         return res.status(500).json({ message: 'Database error' });
+    }
+});
+
+app.get('/reportdata', async (req, res) => {
+    try {
+        const reportData = await report.findAll();
+        const staff = await coursemapping.findAll();
+        const matchData = reportData.map(match=>{
+            const matchStaff = staff.find(staff => staff.staff_id === match.staff_id);
+            if(matchStaff){
+                return{
+                    ...match.toJSON(),
+                    staff_name: matchStaff.staff_name,
+                    course_id: matchStaff.course_id
+                }   
+            }else{
+                return{
+                    ...match.toJSON(),
+                    staff_name: 'unknown',
+                    course_id: 'unknown'
+                }   
+            }
+        })
+        console.log(matchData);
+        const count = await report.count();
+        console.log(count)
+        res.json(matchData);
+    } catch (error) {
+        console.error("Error fetching report data:", error);
+        res.status(500).send({ success: false, error: "Failed to fetch report data" });
+    }
+});
+
+app.put('/reportrelease', async (req, res)=>{
+    const {dept_name,course_code, category, section, cia_1, cia_2, ass_1, ass_2, ese,} = req.body;
+    console.log(dept_name,course_code, section, cia_1, cia_2, ass_1, ass_2, ese)
+    try{
+        const update = await report.update({cia_1, cia_2, ass_1, ass_2, ese}, {where: {course_code, section, dept_name, category}})
+        if (update){
+            res.status(200)
+        }
+    }
+    catch(err){
+        console.error('Error for Updating')
+        res.status(500)
+    }
+   
+})
+app.put('/overallrelease', async (req, res) => {
+    const {l_cia1,l_cia2 , l_a1, l_a2, l_ese} =req.body;
+    console.log(l_cia1)
+    try{
+        const update = await report.update({l_c1 : l_cia1, l_c2 : l_cia2, l_a1 : l_a1, l_a2 : l_a2, l_ese : l_ese }, {where: {}})
+        if (update){
+            res.status(200)
+        }
+    }catch(err){
+        console.error('Error for Updating')
+        res.status(500)
+    }
+})
+
+
+app.post('/coursecode', async (req, res) => {
+    const { academic_year, staff_id } = req.body; 
+
+    try {
+        const courseMappings = await coursemapping.findAll({
+            where: { 
+                active_sem: academic_year,  
+                staff_id: staff_id           
+            },
+            attributes: ['course_code', 'active_sem']
+        });
+
+        if (courseMappings.length === 0) {
+            return res.status(404).json({ error: 'No course codes found for the given academic year and staff ID.' });
+        }
+
+        const courseDetails = courseMappings.map(item => ({
+            course_code: item.course_code,
+            active_sem: item.active_sem
+        }));
+
+        res.json(courseDetails);
+    } catch (err) {
+        res.status(500).json({ error: 'An error occurred while fetching course codes.' });
     }
 });
