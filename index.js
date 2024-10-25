@@ -691,7 +691,8 @@ app.post('/coursecode', async (req, res) => {
         }));
 
         res.json(uniqueCourseDetails);
-    } catch (err) {
+    } 
+    catch (err) {
         res.status(500).json({ error: 'An error occurred while fetching course codes.'});
 }
 });
