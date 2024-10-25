@@ -9,6 +9,7 @@ const report = require('./models/report');
 const markentry = require('./models/markentry');
 const coursemapping = require('./models/coursemapping');
 const academic = require('./models/academic');
+const rsmatrix = require('./models/rsmatrix');
 
 const DashBoard = require('./routes/dash');
 const CourseList = require('./routes/courselist');
@@ -17,6 +18,7 @@ const FileUpload = require('./routes/fileupload');
 const FileDownload = require('./routes/filedownload');
 const StatusReport = require('./routes/statusreport');
 const Settings = require('./routes/settings');
+const Rsmatrix = require('./routes/rsmatrix');
 
 const app = express();
 app.use(cors());
@@ -30,6 +32,7 @@ app.use('/api', FileUpload);
 app.use('/api', FileDownload);
 app.use('/api', StatusReport);
 app.use('/api', Settings);
+app.use('/api', Rsmatrix);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
@@ -55,7 +58,7 @@ const secretKey = process.env.SECRET_KEY;
 //         console.log('Studentmaster Table Synced');
 
 //         // // Synchronize the course model
-//         // await course.sync();
+//         // await rsmatrix.sync();
 //         // console.log('Course Table Synced');
 
 //         // Synchronize the academic model
@@ -70,16 +73,13 @@ const secretKey = process.env.SECRET_KEY;
 //         await scope.sync();
 //         console.log('Scope Table Synced');
 
-//         // // Synchronize the department model
-//         // await department.sync();
-//         // console.log('Deparment Table Synced');
 
-//         // Synchronize the markentry model
 //         await markentry.sync();
 //         console.log('Markentry Table Synced');
 
 //         // Synchronize the markentry model
 //         await report.sync();
+//         await rsmatrix.sync();
 //         console.log('Report Table Synced');
 //     }
 //     catch (error) {
@@ -643,7 +643,7 @@ app.put('/reportrelease', async (req, res)=>{
     try{
         const update = await report.update({cia_1, cia_2, ass_1, ass_2, ese}, {where: {course_code, section, dept_name, category}})
         if (update){
-            res.status(200)
+            res.status(200).json({ message: 'Update successful' });
         }
     }
     catch(err){
