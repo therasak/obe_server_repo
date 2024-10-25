@@ -683,13 +683,15 @@ app.post('/coursecode', async (req, res) => {
             return res.status(404).json({ error: 'No course codes found for the given academic year and staff ID.' });
         }
 
-        const courseDetails = courseMappings.map(item => ({
-            course_code: item.course_code,
-            active_sem: item.active_sem
+        const uniqueCourseDetails = Array.from(
+            new Set(courseMappings.map(item => item.course_code))
+        ).map(course_code => ({
+            course_code: course_code,
+            active_sem: courseMappings.find(item => item.course_code === course_code).active_sem
         }));
 
-        res.json(courseDetails);
+        res.json(uniqueCourseDetails);
     } catch (err) {
-        res.status(500).json({ error: 'An error occurred while fetching course codes.' });
-    }
+        res.status(500).json({ error: 'An error occurred while fetching course codes.'});
+}
 });
