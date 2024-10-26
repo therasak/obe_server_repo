@@ -612,7 +612,7 @@ app.get('/reportdata', async (req, res) => {
         const reportData = await report.findAll();
         const staff = await coursemapping.findAll();
         const matchData = reportData.map(match=>{
-            const matchStaff = staff.find(staff => staff.staff_id === match.staff_id);
+            const matchStaff = staff.find(staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code);
             if(matchStaff){
                 return{
                     ...match.toJSON(),
