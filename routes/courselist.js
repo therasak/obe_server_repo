@@ -29,6 +29,40 @@ route.post('/coursemap', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
+// Course Mapping Status Details Getting Coding
+
+route.post('/report/status', async (req, res) => 
+{
+    const { category, dept_name, degree, section, semester, course_code } = req.body;
+    try 
+    {
+        const courseMappingStatus = await report.findAll({
+            where: {
+                category: category,
+                dept_name: dept_name,
+                section: section,
+                course_code: course_code,
+            }
+        });
+        const isCompleted = courseMappingStatus.length > 0 &&
+        courseMappingStatus.every
+        (
+            (record) =>
+                record.cia_1 === 2 &&
+                record.cia_2 === 2 &&
+                record.ass_1 === 2 &&
+                record.ass_2 === 2
+        )
+        res.status(200).json({status: isCompleted ? 'Completed' : 'Pending',courseMappingStatus});
+        // console.log(courseMappingStatus);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'An error occurred while fetching data.' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
 // Students Data Fetching Coding
 
 route.post('/studentdetails', async (req, res) => 

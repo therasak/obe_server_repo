@@ -4,27 +4,38 @@ const rsmatrix = require('../models/rsmatrix');
 const academic = require('../models/academic');
 const coursemapping = require('../models/coursemapping');
 
-route.post('/rsmatrix', async (req, res) => {
+// ------------------------------------------------------------------------------------------------------- //
+
+// RS Matrix Create and Update Coding
+
+route.post('/rsmatrix', async (req, res) => 
+{
     const { course_code, scores, meanOverallScore, correlation } = req.body;
+
     const cm = await coursemapping.findOne({
         where: {
             course_code: course_code,
         }
     })
+
     const ac = await academic.findOne({
         where: {
             active_sem: 1,
         }
     })
-    console.log(course_code, scores, meanOverallScore, correlation)
-    console.log(scores.CO1_meanScore)
-    console.log(cm.course_id)
+
+    // console.log(course_code, scores, meanOverallScore, correlation)
+    // console.log(scores.CO1_meanScore)
+    // console.log(cm.course_id)
+
     const rsm = await rsmatrix.findOne({
         where: {
             course_code: course_code,
         }
     })
-    if (rsm) {
+
+    if (rsm) 
+    {
         const data = await rsmatrix.update({
             course_code: course_code,
             academic_year: ac.academic_year,
@@ -90,14 +101,17 @@ route.post('/rsmatrix', async (req, res) => {
             where: {
                 course_code: course_code
             }
-        });
+        })
+
         if (data) {
-            res.status(201).json({ message: 'Update successful' });
-        } else {
-            res.json({ message: 'error successful' });
+            res.status(201).json({ message: 'Update Successful' });
+        } 
+        else {
+            res.json({ message: 'Error Successful' });
         }
     }
-    else {
+    else 
+    {
         const data = await rsmatrix.create({
             course_code: course_code,
             academic_year: ac.academic_year,
@@ -161,34 +175,40 @@ route.post('/rsmatrix', async (req, res) => {
             olrel: correlation
         })
         if (data) {
-            res.status(200).json({ message: 'save successful' });
-        } else {
-            res.json({ message: 'error successful' });
+            res.status(200).json({ message: 'Saved Successful' });
+        } 
+        else {
+            res.json({ message: 'Error Successful' });
         }
     }
-
 })
 
-route.get('/rsmatrix/:course_code', async (req, res) => {
-    try {
+// ------------------------------------------------------------------------------------------------------- //
+
+// RS Matrix Create and Update Coding
+
+route.get('/rsmatrix/:course_code', async (req, res) => 
+{
+    try 
+    {
         const { course_code } = req.params;
 
         const ac = await academic.findOne({
             where: { active_sem: 1 }
-        });
+        })
 
         const matrixData = await rsmatrix.findOne({
             where: {
                 course_code,
                 academic_year: ac.academic_year,
             }
-        });
-        console.log(matrixData)
+        })
         res.status(200).json(matrixData);
-    } catch (error) {
-        console.error('Error fetching matrix data:', error);
-        res.status(500).json({ message: 'Error fetching matrix data' });
+    } 
+    catch (error) {
+        console.error('Error Fetching Matrix Data:', error);
+        res.status(500).json({ message: 'Error Fetching Matrix Data' });
     }
-});
+})
 
 module.exports = route;
