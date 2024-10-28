@@ -11,30 +11,32 @@ const coursemapping = require('./models/coursemapping');
 const academic = require('./models/academic');
 const rsmatrix = require('./models/rsmatrix');
 
-const dashboard = require('./routes/dash');
-const courselist = require('./routes/courselist');
-const scopemanage = require('./routes/scopemanage');
-const filupload = require('./routes/fileupload');
-const filedownload = require('./routes/filedownload');
-const statusreport = require('./routes/statusreport');
-const settings = require('./routes/settings');
-const rsmatrixdata = require('./routes/rsmatrix');
-const studentmanage = require('./routes/studentmanage');
+const DashBoard = require('./routes/dash');
+const CourseList = require('./routes/courselist');
+const ScopeManage = require('./routes/scopemanage');
+const FileUpload = require('./routes/fileupload');
+const FileDownload = require('./routes/filedownload');
+const StatusReport = require('./routes/statusreport');
+const Settings = require('./routes/settings');
+const Rsmatrix = require('./routes/rsmatrix');
+const Studentmanage = require('./routes/studentmanage');
+const CourseOutcome = require('./routes/course_outcome');
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
-app.use('/api', dashboard);
-app.use('/api', courselist);
-app.use('/api', scopemanage);
-app.use('/api', filupload);
-app.use('/api', filedownload);
-app.use('/api', statusreport);
-app.use('/api', settings);
-app.use('/api', rsmatrixdata);
-app.use('/api', studentmanage);
+app.use('/api', DashBoard);
+app.use('/api', CourseList);
+app.use('/api', ScopeManage);
+app.use('/api', FileUpload);
+app.use('/api', FileDownload);
+app.use('/api', StatusReport);
+app.use('/api', Settings);
+app.use('/api', Rsmatrix);
+app.use('/api', Studentmanage);
+app.use('/api', CourseOutcome);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
@@ -697,43 +699,4 @@ app.post('/coursecode', async (req, res) => {
     catch (err) {
         res.status(500).json({ error: 'An error occurred while fetching course codes.'});
 }
-});
-
-app.post('/allmatrixreport', async (req, res) => {
-    const { academic_year } = req.body;
-    // console.log(academic_year);
-    try {
-        const matrixAllReport = await coursemapping.findAll({
-            where: {
-                active_sem: academic_year,
-            }
-        });
-
-        if (!matrixAllReport) {
-            throw new Error('No matrix report found.');
-        }
-
-        const rsMatrix = await rsmatrix.findAll();
-
-        if (!rsMatrix) {
-            throw new Error('No rsmatrix data found.');
-        }
-
-
-        const reportWithStatus = matrixAllReport.map(report => {
-            const isCompleted = rsMatrix.some(matrix => matrix.course_code === report.course_code);
-            return {
-                ...report.dataValues,
-                status: isCompleted ? 'Completed' : 'Incomplete'
-            };
-        });
-
-        // console.log(reportWithStatus); 
-
-        res.json(reportWithStatus);
-    } 
-    catch (err) {
-        console.error('Error fetching data:', err); 
-        res.status(500).send('Error fetching data');
-    }
 });
