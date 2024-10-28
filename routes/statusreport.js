@@ -28,7 +28,6 @@ route.post('/statusDeptName', async (req, res) =>
 
 // Department Status Report Fetching Coding
 
-
 route.post('/deptstatusreport', async (req, res) => 
 {
     const { academic_year, dept_name } = req.body;

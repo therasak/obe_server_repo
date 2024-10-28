@@ -86,23 +86,27 @@ route.post('/staffmaster', upload.single('file'), async (req, res) =>
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet);
 
-        const staff = rows.map(row => ({
+        const staffData = rows.map(row => ({
             staff_id: row.staff_id,
             staff_name: row.staff_name,
             staff_pass: row.staff_pass,
             staff_dept: row.staff_dept,
             category: row.category
-        }));
+        }))
 
-        await staffmaster.bulkCreate(staff, {});
+        for (const staff of staffData) {
+            await staffmaster.upsert(staff, {
+                where: { staff_id: staff.staff_id }
+            })
+        }
 
-        res.status(200).send('Staff Master Data Imported Successfully');
+        res.status(200).send('Staff Master Data Imported and Updated Successfully');
     }
     catch (error) {
         console.error(error);
         res.status(500).send('An error occurred');
     }
-});
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 

@@ -238,7 +238,8 @@ route.put('/updateMark', async (req, res) =>
         }
         res.status(200).send({ success: true, message: 'Marks updated successfully' });
     }
-    catch (error) {
+    catch (error) 
+    {
         console.error("Error updating marks:", error);
         res.status(500).send({ success: false, error: "Failed to update marks" });
     }
@@ -331,7 +332,8 @@ route.put('/report', async (req, res) =>
 
         res.status(200).json({ cia_1, cia_2, ass_1, ass_2, ese });
     } 
-    catch (err) {
+    catch (err) 
+    {
         console.error(err);
         res.status(500).send('Internal Server Error');
     }

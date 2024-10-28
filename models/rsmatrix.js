@@ -250,7 +250,6 @@ const rsmatrix = sequelize_conn.define('rsmatrix',
         type: DataTypes.STRING,
         allowNull: true
     }
-
 },
 {
     timestamps: false,

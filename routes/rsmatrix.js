@@ -12,32 +12,30 @@ route.post('/rsmatrix', async (req, res) =>
 {
     const { course_code, scores, meanOverallScore, correlation } = req.body;
 
-    const cm = await coursemapping.findOne({
-        where: {
-            course_code: course_code,
-        }
+    if (!course_code || !scores || !meanOverallScore || !correlation) 
+    {
+        return res.status(400).json({ message: 'All Fields are Required.' });
+    }
+
+    const cm = await coursemapping.findOne(
+    {
+        where: { course_code: course_code }
     })
 
-    const ac = await academic.findOne({
-        where: {
-            active_sem: 1,
-        }
-    })
+    const ac = await academic.findOne(
+    {
+        where: { active_sem: 1 }
+    });
 
-    // console.log(course_code, scores, meanOverallScore, correlation)
-    // console.log(scores.CO1_meanScore)
-    // console.log(cm.course_id)
-
-    const rsm = await rsmatrix.findOne({
-        where: {
-            course_code: course_code,
-        }
-    })
+    const rsm = await rsmatrix.findOne(
+    {
+        where: { course_code: course_code }
+    });
 
     if (rsm) 
     {
-        const data = await rsmatrix.update({
-            course_code: course_code,
+        const data = await rsmatrix.update(
+        {
             academic_year: ac.academic_year,
             course_id: cm.course_id,
             co1_po1: scores.CO1_0,
@@ -98,21 +96,20 @@ route.post('/rsmatrix', async (req, res) =>
             mean: meanOverallScore,
             olrel: correlation
         }, {
-            where: {
-                course_code: course_code
-            }
-        })
+            where: { course_code: course_code }
+        });
 
         if (data) {
-            res.status(201).json({ message: 'Update Successful' });
+            res.status(200).json({ message: 'Update Successful' });
         } 
         else {
-            res.json({ message: 'Error Successful' });
+            res.status(500).json({ message: 'Error during update.' });
         }
-    }
+    } 
     else 
     {
-        const data = await rsmatrix.create({
+        const data = await rsmatrix.create(
+        {
             course_code: course_code,
             academic_year: ac.academic_year,
             course_id: cm.course_id,
@@ -175,10 +172,10 @@ route.post('/rsmatrix', async (req, res) =>
             olrel: correlation
         })
         if (data) {
-            res.status(200).json({ message: 'Saved Successful' });
+            res.status(201).json({ message: 'Saved Successful' });
         } 
         else {
-            res.json({ message: 'Error Successful' });
+            res.status(500).json({ message: 'Error during save.' });
         }
     }
 })

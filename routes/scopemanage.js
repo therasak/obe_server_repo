@@ -4,7 +4,6 @@ const scope = require('../models/scope');
 
 // ------------------------------------------------------------------------------------------------------- //
 
-
 // Scope Setting Coding
 
 route.get('/scopeset', async (req, res) => 

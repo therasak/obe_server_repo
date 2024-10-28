@@ -4,15 +4,14 @@ const studenmaster = require('../models/studentmaster');
 
 // ------------------------------------------------------------------------------------------------------- //
 
-
-// Student details fetching 
+// Student Details Fetching 
 
 route.get('/studetails', async (req, res) => 
-    {
-        const studata = await studenmaster.findAll();
-        res.json(studata);
-    })
+{
+    const studata = await studenmaster.findAll();
+    res.json(studata);
+})
 
-
+// ------------------------------------------------------------------------------------------------------- //
 
 module.exports = route;

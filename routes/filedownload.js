@@ -1,7 +1,6 @@
 const express = require ('express');
 const route = express.Router();
 const XLSX = require('xlsx');
-
 const coursemapping = require('../models/coursemapping');
 const report = require('../models/report');
 const studentmaster = require('../models/studentmaster');
@@ -20,8 +19,8 @@ route.get('/download/coursemap', async (req, res) =>
         const courseData = await coursemapping.findAll();
         
         const formattedData = [
-            ['Category', 'Batch', 'Course ID', 'Degree', 'Department Name', 'Semester', 
-                'Section', 'Course Code', 'Staff ID', 'Staff Name', 'Course Title', 'Active Semester'],
+            ['category', 'batch', 'course_id', 'degree', 'dept_name', 'semester', 
+                'section', 'course_code', 'staff_id', 'staff_name', 'course_title', 'active_sem'],
             ...courseData.map(course => [
                 course.category,
                 course.batch,
@@ -62,7 +61,7 @@ route.get('/download/staff', async (req, res) =>
     {
         const staffData = await staffmaster.findAll();
         const formattedData = [
-            ['Staff ID', 'Staff Name', 'Staff Password', 'Staff Department', 'Category'],
+            ['staff_id', 'staff_name', 'staff_pass', 'staff_dept', 'category'],
             ...staffData.map(staff =>
                 [
                     staff.staff_id,
@@ -98,8 +97,8 @@ route.get('/download/studentmaster', async (req, res) =>
         const studentData = await studentmaster.findAll();
 
         const formattedData = [
-            ['Registration No', 'Student Name', 'Course ID', 'Category', 'Semester', 
-                'Section', 'Batch', 'Mentor', 'EMIS', 'Active Semester'],
+            ['reg_no', 'stu_name', 'course_id', 'category', 'semester', 
+                'section', 'batch', 'mentor', 'emis', 'active_sem'],
             ...studentData.map(student => [
                 student.reg_no,
                 student.stu_name,
@@ -139,10 +138,10 @@ route.get('/download/scope', async (req, res) =>
         const scopeData = await scope.findAll();
 
         const formattedData = [
-            ['STAFF_ID', 'ROLE', 'DASHBOARD', 'COURSE_LIST', 'COURSE_OUTCOME', 
-                'STUDENT_OUTCOME', 'PROGRAM_OUTCOME', 'PROGRAM_SPECIFIC_OUTCOME', 
-                'MENTOR_REPORT', 'HOD_REPORT', 'REPORT', 'INPUT_FILES', 
-                'MANAGE', 'RELATIONSHIP_MATRIX', 'SETTINGS', 'LOGOUT'],
+            ['staff_id', 'role', 'dashboard', 'course_list', 'course_outcome', 
+                'student_outcome', 'program_outcome', 'program_specific_outcome', 
+                'mentor_report', 'hod_report', 'report', 'input_files', 
+                'manage', 'relationship_matrix', 'settings', 'logout'],
             ...scopeData.map(scope => [
                 scope.staff_id,
                 scope.role,
@@ -179,7 +178,6 @@ route.get('/download/scope', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-
 // Student Mark Entry Excel Download
 
 route.get('/download/mark', async (req, res) => 
@@ -188,8 +186,8 @@ route.get('/download/mark', async (req, res) =>
     {
         const markData = await markentry.findAll();
         const formattedData = [
-            ['SNO', 'BATCH', 'CATEGORY', 'COURSE_ID', 'REG_NO', 'COURSE_CODE', 'SEMESTER', 'C1_LOT', 'C1_HOT', 'C1_MOT', 'C1_TOTAL',
-                'C2_LOT', 'C2_HOT', 'C2_MOT', 'C2_TOTAL', 'A1_LOT', 'A2_LOT', 'ESE_LOT', 'ESE_HOT', 'ESE_MOT', 'ESE_TOTAL'],
+            ['s_no', 'batch', 'category', 'course_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_hot', 'c1_mot', 'c1_total',
+                'c2_lot', 'c2_hot', 'c2_mot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_hot', 'ese_mot', 'ese_total'],
 
             ...markData.map(student =>
                 [
@@ -242,8 +240,8 @@ route.get('/download/deptmarkentry', async (req, res) =>
         const markData = await markentry.findAll();
         
         const formattedData = [
-            ['Registration No', 'Course Code', 'Course ID', 'C1 LOT', 'C1 HOT', 
-                'C1 MOT', 'C1 Total'],
+            ['reg_no', 'course_code', 'course_id', 'c1_lot', 'c1_hot', 
+                'c1_mot', 'c1_total'],
             ...markData.map(entry => [
                 entry.reg_no,
                 entry.course_code,
