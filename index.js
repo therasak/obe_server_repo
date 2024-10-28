@@ -19,6 +19,7 @@ const FileDownload = require('./routes/filedownload');
 const StatusReport = require('./routes/statusreport');
 const Settings = require('./routes/settings');
 const Rsmatrix = require('./routes/rsmatrix');
+const Studentmanage = require('./routes/studentmanage');
 
 const app = express();
 app.use(cors());
@@ -33,6 +34,7 @@ app.use('/api', FileDownload);
 app.use('/api', StatusReport);
 app.use('/api', Settings);
 app.use('/api', Rsmatrix);
+app.use('/api', Studentmanage);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
