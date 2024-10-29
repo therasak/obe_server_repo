@@ -11,7 +11,7 @@ const studentmaster = require('../models/studentmaster');
 const staffmaster = require('../models/staffmaster');
 const markentry = require('../models/markentry');
 const scope = require('../models/scope');
-
+const mentor = require('../models/mentor');
 // ------------------------------------------------------------------------------------------------------- //
 
 // Course Mapping File Upload
@@ -367,6 +367,62 @@ route.post('/report', upload.single('file'), async (req, res) =>
     catch (error) {
         console.error('Error processing report upload:', error);
         res.status(500).send('An error occurred while processing the report');
+    }
+});
+
+module.exports = route;
+
+
+
+// ------------------------------------------------------------------------------------------------------- //
+
+//Mentor File Upload
+
+route.post('/mentor', upload.single('file'), async (req, res) => {
+    try {
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('File Upload Failed');
+        }
+
+        const workbook = XLSX.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        const activeAcademic = await academic.findOne({
+            where: { active_sem: 1 }
+        });
+
+        if (!activeAcademic) {
+            return res.status(400).send('No Active Academic Year Found');
+        }
+
+        const activeSemester = activeAcademic.academic_year;
+
+        await mentor.destroy({ where: {}, truncate: true });
+
+        const mentorData = rows.map(row => ({
+            sno: row.sno,
+            graduate: row.graduate,
+            course_id: row.course_id,
+            category: row.category,
+            degree: row.degree,
+            dept_name: row.dept_name,
+            section: row.section,
+            batch: row.batch,
+            staff_id: row.staff_id,
+            staff_name: row.staff_name,
+            active_sem: activeSemester
+        }));
+
+        await mentor.bulkCreate(mentorData);
+
+        res.status(200).send('Mentor Data Imported and Replaced Successfully');
+    } catch (error) {
+        console.error('Error processing mentor upload:', error);
+        res.status(500).send('An error occurred while processing the mentor');
     }
 });
 
