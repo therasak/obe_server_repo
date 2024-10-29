@@ -11,32 +11,32 @@ const coursemapping = require('./models/coursemapping');
 const academic = require('./models/academic');
 const rsmatrix = require('./models/rsmatrix');
 
-const DashBoard = require('./routes/dash');
-const CourseList = require('./routes/courselist');
-const ScopeManage = require('./routes/scopemanage');
-const FileUpload = require('./routes/fileupload');
-const FileDownload = require('./routes/filedownload');
-const StatusReport = require('./routes/statusreport');
-const Settings = require('./routes/settings');
-const Rsmatrix = require('./routes/rsmatrix');
-const Studentmanage = require('./routes/studentmanage');
-const CourseOutcome = require('./routes/course_outcome');
+const dashboard = require('./routes/dash');
+const courselist = require('./routes/courselist');
+const scopemanage = require('./routes/scopemanage');
+const fileupload = require('./routes/fileupload');
+const filedownload = require('./routes/filedownload');
+const statusreport = require('./routes/statusreport');
+const settings = require('./routes/settings');
+const rsmatrixall = require('./routes/rsmatrix');
+const studentmanage = require('./routes/studentmanage');
+const studentoutcome = require('./routes/studentoutcome');
 
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
-app.use('/api', DashBoard);
-app.use('/api', CourseList);
-app.use('/api', ScopeManage);
-app.use('/api', FileUpload);
-app.use('/api', FileDownload);
-app.use('/api', StatusReport);
-app.use('/api', Settings);
-app.use('/api', Rsmatrix);
-app.use('/api', Studentmanage);
-app.use('/api', CourseOutcome);
+app.use('/api', dashboard);
+app.use('/api', courselist);
+app.use('/api', scopemanage);
+app.use('/api', fileupload);
+app.use('/api', filedownload);
+app.use('/api', statusreport);
+app.use('/api', settings);
+app.use('/api', rsmatrixall);
+app.use('/api', studentmanage);
+app.use('/api', studentoutcome);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
@@ -699,4 +699,4 @@ app.post('/coursecode', async (req, res) => {
     catch (err) {
         res.status(500).json({ error: 'An error occurred while fetching course codes.'});
 }
-});
+})
