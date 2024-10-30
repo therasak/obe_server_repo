@@ -3,117 +3,117 @@ const sequelize_conn = require('./dbconnection');
 
 const calculation = sequelize_conn.define('calculation',
 {
-    s_no: {
+    s_no : {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
-    active_sem: {
+    active_sem : {
         type: DataTypes.STRING,
         allowNull: true
     },
-    c1lot: {
+    c1_lot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    c1mot: {
+    c1_mot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    c1hot: {
+    c1_hot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    c2lot: {
+    c2_lot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    c2mot: {
+    c2_mot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    c2hot: {
+    c2_hot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    a1lot: {
+    a1_lot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    a1mot: {
+    a1_mot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    a1mhot: {
+    a1_hot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    a2lot: {
+    a2_lot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    a2mot: {
+    a2_mot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    a2hot: {
+    a2_hot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    clot: {
+    c_lot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    cmot: {
+    c_mot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    chot: {
+    c_hot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    elot: {
+    e_lot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    emmot: {
+    e_mot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    ehot: {
+    e_hot : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    l1soug: {
+    so_l1_ug : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    l2soug: {
+    so_l2_ug : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    l3soug: {
+    so_l3_ug : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    l4soug: {
+    so_l4_ug : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    l1sopg: {
+    so_l1_pg : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    l2sopg: {
+    so_l2_pg : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    l3sopg: {
+    so_l3_pg : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    l4sopg: {
+    so_l4_pg : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
