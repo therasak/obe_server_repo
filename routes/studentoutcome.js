@@ -1,19 +1,25 @@
 const express = require('express');
 const route = express.Router();
-const markentry = require('../models/markentry'); 
-const studentmaster = require('../models/studentmaster'); 
-
+const markentry = require('../models/markentry');
+const studentmaster = require('../models/studentmaster');
 
 const getUniqueValues = (data, key) => {
     return [...new Set(data.map(entry => entry[key]))];
 };
 
-
 route.get('/markentry', async (req, res) => {
-    console.log('Received request for mark entries');
+    const { batch, active_sem, course_id, category } = req.query;
+
     try {
+        const where = {};
+        if (batch) where.batch = batch;
+        if (active_sem) where.active_sem = active_sem;
+        if (course_id) where.course_id = course_id;
+        if (category) where.category = category;
+
         const entries = await markentry.findAll({
-            attributes: ['batch', 'active_sem', 'course_id', 'category', 'course_code']
+            attributes: ['batch', 'active_sem', 'course_id', 'category', 'course_code'],
+            where
         });
 
         const uniqueEntries = {
@@ -21,9 +27,9 @@ route.get('/markentry', async (req, res) => {
             active_sem: getUniqueValues(entries, 'active_sem'),
             course_id: getUniqueValues(entries, 'course_id'),
             category: getUniqueValues(entries, 'category'),
-            course_code: getUniqueValues(entries, 'course_code'),
+            course_code: getUniqueValues(entries, 'course_code')
         };
-        
+
         res.json(uniqueEntries);
     } catch (error) {
         console.error('Error fetching mark entries:', error);
@@ -31,13 +37,12 @@ route.get('/markentry', async (req, res) => {
     }
 });
 
-
 route.get('/studentmaster', async (req, res) => {
     try {
         const students = await studentmaster.findAll({
             attributes: ['section']
         });
-        const uniqueSections = [...new Set(students.map(student => student.section))]; // Extract unique sections
+        const uniqueSections = [...new Set(students.map(student => student.section))];
         res.json(uniqueSections);
     } catch (error) {
         console.error('Error fetching student sections:', error);
@@ -45,8 +50,7 @@ route.get('/studentmaster', async (req, res) => {
     }
 });
 
-module.exports = route;
-
+module.exports=route;
 
 
 
