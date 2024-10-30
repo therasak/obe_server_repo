@@ -11,6 +11,7 @@ const coursemapping = require('./models/coursemapping');
 const academic = require('./models/academic');
 const rsmatrix = require('./models/rsmatrix');
 const mentor = require('./models/mentor');
+const calculation = require('./models/calculation');
 
 const dashboard = require('./routes/dash');
 const courselist = require('./routes/courselist');
@@ -88,6 +89,8 @@ const secretKey = process.env.SECRET_KEY;
 //         console.log('Report Table Synced');
 //            await mentor.sync();
 //            console.log('Mentor table Synced');
+//            await calculation.sync();
+//            console.log('Calculaiton Table Synced')
 //     }
 //     catch (error) {
 //         console.log('Error Occurred:', error.message);
