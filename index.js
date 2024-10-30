@@ -637,9 +637,9 @@ app.get('/reportdata', async (req, res) => {
                 }   
             }
         })
-        console.log(matchData);
+        // console.log(matchData);
         const count = await report.count();
-        console.log(count)
+        // console.log(count)
         res.json(matchData);
     } catch (error) {
         console.error("Error fetching report data:", error);
@@ -647,9 +647,9 @@ app.get('/reportdata', async (req, res) => {
     }
 });
 
-app.put('/reportrelease', async (req, res)=>{
+app.put('/reportrelease', async (req, res)=> {
     const {dept_name,course_code, category, section, cia_1, cia_2, ass_1, ass_2, ese,} = req.body;
-    console.log(dept_name,course_code, section, cia_1, cia_2, ass_1, ass_2, ese)
+    // console.log(dept_name,course_code, section, cia_1, cia_2, ass_1, ass_2, ese)
     try{
         const update = await report.update({cia_1, cia_2, ass_1, ass_2, ese}, {where: {course_code, section, dept_name, category}})
         if (update){
@@ -664,7 +664,7 @@ app.put('/reportrelease', async (req, res)=>{
 })
 app.put('/overallrelease', async (req, res) => {
     const {l_cia1,l_cia2 , l_a1, l_a2, l_ese} =req.body;
-    console.log(l_cia1)
+    // console.log(l_cia1)
     try{
         const update = await report.update({l_c1 : l_cia1, l_c2 : l_cia2, l_a1 : l_a1, l_a2 : l_a2, l_ese : l_ese }, {where: {}})
         if (update){
