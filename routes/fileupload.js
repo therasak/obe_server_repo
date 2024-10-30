@@ -12,6 +12,7 @@ const staffmaster = require('../models/staffmaster');
 const markentry = require('../models/markentry');
 const scope = require('../models/scope');
 const mentor = require('../models/mentor');
+
 // ------------------------------------------------------------------------------------------------------- //
 
 // Course Mapping File Upload
@@ -368,18 +369,16 @@ route.post('/report', upload.single('file'), async (req, res) =>
         console.error('Error processing report upload:', error);
         res.status(500).send('An error occurred while processing the report');
     }
-});
-
-module.exports = route;
-
-
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 
-//Mentor File Upload
+// Mentor File Upload
 
-route.post('/mentor', upload.single('file'), async (req, res) => {
-    try {
+route.post('/mentor', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
 
         if (!file) {
@@ -393,7 +392,7 @@ route.post('/mentor', upload.single('file'), async (req, res) => {
 
         const activeAcademic = await academic.findOne({
             where: { active_sem: 1 }
-        });
+        })
 
         if (!activeAcademic) {
             return res.status(400).send('No Active Academic Year Found');
@@ -403,7 +402,8 @@ route.post('/mentor', upload.single('file'), async (req, res) => {
 
         await mentor.destroy({ where: {}, truncate: true });
 
-        const mentorData = rows.map(row => ({
+        const mentorData = rows.map(row => (
+        {
             sno: row.sno,
             graduate: row.graduate,
             course_id: row.course_id,
@@ -415,13 +415,14 @@ route.post('/mentor', upload.single('file'), async (req, res) => {
             staff_id: row.staff_id,
             staff_name: row.staff_name,
             active_sem: activeSemester
-        }));
+        }))
 
         await mentor.bulkCreate(mentorData);
 
         res.status(200).send('Mentor Data Imported and Replaced Successfully');
-    } catch (error) {
-        console.error('Error processing mentor upload:', error);
+    } 
+    catch (error) {
+        console.error('Error Processing Mentor Upload:', error);
         res.status(500).send('An error occurred while processing the mentor');
     }
 });

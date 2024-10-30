@@ -319,54 +319,50 @@ route.get('/download/report', async (req, res) =>
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
-});
-
-module.exports = route;
-
-
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Mentor Excel Download
 
 route.get('/download/mentor', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const mentorData = await mentor.findAll();
-    
-            const formattedData = [
-                ['sno', 'graduate', 'course_code', 'category','degree','dept_name','section','batch','staff_id','staff_name', 'active_sem'],
-                ...mentorData.map((mentor, index) => 
-                [
-                    index + 1,
-                    mentor.graduate,
-                    mentor.course_code,
-                    mentor.category,
-                    mentor.degree,
-                    mentor.dept_name,                    
-                    mentor.section,
-                    mentor.batch,
-                    mentor.staff_id,            
-                    mentor.staff_name,
-                    mentor.active_sem
-                ])
-            ]
-    
-            const ws = XLSX.utils.aoa_to_sheet(formattedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Mentor Data');
-    
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-    
-            res.setHeader('Content-Disposition', 'attachment; filename = Mentor Data.xlsx');
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            res.send(excelBuffer);
-        } 
-        catch (error) {
-            console.error('Error generating Excel file:', error);
-            res.status(500).send('Server error');
-        }
-    });
-    
-    module.exports = route;
+        const mentorData = await mentor.findAll();
+
+        const formattedData = [
+            ['sno', 'graduate', 'course_code', 'category','degree','dept_name','section','batch','staff_id','staff_name', 'active_sem'],
+            ...mentorData.map((mentor, index) => 
+            [
+                index + 1,
+                mentor.graduate,
+                mentor.course_code,
+                mentor.category,
+                mentor.degree,
+                mentor.dept_name,                    
+                mentor.section,
+                mentor.batch,
+                mentor.staff_id,            
+                mentor.staff_name,
+                mentor.active_sem
+            ])
+        ]
+
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Mentor Data');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+
+        res.setHeader('Content-Disposition', 'attachment; filename = Mentor Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } 
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+})
+
+module.exports = route;

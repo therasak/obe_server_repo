@@ -1,7 +1,8 @@
 const { DataTypes } = require('sequelize');
 const sequelize_conn = require('./dbconnection');
 
-const mentor = sequelize_conn.define('mentor', {
+const mentor = sequelize_conn.define('mentor', 
+{
     s_no: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -48,7 +49,8 @@ const mentor = sequelize_conn.define('mentor', {
         type: DataTypes.STRING,
         allowNull: true 
     }
-}, {
+}, 
+{
     timestamps: false,
     freezeTableName: true
 });
