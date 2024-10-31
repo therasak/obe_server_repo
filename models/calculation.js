@@ -85,6 +85,10 @@ const calculation = sequelize_conn.define('calculation',
         type: DataTypes.INTEGER,
         allowNull: true
     },
+    so_l0_ug : {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
     so_l1_ug : {
         type: DataTypes.INTEGER,
         allowNull: true
@@ -97,7 +101,7 @@ const calculation = sequelize_conn.define('calculation',
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    so_l4_ug : {
+    so_l0_pg : {
         type: DataTypes.INTEGER,
         allowNull: true
     },
@@ -110,10 +114,6 @@ const calculation = sequelize_conn.define('calculation',
         allowNull: true
     },
     so_l3_pg : {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    so_l4_pg : {
         type: DataTypes.INTEGER,
         allowNull: true
     },

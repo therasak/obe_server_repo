@@ -25,6 +25,7 @@ const studentmanage = require('./routes/studentmanage');
 const staffmanage = require('./routes/staffmanage');
 const markrelease = require('./routes/markrelease');
 const studentoutcome = require('./routes/studentoutcome');
+const markmanage = require('./routes/markmanage');
 
 const app = express();
 app.use(cors());
@@ -43,6 +44,7 @@ app.use('/api', studentmanage);
 app.use('/api', staffmanage);
 app.use('/api', studentoutcome);
 app.use('/api', markrelease);
+app.use('/api', markmanage);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
@@ -100,9 +102,9 @@ const secretKey = process.env.SECRET_KEY;
 //         // await mentor.sync();
 //         // console.log('Mentor Table Synced');
 
-//         // // Synchronize the Rs Mentor Model
-//         // await calculation.sync();
-//         // console.log('Calculaiton Table Synced')
+//         // Synchronize the Rs Mentor Model
+//         await calculation.sync();
+//         console.log('Calculaiton Table Synced');
 //     }
 //     catch (error) {
 //         console.log('Error Occurred:', error.message);
