@@ -22,6 +22,8 @@ const statusreport = require('./routes/statusreport');
 const settings = require('./routes/settings');
 const rsmatrixall = require('./routes/rsmatrix');
 const studentmanage = require('./routes/studentmanage');
+const staffmanage = require('./routes/staffmanage');
+const markrelease = require('./routes/markrelease');
 const studentoutcome = require('./routes/studentoutcome');
 
 const app = express();
@@ -38,7 +40,9 @@ app.use('/api', statusreport);
 app.use('/api', settings);
 app.use('/api', rsmatrixall);
 app.use('/api', studentmanage);
+app.use('/api', staffmanage);
 app.use('/api', studentoutcome);
+app.use('/api', markrelease);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
@@ -54,43 +58,51 @@ const secretKey = process.env.SECRET_KEY;
 
 // async function dbconncheck() 
 // {
-//     try {
-//         // Synchronize the staffmaster model
-//         await staffmaster.sync();
-//         console.log('Staffmaster Table Synced');
+//     try 
+//     {
+//         // // Synchronize the Staff Master Model
+//         // await staffmaster.sync();
+//         // console.log('Staffmaster Table Synced');
 
-//         // Synchronize the studentmaster model
-//         await studentmaster.sync();
-//         console.log('Studentmaster Table Synced');
+//         // // Synchronize the Student Master Model
+//         // await studentmaster.sync();
+//         // console.log('Studentmaster Table Synced');
 
-//         // // Synchronize the course model
+//         // // Synchronize the Rsmatrix Model
 //         // await rsmatrix.sync();
 //         // console.log('Course Table Synced');
 
-//         // Synchronize the academic model
-//         await academic.sync();
-//         console.log('Academic Table Synced');
+//         // // Synchronize the Academic Model
+//         // await academic.sync();
+//         // console.log('Academic Table Synced');
 
-//         // Synchronize the coursemapping model
-//         await coursemapping.sync();
-//         console.log('Course Mapping Table Synced');
+//         // // Synchronize the Coursemapping Model
+//         // await coursemapping.sync();
+//         // console.log('Course Mapping Table Synced');
 
-//         // Synchronize the scope model
-//         await scope.sync();
-//         console.log('Scope Table Synced');
+//         // // Synchronize the Scope Model
+//         // await scope.sync();
+//         // console.log('Scope Table Synced');
 
+//         // // Synchronize the Mark Entry Model
+//         // await markentry.sync();
+//         // console.log('Markentry Table Synced');
 
-//         await markentry.sync();
-//         console.log('Markentry Table Synced');
+//         // // Synchronize the Report Model
+//         // await report.sync();
+//         // console.log('Report Table Synced');
 
-//         // Synchronize the markentry model
-//         await report.sync();
-//         await rsmatrix.sync();
-//         console.log('Report Table Synced');
-//            await mentor.sync();
-//            console.log('Mentor table Synced');
-//            await calculation.sync();
-//            console.log('Calculaiton Table Synced')
+//         // // Synchronize the Rs Matrix Model
+//         // await rsmatrix.sync();
+//         // console.log('Rs Matrix Table Synced');
+        
+//         // // Synchronize the Rs Mentor Model
+//         // await mentor.sync();
+//         // console.log('Mentor Table Synced');
+
+//         // // Synchronize the Rs Mentor Model
+//         // await calculation.sync();
+//         // console.log('Calculaiton Table Synced')
 //     }
 //     catch (error) {
 //         console.log('Error Occurred:', error.message);
@@ -436,273 +448,3 @@ app.post('/activesem', async (req, res) =>
 })
   
 // ------------------------------------------------------------------------------------------------------- //
-
-// Staff Details Fetching Coding
-
-app.get('/staffdetails', async (req, res) => 
-{
-    const staffDetails = await staffmaster.findAll();
-    res.json(staffDetails);
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-// Staff Creating Coding
-
-// app.get('/reportdata', async (req, res) => {
-//     try {
-//         const reportData = await report.findAll({
-//             include: [
-//                 {
-//                     model: coursemapping,
-//                     attributes: ['staff_name', 'course_id'],
-//                     required: true, 
-//                 }
-//             ],
-//             attributes: ['staff_id', 'category', 'section', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'], 
-//         });
-//         res.json(reportData);
-//     } catch (error) {
-//         console.error("Error fetching report data:", error);
-//         res.status(500).send({ success: false, error: "Failed to fetch report data" });
-//     }
-// });
-
-// ------------------------------------------------------------------------------------------------------- //
-
-// Update Report
-    
-app.put('/updatereport', async (req, res) => 
-{
-    const { updates } = req.body;
-    const staffIds = Object.keys(updates);
-
-    try 
-    {
-        for (const staffId of staffIds) 
-        {
-            const updateData = updates[staffId];
-            const updateFields = {
-                cia_1: updateData.cia_1 ? 1 : 0,
-                cia_2: updateData.cia_2 ? 1 : 0,
-                ass_1: updateData.ass_1 ? 1 : 0,
-                ass_2: updateData.ass_2 ? 1 : 0,
-                ese: updateData.ese ? 1 : 0
-            };
-
-            await markRelease.update(updateFields, {
-                where: { staff_id: staffId }
-            })
-        }
-        res.status(200).send({ success: true, message: 'Data updated successfully' });
-    } 
-    catch (error) {
-        console.error("Error updating data:", error);
-        res.status(500).send({ success: false, error: "Failed to update data" });
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-// Update Mark Release
-
-app.put('/updatemarkrelease', async (req, res) => 
-{
-    const { updates } = req.body;
-    const regNumbers = Object.keys(updates);
-
-    try 
-    {
-        for (const regNo of regNumbers) 
-        {
-            const updateData = updates[regNo];
-            
-            let updateFields = {
-                cia_1: updateData.cia_1,
-                cia_2: updateData.cia_2,
-                ass_1: updateData.ass_1,
-                ass_2: updateData.ass_2,
-                ese: updateData.ese
-            };
-
-            await report.update(updateFields, {
-                where: { staff_id: regNo } 
-            });
-        }
-
-        res.status(200).send({ success: true, message: 'Mark release data updated successfully' });
-    } 
-    catch (error) {
-        console.error("Error updating mark release:", error);
-        res.status(500).send({ success: false, error: "Failed to update mark release data" });
-    }
-});
-
-// ------------------------------------------------------------------------------------------------------- //
-// update staf
-app.put('/staffupdate',async (req,res)=>{
-    const {newstaffid,newstaffname,newpassword,newdept,newcategory}=req.body;
-    try{
-        const updated_staff = await staffmaster.update(
-            { staff_name:newstaffname, 
-              staff_pass:newpassword,
-              staff_dept:newdept,
-              category:newcategory
-            },
-
-            { where: { staff_id: newstaffid } }
-        );
-
-        res.json({ message: 'Staff updated successfully' })
-    }
-    catch(err){
-        console.log("error while update")
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-// delete staff
-
-app.post('/staffdelete', async (req,res)=>{
-    const {deletestaffid}=req.body;
-    console.log(deletestaffid);
-    try{
-        const deleteresult = await staffmaster.destroy({
-            where: { staff_id: deletestaffid }
-        });
-        res.json({message:"staff successfully delete"})
-    }
-    catch(err)
-    {
-        console.log(err,"delete error")
-    }
-})
-
-
-app.post('/newstaff', async (req, res) => {
-    const { staff_id, staff_name, staff_dept, category, password, permissions } = req.body; // Include permissions
-
-    try {
-        // Create a new staff member
-        const newStaff = await staffmaster.create({
-            staff_id: staff_id,
-            staff_name: staff_name,
-            staff_dept: staff_dept,
-            category: category,
-            staff_pass: password
-        });
-
-        // Create a corresponding scope entry for permissions
-        const newScope = await scope.create({
-            staff_id: staff_id, // Link the permission to the staff ID
-            dashboard: permissions.dashboard ? 1 : 0,
-            course_list: permissions.course ? 1 : 0,
-            course_outcome: permissions.co ? 1 : 0, // Renamed for uniqueness
-            student_outcome: permissions.so ? 1 : 0, // Renamed for uniqueness
-            program_outcome: permissions.po ? 1 : 0, // Renamed for uniqueness
-            program_specific_outcome: permissions.pso ? 1 : 0,
-            mentor_report: permissions.tutor ? 1 : 0,
-            hod_report: permissions.hod ? 1 : 0,
-            report: permissions.report ? 1 : 0,
-            input_files: permissions.input ? 1 : 0,
-            manage: permissions.manage ? 1 : 0,
-            relationship_matrix: permissions.rsm ? 1 : 0,
-            settings: permissions.setting ? 1 : 0,
-        });
-
-        return res.json({ message: 'New staff and permissions added successfully' });
-    } catch (err) {
-        console.error('Error inserting data into the database:', err);
-        return res.status(500).json({ message: 'Database error' });
-    }
-});
-
-app.get('/reportdata', async (req, res) => {
-    try {
-        const reportData = await report.findAll();
-        const staff = await coursemapping.findAll();
-        const matchData = reportData.map(match=>{
-            const matchStaff = staff.find(staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code);
-            if(matchStaff){
-                return{
-                    ...match.toJSON(),
-                    staff_name: matchStaff.staff_name,
-                    course_id: matchStaff.course_id
-                }   
-            }else{
-                return{
-                    ...match.toJSON(),
-                    staff_name: 'unknown',
-                    course_id: 'unknown'
-                }   
-            }
-        })
-        // console.log(matchData);
-        const count = await report.count();
-        // console.log(count)
-        res.json(matchData);
-    } catch (error) {
-        console.error("Error fetching report data:", error);
-        res.status(500).send({ success: false, error: "Failed to fetch report data" });
-    }
-});
-
-app.put('/reportrelease', async (req, res)=> {
-    const {dept_name,course_code, category, section, cia_1, cia_2, ass_1, ass_2, ese,} = req.body;
-    // console.log(dept_name,course_code, section, cia_1, cia_2, ass_1, ass_2, ese)
-    try{
-        const update = await report.update({cia_1, cia_2, ass_1, ass_2, ese}, {where: {course_code, section, dept_name, category}})
-        if (update){
-            res.status(200).json({ message: 'Update successful' });
-        }
-    }
-    catch(err){
-        console.error('Error for Updating')
-        res.status(500)
-    }
-   
-})
-app.put('/overallrelease', async (req, res) => {
-    const {l_cia1,l_cia2 , l_a1, l_a2, l_ese} =req.body;
-    // console.log(l_cia1)
-    try{
-        const update = await report.update({l_c1 : l_cia1, l_c2 : l_cia2, l_a1 : l_a1, l_a2 : l_a2, l_ese : l_ese }, {where: {}})
-        if (update){
-            res.status(200)
-        }
-    }catch(err){
-        console.error('Error for Updating')
-        res.status(500)
-    }
-})
-
-
-app.post('/coursecode', async (req, res) => {
-    const { academic_year, staff_id } = req.body; 
-
-    try {
-        const courseMappings = await coursemapping.findAll({
-            where: { 
-                active_sem: academic_year,  
-                staff_id: staff_id           
-            },
-            attributes: ['course_code', 'active_sem']
-        });
-
-        if (courseMappings.length === 0) {
-            return res.status(404).json({ error: 'No course codes found for the given academic year and staff ID.' });
-        }
-
-        const uniqueCourseDetails = Array.from(
-            new Set(courseMappings.map(item => item.course_code))
-        ).map(course_code => ({
-            course_code: course_code,
-            active_sem: courseMappings.find(item => item.course_code === course_code).active_sem
-        }));
-
-        res.json(uniqueCourseDetails);
-    } 
-    catch (err) {
-        res.status(500).json({ error: 'An error occurred while fetching course codes.'});
-}
-})

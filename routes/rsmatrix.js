@@ -6,6 +6,42 @@ const coursemapping = require('../models/coursemapping');
 
 // ------------------------------------------------------------------------------------------------------- //
 
+// RS Matrix Course Code Finding Coding
+
+route.post('/rsmcoursecode', async (req, res) => 
+{
+    const { academic_year, staff_id } = req.body; 
+
+    try 
+    {
+        const courseMappings = await coursemapping.findAll(
+        {
+            where: { 
+                active_sem: academic_year,  
+                staff_id: staff_id           
+            },
+            attributes: ['course_code', 'active_sem']
+        })
+
+        if (courseMappings.length === 0) {
+            return res.status(404).json({ error: 'No course codes found for the given academic year and staff ID.' });
+        }
+
+        const uniqueCourseDetails = Array.from(
+            new Set(courseMappings.map(item => item.course_code))
+        ).map(course_code => ({
+            course_code: course_code,
+            active_sem: courseMappings.find(item => item.course_code === course_code).active_sem
+        }))
+        res.json(uniqueCourseDetails);
+    } 
+    catch (err) {
+        res.status(500).json({ error: 'An error occurred while fetching course codes.'});
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
 // RS Matrix Create and Update Coding
 
 route.post('/rsmatrix', async (req, res) => 
