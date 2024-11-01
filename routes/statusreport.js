@@ -1,4 +1,4 @@
-const express = require ('express');
+const express = require('express');
 const route = express.Router();
 const report = require('../models/report');
 const coursemapping = require('../models/coursemapping');
@@ -11,7 +11,7 @@ const rsmatrix = require('../models/rsmatrix');
 route.post('/statusDeptName', async (req, res) => 
 {
     const { academicYear } = req.body;
-    
+
     try 
     {
         const reportDeptMapping = await report.findAll({
@@ -19,7 +19,7 @@ route.post('/statusDeptName', async (req, res) =>
             attributes: ['dept_name']
         })
         const uniqueDeptNames = [...new Set(reportDeptMapping.map(item => item.dept_name))];
-        res.json(uniqueDeptNames); 
+        res.json(uniqueDeptNames);
     }
     catch (err) {
         res.status(500).json({ error: 'An error occurred while Fetching Data.' });
@@ -38,21 +38,43 @@ route.post('/deptstatusreport', async (req, res) =>
     {
         let deptReportStatus;
 
-        if (dept_name === "ALL") {
-            deptReportStatus = await report.findAll({
+        if (dept_name === "ALL") 
+        {
+            const reportData = await report.findAll({
                 where: { active_sem: academic_year }
+            });
+            const staff = await coursemapping.findAll();
+            deptReportStatus = reportData.map(match => 
+            {
+                const matchStaff = staff.find(staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code);
+                return {
+                    ...match.toJSON(),
+                    staff_name: matchStaff ? matchStaff.staff_name : 'unknown',
+                    course_id: matchStaff ? matchStaff.course_id : 'unknown'
+                }
             })
         } 
-        else {
-            deptReportStatus = await report.findAll({
-                where: { 
+        else 
+        {
+            reportData = await report.findAll({
+                where: {
                     active_sem: academic_year,
                     dept_name: dept_name
                 }
             })
+            const staff = await coursemapping.findAll();
+            deptReportStatus = reportData.map(match => 
+            {
+                const matchStaff = staff.find(staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code);
+                return {
+                    ...match.toJSON(),
+                    staff_name: matchStaff ? matchStaff.staff_name : 'unknown',
+                    course_id: matchStaff ? matchStaff.course_id : 'unknown'
+                }
+            })
         }
         res.json(deptReportStatus);
-    }
+    } 
     catch (err) {
         res.status(500).json({ error: 'An error occurred while Fetching Data.' });
     }
@@ -65,6 +87,7 @@ route.post('/deptstatusreport', async (req, res) =>
 route.post('/allmatrixreport', async (req, res) => 
 {
     const { academic_year } = req.body;
+
     try 
     {
         const matrixAllReport = await coursemapping.findAll({
@@ -92,9 +115,9 @@ route.post('/allmatrixreport', async (req, res) =>
             }
         })
         res.json(reportWithStatus);
-    } 
+    }
     catch (err) {
-        console.error('Error fetching data:', err); 
+        console.error('Error fetching data:', err);
         res.status(500).send('Error fetching data');
     }
 })
