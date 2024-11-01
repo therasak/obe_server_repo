@@ -10,33 +10,43 @@ const coursemapping = require('../models/coursemapping');
 
 route.post('/rsmcoursecode', async (req, res) => 
 {
-    const { academic_year, staff_id } = req.body; 
+    const { academic_year, staff_id } = req.body;
 
     try 
     {
-        const courseMappings = await coursemapping.findAll(
-        {
+        const courseMappings = await coursemapping.findAll({
             where: { 
-                active_sem: academic_year,  
-                staff_id: staff_id           
+                active_sem: academic_year,
+                staff_id: staff_id
             },
             attributes: ['course_code', 'active_sem']
         })
 
         if (courseMappings.length === 0) {
-            return res.status(404).json({ error: 'No course codes found for the given academic year and staff ID.' });
+            return res.status(404).json({ error: 'No Course Codes found for the giveN Staff ID.' });
         }
+        const seenCourseCodes = new Set();
 
-        const uniqueCourseDetails = Array.from(
-            new Set(courseMappings.map(item => item.course_code))
-        ).map(course_code => ({
-            course_code: course_code,
-            active_sem: courseMappings.find(item => item.course_code === course_code).active_sem
-        }))
+        const courseStatusPromises = courseMappings.map(async (item) => 
+        {
+            if (seenCourseCodes.has(item.course_code)) return null;
+
+            seenCourseCodes.add(item.course_code);
+
+            const courseExists = await rsmatrix.findOne({
+                where: { course_code: item.course_code },
+            })
+            return {
+                course_code: item.course_code,
+                active_sem: item.active_sem,
+                completed: !!courseExists, 
+            }
+        })
+        const uniqueCourseDetails = (await Promise.all(courseStatusPromises)).filter(Boolean);
         res.json(uniqueCourseDetails);
     } 
     catch (err) {
-        res.status(500).json({ error: 'An error occurred while fetching course codes.'});
+        res.status(500).json({ error: 'An error occurred while fetching course codes with status.' });
     }
 })
 
