@@ -2,6 +2,8 @@ const express = require('express');
 const route = express.Router();
 const markentry = require('../models/markentry');
 const studentmaster = require('../models/studentmaster');
+const calculation = require('../models/calculation');
+const academic = require('../models/academic');
 
 const getUniqueValues = (data, key) => {
     return [...new Set(data.map(entry => entry[key]))];
@@ -50,7 +52,121 @@ route.get('/studentmaster', async (req, res) => {
     }
 });
 
-module.exports=route;
+route.get('/studOutcome', async (req, res) => {
+    const {
+        selectedBatch,
+        selectedSem,
+        selectedCourseId,
+        selectedCategory,
+        selectedCourseCode,
+        selectedSection
+    } = req.query;
+
+    console.log(selectedBatch, selectedSem, selectedCourseId, selectedCategory, selectedCourseCode, selectedSection);
+
+    try {
+        const students = await studentmaster.findAll({
+            where: {
+                batch: selectedBatch,
+                course_id: selectedCourseId,
+                category: selectedCategory,
+                section: selectedSection
+            },
+            attributes: ['reg_no']
+        });
+
+        const stud_regs = students.map(student => student.reg_no);
+
+        const marks = await markentry.findAll({
+            where: {
+                reg_no: stud_regs,
+                course_code: selectedCourseCode,
+                active_sem: selectedSem
+            }
+        });
+
+        const academicdata = await academic.findOne({
+            where: { active_sem: 1 }
+        });
+        const cal = await calculation.findOne({
+            where: { active_sem: academicdata.academic_year }
+        });
+        const calculatedData = await Promise.all(marks.map(async entry => {
+            let {
+                c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0, ese_lot = 0,
+                c1_mot = 0, c2_mot = 0, ese_mot = 0,
+                c1_hot = 0, c2_hot = 0, ese_hot = 0
+            } = entry.dataValues;
+            
+            const lot_total = (cal.c1_lot || 0) + (cal.c2_lot || 0) + (cal.a1_lot || 0) + (cal.a2_lot || 0);
+            const mot_total = (cal.c1_mot || 0) + (cal.c2_mot || 0);
+            const hot_total = (cal.c1_hot || 0) + (cal.c2_hot || 0);
+        
+            const lot_percentage = ((c1_lot || 0) + (c2_lot || 0) + (a1_lot || 0) + (a2_lot || 0)) / (lot_total || 1) * 100;
+            const mot_percentage = ((c1_mot || 0) + (c2_mot || 0)) / (mot_total || 1) * 100;
+            const hot_percentage = ((c1_hot || 0) + (c2_hot || 0)) / (hot_total || 1) * 100;
+            const elot_percentage = (ese_lot || 0) / 25 * 100;
+            const emot_percentage = (ese_mot || 0) / 40 * 100;
+            const ehot_percentage = (ese_hot || 0) / 10 * 100;
+        
+            console.log(`LOT Percentage: ${lot_percentage}, MOT Percentage: ${mot_percentage}, HOT Percentage: ${hot_percentage}`);
+        
+            return {
+                ...entry.dataValues,
+                lot_percentage: await calculateCategory(lot_percentage),
+                mot_percentage: await calculateCategory(mot_percentage),
+                hot_percentage: await calculateCategory(hot_percentage),
+                elot_percentage: await calculateCategory(elot_percentage),
+                emot_percentage: await calculateCategory(emot_percentage),
+                ehot_percentage: await calculateCategory(ehot_percentage),
+            };
+        }));
+        console.log(calculatedData);
+        res.json(calculatedData);
+
+    } catch (error) {
+        console.error('Error fetching student sections:', error);
+        res.status(500).json({ message: 'Error fetching student sections' });
+    }
+});
+
+async function calculateCategory(percentage) {
+    try {
+        const academicdata = await academic.findOne({
+            where: { active_sem: 1 }
+        });
+
+        if (!academicdata) {
+            console.error("Academic data not found");
+            return null;
+        }
+
+        const data = await calculation.findOne({
+            where: { active_sem: academicdata.academic_year }
+        });
+
+        if (!data) {
+            console.error("Calculation data not found for the specified academic year");
+            return null;
+        }
+
+        if (percentage > data.so_l3_ug) {
+            return 3;
+        } else if (percentage > data.so_l2_ug) {
+            return 2;
+        } else if (percentage > data.so_l1_ug) {
+            return 1;
+        } else if (percentage > data.so_l0_ug) {
+            return 0;
+        }
+        return 0;
+
+    } catch (error) {
+        console.error('Error fetching academic or calculation data:', error);
+    }
+}
+
+module.exports = route;
 
 
 
@@ -65,7 +181,7 @@ module.exports=route;
 
 
 
-// const express = require('express'); 
+// const express = require('express');
 // const route = express.Router();
 // const markentry = require('../models/markentry');
 // const academic = require('../models/academic');
@@ -73,10 +189,10 @@ module.exports=route;
 // function calculateCategory(percentage) {
 //     if (percentage > 80) {
 //         return 3;
-//     } 
+//     }
 //     else if (percentage > 60) {
 //         return 2;
-//     } 
+//     }
 //     else if (percentage > 10){
 //         return 1;
 //     }
