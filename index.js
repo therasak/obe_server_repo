@@ -72,10 +72,6 @@ const secretKey = process.env.SECRET_KEY;
 //         // await studentmaster.sync();
 //         // console.log('Studentmaster Table Synced');
 
-//         // // Synchronize the Rsmatrix Model
-//         // await rsmatrix.sync();
-//         // console.log('Course Table Synced');
-
 //         // // Synchronize the Academic Model
 //         // await academic.sync();
 //         // console.log('Academic Table Synced');
@@ -100,11 +96,11 @@ const secretKey = process.env.SECRET_KEY;
 //         // await rsmatrix.sync();
 //         // console.log('Rs Matrix Table Synced');
         
-//         // // Synchronize the Rs Mentor Model
+//         // // Synchronize the Mentor Model
 //         // await mentor.sync();
 //         // console.log('Mentor Table Synced');
 
-//         // // Synchronize the Rs Mentor Model
+//         // // Synchronize the Calculation Model
 //         // await calculation.sync();
 //         // console.log('Calculaiton Table Synced');
 //     }

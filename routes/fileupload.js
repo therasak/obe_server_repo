@@ -402,8 +402,7 @@ route.post('/mentor', upload.single('file'), async (req, res) =>
 
         await mentor.destroy({ where: {}, truncate: true });
 
-        const mentorData = rows.map(row => (
-        {
+        const mentorData = rows.map(row => ({
             sno: row.sno,
             graduate: row.graduate,
             course_id: row.course_id,
@@ -419,12 +418,22 @@ route.post('/mentor', upload.single('file'), async (req, res) =>
 
         await mentor.bulkCreate(mentorData);
 
-        res.status(200).send('Mentor Data Imported and Replaced Successfully');
+        const updatedStaffIds = mentorData.map(data => data.staff_id);
+        await scope.update(
+            { mentor_report: 1 },
+            {
+                where: {
+                    staff_id: updatedStaffIds.map(id => `${id}`),
+                    mentor_report: 0
+                }
+            }
+        );
+        res.status(200).send('Mentor Data Imported Successfully');
     } 
     catch (error) {
         console.error('Error Processing Mentor Upload:', error);
         res.status(500).send('An error occurred while processing the mentor');
     }
-});
+})
 
 module.exports = route;
