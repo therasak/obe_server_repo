@@ -117,6 +117,14 @@ const calculation = sequelize_conn.define('calculation',
         type: DataTypes.INTEGER,
         allowNull: true
     },
+    cia_weightage : {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
+    ese_weightage : {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    },
 },
 {
     timestamps: false,
