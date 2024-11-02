@@ -80,7 +80,7 @@ route.get('/studOutcome', async (req, res) => {
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                course_code: selectedCourseCode,
+                // course_code: selectedCourseCode,
                 active_sem: selectedSem
             }
         });
@@ -101,6 +101,8 @@ route.get('/studOutcome', async (req, res) => {
             const lot_total = (cal.c1_lot || 0) + (cal.c2_lot || 0) + (cal.a1_lot || 0) + (cal.a2_lot || 0);
             const mot_total = (cal.c1_mot || 0) + (cal.c2_mot || 0);
             const hot_total = (cal.c1_hot || 0) + (cal.c2_hot || 0);
+            const cia_weightage = cal.cia_weightage || 0;
+            const ese_weightage = cal.ese_weightage || 0;
         
             const lot_percentage = ((c1_lot || 0) + (c2_lot || 0) + (a1_lot || 0) + (a2_lot || 0)) / (lot_total || 1) * 100;
             const mot_percentage = ((c1_mot || 0) + (c2_mot || 0)) / (mot_total || 1) * 100;
@@ -108,9 +110,13 @@ route.get('/studOutcome', async (req, res) => {
             const elot_percentage = (ese_lot || 0) / 25 * 100;
             const emot_percentage = (ese_mot || 0) / 40 * 100;
             const ehot_percentage = (ese_hot || 0) / 10 * 100;
+            const overAll_lot = (lot_percentage*cia_weightage/100) + (elot_percentage*ese_weightage/100)
+            const overAll_mot = (mot_percentage*cia_weightage/100) + (emot_percentage*ese_weightage/100)
+            const overAll_hot = (hot_percentage*cia_weightage/100) + (ehot_percentage*ese_weightage/100)
+
         
             console.log(`LOT Percentage: ${lot_percentage}, MOT Percentage: ${mot_percentage}, HOT Percentage: ${hot_percentage}`);
-        
+            console.log(overAll_lot, overAll_mot, overAll_hot);
             return {
                 ...entry.dataValues,
                 lot_percentage: await calculateCategory(lot_percentage),
@@ -119,9 +125,12 @@ route.get('/studOutcome', async (req, res) => {
                 elot_percentage: await calculateCategory(elot_percentage),
                 emot_percentage: await calculateCategory(emot_percentage),
                 ehot_percentage: await calculateCategory(ehot_percentage),
+                overAll_lot: await calculateCategory(overAll_lot),
+                overAll_mot: await calculateCategory(overAll_mot),
+                overAll_hot: await calculateCategory(overAll_hot),            
             };
+          
         }));
-        console.log(calculatedData);
         res.json(calculatedData);
 
     } catch (error) {
