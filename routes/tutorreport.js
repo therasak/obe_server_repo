@@ -46,10 +46,27 @@ route.post('/tutorreportcode', async (req, res) =>
           res.json({ uniqueCourseCodes, mentorStuReg});
      }
      catch {
-          console.error("Error Fetching Tutor Report:", error);
-          res.status(500).json({ message: "An error occurred while fetching tutor report" });
-     }
+          console.error("Error Fetching Tutor Report", error);
+          res.status(500).json({ message: "An error occurred while Fetching Tutor Report" });
+     }   
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Student Details Fetching 
+
+route.post('/tutorstudent', async (req, res) => 
+{
+     const { uniqueValues, courseCode } = req.body;
      
+     try 
+     {
+         
+     }
+     catch {
+          console.error("Error Fetching Tutor Student Report:", error);
+          res.status(500).json({ message: "An error occurred while Fetching Tutor Report" });
+     }   
 })
 
 module.exports = route;
