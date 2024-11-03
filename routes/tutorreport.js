@@ -61,19 +61,24 @@ route.post('/tutorreportcode', async (req, res) =>
 route.post('/tutorstudent', async (req, res) => 
 {
      const { uniqueValues, courseCode } = req.body;
-     console(uniqueValues)    
-     try 
-     {
-          const students = await studentmaster.findAll({
-               where: {
-                   batch: selectedBatch,
-                   course_id: uniqueValues.courseId,
-                   category: uniqueValues.category,
-                   section: uniqueValues.section
-               },
-               attributes: ['reg_no']
-           });
-   
+    //  console.log(uniqueValues)    
+     const { courseId, category, section } = uniqueValues[0];
+
+    // Check if values are accessible
+    console.log("Course ID:", courseId);
+    console.log("Category:", category);
+    console.log("Section:", section);
+    
+    try {
+        const students = await studentmaster.findAll({
+            where: {
+                course_id: courseId,
+                category: category,
+                section: section
+            },
+            attributes: ['reg_no']
+        });
+
            const stud_regs = students.map(student => student.reg_no);
 
            const academicdata = await academic.findOne({
