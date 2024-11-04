@@ -125,6 +125,10 @@ const calculation = sequelize_conn.define('calculation',
         type: DataTypes.INTEGER,
         allowNull: true
     },
+    co_thresh_value : {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    }
 },
 {
     timestamps: false,

@@ -4,10 +4,45 @@ const markentry = require('../models/markentry');
 const studentmaster = require('../models/studentmaster');
 const calculation = require('../models/calculation');
 const academic = require('../models/academic');
+const mentor = require('../models/mentor');
+const coursemapping = require('../models/coursemapping');
+
+
+route.post('/checkstaffId', async (req, res) => 
+{
+    const { staff_id } = req.body;
+
+    const academicdata = await academic.findOne({
+        where: { active_sem: 1 }
+    });
+
+    const courseHandleStaffId = await coursemapping.findOne({
+        where: { 
+            staff_id: staff_id,
+            active_sem: academicdata.academic_year 
+        }
+    })
+
+    const tutorHandleStaffId = await mentor.findOne({
+        where: { 
+            staff_id: staff_id,
+            active_sem: academicdata.academic_year 
+        }
+    })
+
+    // const hodHandleStaffId = await coursemapping.findOne({
+    //     where: { 
+    //         staff_id: staff_id,
+    //         active_sem: academicdata.academic_year 
+    //     }
+    // })
+
+    res.json({ courseHandleStaffId, tutorHandleStaffId });
+})
 
 const getUniqueValues = (data, key) => {
     return [...new Set(data.map(entry => entry[key]))];
-};
+}
 
 route.get('/markentry', async (req, res) => {
     const { batch, active_sem, course_id, category } = req.query;
@@ -72,7 +107,7 @@ route.get('/studOutcome', async (req, res) => {
                 category: selectedCategory,
                 section: selectedSection
             },
-            attributes: ['reg_no']
+            attributes: ['reg_no'] 
         });
 
         const stud_regs = students.map(student => student.reg_no);
@@ -90,7 +125,10 @@ route.get('/studOutcome', async (req, res) => {
         });
         const cal = await calculation.findOne({
             where: { active_sem: academicdata.academic_year }
+
         });
+
+        console.log(cal.so_l1_ug);
         const calculatedData = await Promise.all(marks.map(async entry => {
             let {
                 c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0, ese_lot = 0,
@@ -110,24 +148,36 @@ route.get('/studOutcome', async (req, res) => {
             const elot_percentage = (ese_lot || 0) / 25 * 100;
             const emot_percentage = (ese_mot || 0) / 40 * 100;
             const ehot_percentage = (ese_hot || 0) / 10 * 100;
-            const overAll_lot = (lot_percentage*cia_weightage/100) + (elot_percentage*ese_weightage/100)
-            const overAll_mot = (mot_percentage*cia_weightage/100) + (emot_percentage*ese_weightage/100)
-            const overAll_hot = (hot_percentage*cia_weightage/100) + (ehot_percentage*ese_weightage/100)
+            // const overAll_lot = (lot_percentage*cia_weightage/100) + (elot_percentage*ese_weightage/100)
+            const lot_attainment = await calculateCategory(lot_percentage);
+            const mot_attainment = await calculateCategory(mot_percentage);
+            const hot_attainment = await calculateCategory(hot_percentage);
+            const elot_attainment = await calculateCategory(elot_percentage);
+            const emot_attainment = await calculateCategory(emot_percentage);
+            const ehot_attainment = await calculateCategory(ehot_percentage);
 
-        
-            console.log(`LOT Percentage: ${lot_percentage}, MOT Percentage: ${mot_percentage}, HOT Percentage: ${hot_percentage}`);
-            console.log(overAll_lot, overAll_mot, overAll_hot);
+            // Calculate overall attainment values based on CIA and ESE weightages
+            const overAll_lot = (lot_attainment * (cia_weightage / 100)) + (elot_attainment * (ese_weightage / 100));
+            const overAll_mot = (mot_attainment * (cia_weightage / 100)) + (emot_attainment * (ese_weightage / 100));
+            const overAll_hot = (hot_attainment * (cia_weightage / 100)) + (ehot_attainment * (ese_weightage / 100));
+
             return {
                 ...entry.dataValues,
-                lot_percentage: await calculateCategory(lot_percentage),
-                mot_percentage: await calculateCategory(mot_percentage),
-                hot_percentage: await calculateCategory(hot_percentage),
-                elot_percentage: await calculateCategory(elot_percentage),
-                emot_percentage: await calculateCategory(emot_percentage),
-                ehot_percentage: await calculateCategory(ehot_percentage),
-                overAll_lot: await calculateCategory(overAll_lot),
-                overAll_mot: await calculateCategory(overAll_mot),
-                overAll_hot: await calculateCategory(overAll_hot),            
+                lot_percentage,
+                mot_percentage,
+                hot_percentage,
+                elot_percentage,
+                emot_percentage,
+                ehot_percentage,
+                lot_attainment,
+                mot_attainment,
+                hot_attainment,
+                elot_attainment,
+                emot_attainment,
+                ehot_attainment,
+                overAll_lot,
+                overAll_mot,
+                overAll_hot
             };
           
         }));
@@ -159,11 +209,11 @@ async function calculateCategory(percentage) {
             return null;
         }
 
-        if (percentage > data.so_l3_ug) {
+        if (percentage >= data.so_l3_ug) {
             return 3;
-        } else if (percentage > data.so_l2_ug) {
+        } else if (percentage >= data.so_l2_ug) {
             return 2;
-        } else if (percentage > data.so_l1_ug) {
+        } else if (percentage >= data.so_l1_ug) {
             return 1;
         } else if (percentage > data.so_l0_ug) {
             return 0;
