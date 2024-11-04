@@ -115,7 +115,7 @@ route.get('/studOutcome', async (req, res) => {
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                // course_code: selectedCourseCode,
+                // course_code: selectedCourseCode, 
                 active_sem: selectedSem
             }
         });
