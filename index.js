@@ -12,6 +12,7 @@ const academic = require('./models/academic');
 const rsmatrix = require('./models/rsmatrix');
 const mentor = require('./models/mentor');
 const calculation = require('./models/calculation');
+const hod = require('./models/hod')
 
 const dashboard = require('./routes/dash');
 const courselist = require('./routes/courselist');
@@ -62,49 +63,51 @@ const secretKey = process.env.SECRET_KEY;
 
 // Tables ( Model ) Synchronization Coding
 
-// async function dbconncheck() 
-// {
-//     try 
-//     {
-//         // // Synchronize the Staff Master Model
-//         // await staffmaster.sync();
-//         // console.log('Staffmaster Table Synced');
+// async function dbconncheck() {
+//     try {
+        //         // // Synchronize the Staff Master Model
+        //         // await staffmaster.sync();
+        //         // console.log('Staffmaster Table Synced');
 
-//         // // Synchronize the Student Master Model
-//         // await studentmaster.sync();
-//         // console.log('Studentmaster Table Synced');
+        //         // // Synchronize the Student Master Model
+        //         // await studentmaster.sync();
+        //         // console.log('Studentmaster Table Synced');
 
-//         // // Synchronize the Academic Model
-//         // await academic.sync();
-//         // console.log('Academic Table Synced');
+        //         // // Synchronize the Academic Model
+        //         // await academic.sync();
+        //         // console.log('Academic Table Synced');
 
-//         // // Synchronize the Coursemapping Model
-//         // await coursemapping.sync();
-//         // console.log('Course Mapping Table Synced');
+        //         // // Synchronize the Coursemapping Model
+        //         // await coursemapping.sync();
+        //         // console.log('Course Mapping Table Synced');
 
-//         // // Synchronize the Scope Model
-//         // await scope.sync();
-//         // console.log('Scope Table Synced');
+        //         // // Synchronize the Scope Model
+        //         // await scope.sync();
+        //         // console.log('Scope Table Synced');
 
-//         // // Synchronize the Mark Entry Model
-//         // await markentry.sync();
-//         // console.log('Markentry Table Synced');
+        //         // // Synchronize the Mark Entry Model
+        //         // await markentry.sync();
+        //         // console.log('Markentry Table Synced');
 
-//         // // Synchronize the Report Model
-//         // await report.sync();
-//         // console.log('Report Table Synced');
+        //         // // Synchronize the Report Model
+        //         // await report.sync();
+        //         // console.log('Report Table Synced');
 
-//         // // Synchronize the Rs Matrix Model
-//         // await rsmatrix.sync();
-//         // console.log('Rs Matrix Table Synced');
-        
-//         // // Synchronize the Mentor Model
-//         // await mentor.sync();
-//         // console.log('Mentor Table Synced');
+        //         // // Synchronize the Rs Matrix Model
+        //         // await rsmatrix.sync();
+        //         // console.log('Rs Matrix Table Synced');
 
-//         // // Synchronize the Calculation Model
-//         // await calculation.sync();
-//         // console.log('Calculaton Table Synced');
+        //         // // Synchronize the Mentor Model
+        //         // await mentor.sync();
+        //         // console.log('Mentor Table Synced');
+
+        //         // // Synchronize the Calculation Model
+        //         // await calculation.sync();
+        //         // console.log('Calculaton Table Synced');
+
+//         await hod.sync();
+//         console.log('Hod Table Synced');
+
 //     }
 //     catch (error) {
 //         console.log('Error Occurred:', error.message);
@@ -337,17 +340,14 @@ const secretKey = process.env.SECRET_KEY;
 
 // Validation Coding
 
-app.post('/login', async (req, res) => 
-{
+app.post('/login', async (req, res) => {
     const { staff_id, staff_pass } = req.body;
 
-    try 
-    {
+    try {
         const user = await staffmaster.findOne({
             where: { staff_id: staff_id }
         });
-        if (user) 
-        {
+        if (user) {
             if (user.staff_pass === staff_pass) {
                 return res.json({ success: true, message: "Login Successful" });
             }
@@ -370,8 +370,7 @@ app.post('/login', async (req, res) =>
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => 
-{
+app.get('/scope/:staffId', async (req, res) => {
     const { staffId } = req.params;
 
     try {
@@ -392,25 +391,23 @@ app.get('/scope/:staffId', async (req, res) =>
 
 sequelize_conn.authenticate()
 
-.then(() => {
-    console.log('Database Connected');
-    app.listen(port, () => {
-        console.log(`Server running on http:/localhost:${port}`);
+    .then(() => {
+        console.log('Database Connected');
+        app.listen(port, () => {
+            console.log(`Server running on http:/localhost:${port}`);
+        });
+    })
+    .catch(err => {
+        console.error('Unable to connect to the Database:', err);
     });
-})
-.catch(err => {
-    console.error('Unable to connect to the Database:', err);
-});
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Academic Year Setting Coding
 
-app.put('/academic', async (req, res) => 
-{
+app.put('/academic', async (req, res) => {
     const { academicsem } = req.body;
-    try 
-    {
+    try {
         await academic.update(
             { active_sem: 0 },
             { where: {} }
@@ -441,12 +438,11 @@ app.put('/academic', async (req, res) =>
 
 // Active Sem Fetching Coding
 
-app.post('/activesem', async (req, res) => 
-{
+app.post('/activesem', async (req, res) => {
     const activeAcademic = await academic.findOne({
-      where: { active_sem: 1 }
+        where: { active_sem: 1 }
     })
     res.json(activeAcademic);
 })
-  
+
 // ------------------------------------------------------------------------------------------------------- //

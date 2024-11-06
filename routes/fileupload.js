@@ -12,6 +12,7 @@ const staffmaster = require('../models/staffmaster');
 const markentry = require('../models/markentry');
 const scope = require('../models/scope');
 const mentor = require('../models/mentor');
+const hod = require('../models/hod');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -286,10 +287,10 @@ route.post('/deptmarkentry', upload.single('file'), async (req, res) =>
 
             const updatedData = {
                 course_id: row.course_id,
-                c1_lot: row.c1_lot,
-                c1_hot: row.c1_hot,
-                c1_mot: row.c1_mot,
-                c1_total: row.c1_total,
+                ese_lot: row.ese_lot,
+                ese_hot: row.ese_hot,
+                ese_mot: row.ese_mot,
+                ese_total: row.ese_total,
             };
 
             if (existingEntry) {
@@ -363,7 +364,7 @@ route.post('/report', upload.single('file'), async (req, res) =>
 
         await report.bulkCreate(reports);
 
-        res.status(200).send('Report Data Imported and Replaced Successfully');
+        res.status(200).send('Report Data Imported Successfully');
     } 
     catch (error) {
         console.error('Error processing report upload:', error);
@@ -375,10 +376,8 @@ route.post('/report', upload.single('file'), async (req, res) =>
 
 // Mentor File Upload
 
-route.post('/mentor', upload.single('file'), async (req, res) => 
-{
-    try 
-    {
+route.post('/mentor', upload.single('file'), async (req, res) => {
+    try {
         const file = req.file;
 
         if (!file) {
@@ -392,7 +391,7 @@ route.post('/mentor', upload.single('file'), async (req, res) =>
 
         const activeAcademic = await academic.findOne({
             where: { active_sem: 1 }
-        })
+        });
 
         if (!activeAcademic) {
             return res.status(400).send('No Active Academic Year Found');
@@ -400,50 +399,36 @@ route.post('/mentor', upload.single('file'), async (req, res) =>
 
         const activeSemester = activeAcademic.academic_year;
 
-        await mentor.destroy({ where: {}, truncate: true });
+        for (const row of rows) {
+            await mentor.upsert({
+                sno: row.sno,
+                graduate: row.graduate,
+                course_id: row.course_id,
+                category: row.category,
+                degree: row.degree,
+                dept_name: row.dept_name,
+                section: row.section,
+                batch: row.batch,
+                staff_id: row.staff_id,
+                staff_name: row.staff_name,
+                active_sem: activeSemester
+            });
+        }
 
-        const mentorData = rows.map(row => ({
-            sno: row.sno,
-            graduate: row.graduate,
-            course_id: row.course_id,
-            category: row.category,
-            degree: row.degree,
-            dept_name: row.dept_name,
-            section: row.section,
-            batch: row.batch,
-            staff_id: row.staff_id,
-            staff_name: row.staff_name,
-            active_sem: activeSemester
-        }))
-
-        await mentor.bulkCreate(mentorData);
-
-        const updatedStaffIds = mentorData.map(data => data.staff_id);
-        await scope.update(
-            { mentor_report: 1 },
-            {
-                where: {
-                    staff_id: updatedStaffIds.map(id => `${id}`),
-                    mentor_report: 0
-                }
-            }
-        );
-        res.status(200).send('Mentor Data Imported Successfully');
-    } 
-    catch (error) {
+        res.status(200).send('Mentor Data Imported and Updated Successfully');
+    } catch (error) {
         console.error('Error Processing Mentor Upload:', error);
         res.status(500).send('An error occurred while processing the mentor');
     }
-})
+});
+
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Mentor File Upload
+// Hod File Upload
 
-route.post('/hod', upload.single('file'), async (req, res) => 
-{
-    try 
-    {
+route.post('/hod', upload.single('file'), async (req, res) => {
+    try {
         const file = req.file;
 
         if (!file) {
@@ -457,7 +442,7 @@ route.post('/hod', upload.single('file'), async (req, res) =>
 
         const activeAcademic = await academic.findOne({
             where: { active_sem: 1 }
-        })
+        });
 
         if (!activeAcademic) {
             return res.status(400).send('No Active Academic Year Found');
@@ -465,40 +450,27 @@ route.post('/hod', upload.single('file'), async (req, res) =>
 
         const activeSemester = activeAcademic.academic_year;
 
-        await hod.destroy({ where: {}, truncate: true });
+        for (const row of rows) {
+            await hod.upsert({
+                s_no: row.s_no,
+                graduate: row.graduate,
+                course_id: row.course_id,
+                category: row.category,
+                degree: row.degree,
+                dept_name: row.dept_name,
+                section: row.section,
+                batch: row.batch,
+                staff_id: row.staff_id,
+                hod_name: row.hod_name,
+                type: row.type
+            });
+        }
 
-        const mentorData = rows.map(row => ({
-            sno: row.sno,
-            graduate: row.graduate,
-            course_id: row.course_id,
-            category: row.category,
-            degree: row.degree,
-            dept_name: row.dept_name,
-            section: row.section,
-            batch: row.batch,
-            staff_id: row.staff_id,
-            staff_name: row.staff_name,
-            active_sem: activeSemester
-        }))
-
-        await mentor.bulkCreate(mentorData);
-
-        const updatedStaffIds = mentorData.map(data => data.staff_id);
-        await scope.update(
-            { mentor_report: 1 },
-            {
-                where: {
-                    staff_id: updatedStaffIds.map(id => `${id}`),
-                    mentor_report: 0
-                }
-            }
-        );
-        res.status(200).send('Mentor Data Imported Successfully');
-    } 
-    catch (error) {
-        console.error('Error Processing Mentor Upload:', error);
-        res.status(500).send('An error occurred while processing the mentor');
+        res.status(200).send('HOD Data Imported and Updated Successfully');
+    } catch (error) {
+        console.error('Error Processing HOD Upload:', error);
+        res.status(500).send('An error occurred while processing the HOD file');
     }
-})
+});
 
 module.exports = route;
