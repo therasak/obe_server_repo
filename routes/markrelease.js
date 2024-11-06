@@ -34,7 +34,7 @@ route.get('/reportdata', async (req, res) =>
                     course_id: 'unknown'
                 }   
             }
-        });
+        })
         const count = await report.count();
         res.json(matchData);
     } 

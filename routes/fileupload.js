@@ -265,7 +265,7 @@ route.post('/markentry', upload.single('file'), async (req, res) =>
 
 // Department Mark Entry File Upload
 
-route.post('/deptmarkentry', upload.single('file'), async (req, res) => 
+route.post('/ese', upload.single('file'), async (req, res) => 
 {
     try 
     {
@@ -376,8 +376,10 @@ route.post('/report', upload.single('file'), async (req, res) =>
 
 // Mentor File Upload
 
-route.post('/mentor', upload.single('file'), async (req, res) => {
-    try {
+route.post('/mentor', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
 
         if (!file) {
@@ -391,7 +393,7 @@ route.post('/mentor', upload.single('file'), async (req, res) => {
 
         const activeAcademic = await academic.findOne({
             where: { active_sem: 1 }
-        });
+        })
 
         if (!activeAcademic) {
             return res.status(400).send('No Active Academic Year Found');
@@ -414,21 +416,22 @@ route.post('/mentor', upload.single('file'), async (req, res) => {
                 active_sem: activeSemester
             });
         }
-
         res.status(200).send('Mentor Data Imported and Updated Successfully');
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error Processing Mentor Upload:', error);
         res.status(500).send('An error occurred while processing the mentor');
     }
-});
-
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Hod File Upload
 
-route.post('/hod', upload.single('file'), async (req, res) => {
-    try {
+route.post('/hod', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
         const file = req.file;
 
         if (!file) {
@@ -442,7 +445,7 @@ route.post('/hod', upload.single('file'), async (req, res) => {
 
         const activeAcademic = await academic.findOne({
             where: { active_sem: 1 }
-        });
+        })
 
         if (!activeAcademic) {
             return res.status(400).send('No Active Academic Year Found');
@@ -467,10 +470,11 @@ route.post('/hod', upload.single('file'), async (req, res) => {
         }
 
         res.status(200).send('HOD Data Imported and Updated Successfully');
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error Processing HOD Upload:', error);
         res.status(500).send('An error occurred while processing the HOD file');
     }
-});
+})
 
 module.exports = route;
