@@ -3,6 +3,7 @@ const route = express.Router();
 const report = require('../models/report');
 const coursemapping = require('../models/coursemapping');
 const rsmatrix = require('../models/rsmatrix');
+const staffmaster=require('../models/staffmaster');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -30,55 +31,86 @@ route.post('/statusDeptName', async (req, res) =>
 
 // Department Status Report Fetching Coding
 
-route.post('/deptstatusreport', async (req, res) => 
-{
+route.post('/deptstatusreport', async (req, res) => {
     const { academic_year, dept_name } = req.body;
 
-    try 
-    {
+    try {
         let deptReportStatus;
 
-        if (dept_name === "ALL") 
-        {
+        if (dept_name === "ALL") {
             const reportData = await report.findAll({
                 where: { active_sem: academic_year }
             });
+
             const staff = await coursemapping.findAll();
-            deptReportStatus = reportData.map(match => 
-            {
-                const matchStaff = staff.find(staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code);
+
+            // Fetch staff details with `staffmaster` department details
+            const staffDetails = await Promise.all(staff.map(async (staffMember) => {
+                const staffDept = await staffmaster.findOne({
+                    where: { staff_id: staffMember.staff_id },
+                    attributes: ['staff_dept']
+                });
+
+                return {
+                    ...staffMember.toJSON(),
+                    dept_name: staffDept ? staffDept.staff_dept : 'unknown'
+                };
+            }));
+
+            deptReportStatus = reportData.map(match => {
+                const matchStaff = staffDetails.find(
+                    staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code
+                );
                 return {
                     ...match.toJSON(),
                     staff_name: matchStaff ? matchStaff.staff_name : 'unknown',
-                    course_id: matchStaff ? matchStaff.course_id : 'unknown'
-                }
-            })
-        } 
-        else 
-        {
-            reportData = await report.findAll({
+                    course_id: matchStaff ? matchStaff.course_id : 'unknown',
+                    dept_name: matchStaff ? matchStaff.dept_name : 'unknown'
+                };
+            });
+        } else {
+            const reportData = await report.findAll({
                 where: {
                     active_sem: academic_year,
                     dept_name: dept_name
                 }
-            })
+            });
+
             const staff = await coursemapping.findAll();
-            deptReportStatus = reportData.map(match => 
-            {
-                const matchStaff = staff.find(staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code);
+
+            // Fetch staff details with `staffmaster` department details
+            const staffDetails = await Promise.all(staff.map(async (staffMember) => {
+                const staffDept = await staffmaster.findOne({
+                    where: { staff_id: staffMember.staff_id },
+                    attributes: ['staff_dept']
+                });
+
+                return {
+                    ...staffMember.toJSON(),
+                    dept_name: staffDept ? staffDept.staff_dept : 'unknown'
+                };
+            }));
+
+            deptReportStatus = reportData.map(match => {
+                const matchStaff = staffDetails.find(
+                    staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code
+                );
                 return {
                     ...match.toJSON(),
                     staff_name: matchStaff ? matchStaff.staff_name : 'unknown',
-                    course_id: matchStaff ? matchStaff.course_id : 'unknown'
-                }
-            })
+                    course_id: matchStaff ? matchStaff.course_id : 'unknown',
+                    dept_name: matchStaff ? matchStaff.dept_name : 'unknown'
+                };
+            });
         }
+
         res.json(deptReportStatus);
-    } 
-    catch (err) {
-        res.status(500).json({ error: 'An error occurred while Fetching Data.' });
+    } catch (err) {
+        console.error('Error fetching data:', err);
+        res.status(500).json({ error: 'An error occurred while fetching data.' });
     }
-})
+});
+
 
 // ------------------------------------------------------------------------------------------------------- //
 

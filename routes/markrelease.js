@@ -22,10 +22,11 @@ route.get('/reportdata', async (req, res) =>
                 return{
                     ...match.toJSON(),
                     staff_name: matchStaff.staff_name,
-                    course_id: matchStaff.course_id
+                    course_id: matchStaff.course_id,
+                    course_title:matchStaff.course_title
                 }   
             }
-            else
+            else 
             {
                 return {
                     ...match.toJSON(),
