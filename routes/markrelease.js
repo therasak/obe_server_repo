@@ -16,7 +16,7 @@ route.get('/reportdata', async (req, res) =>
         const staff = await coursemapping.findAll();
         const matchData = reportData.map(match=>
         {
-            const matchStaff = staff.find(staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code);
+            const matchStaff = staff.find(staff => staff.staff_id === match.staff_id && staff.course_code === match.course_code && staff.dept_name===match.dept_name);
             if(matchStaff)
             {
                 return{
