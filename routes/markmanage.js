@@ -8,7 +8,7 @@ route.post('/calculation', async (req, res) =>
 {
     try 
     {
-        const { cia1, cia2, ass1, ass2, maxCia, maxEse, academicYear } = req.body;
+        const { cia1, cia2, ass1, ass2, maxCia, maxEse, academicYear, inputValue } = req.body;
         
         if (!cia1 || !cia2 || !ass1 || !ass2 || !maxCia || !maxEse) {
             return res.status(400).json({ error: 'All fields are Required.' });
@@ -28,7 +28,8 @@ route.post('/calculation', async (req, res) =>
             e_hot: maxEse.hot,
             ese_weightage: maxEse.weightage,
             cia_weightage: cia1.weightage,
-            active_sem: academicYear
+            active_sem: academicYear,
+            co_thresh_value: inputValue
         }
 
         const decition = await calculation.findAll({

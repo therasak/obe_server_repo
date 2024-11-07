@@ -159,4 +159,37 @@ route.post('/allmatrixreport', async (req, res) =>
     }
 })
 
+// ------------------------------------------------------------------------------------------------------- //
+
+// Matrix Completed Count
+
+route.post('/matrixcount', async (req, res) => 
+{
+    const { academic_year } = req.body;
+
+    try 
+    {
+        const uniqueCourseCount = await coursemapping.count({
+            where: {
+                active_sem: academic_year,
+            },
+            distinct: true,
+            col: 'course_code'
+        })
+
+        const completeCount = await rsmatrix.count({
+            where: {
+                academic_year: academic_year,
+            },
+            distinct: true,
+            col: 'course_code'
+        })
+        res.json({uniqueCourseCount, completeCount});
+    }
+    catch (err) {
+        console.error('Error Fetching Data:', err);
+        res.status(500).send('Error Fetching Data');
+    }
+})
+
 module.exports = route;
