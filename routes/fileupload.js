@@ -263,7 +263,7 @@ route.post('/markentry', upload.single('file'), async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Department Mark Entry File Upload
+// ESE Mark Entry File Upload
 
 route.post('/ese', upload.single('file'), async (req, res) => 
 {
@@ -286,7 +286,6 @@ route.post('/ese', upload.single('file'), async (req, res) =>
             });
 
             const updatedData = {
-                course_id: row.course_id,
                 ese_lot: row.ese_lot,
                 ese_hot: row.ese_hot,
                 ese_mot: row.ese_mot,
