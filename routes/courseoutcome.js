@@ -637,13 +637,13 @@ async function calculateCategory(percentage)
 
 function calculateGrade(overallAverage) 
 {
-    if (overallAverage > 2) {
+    if (overallAverage >= 2.5) {
         return 'High';
     } 
-    else if (overallAverage > 1) {
+    else if (overallAverage >= 1.5 && overallAverage < 2.5) {
         return 'Medium';
     } 
-    else if (overallAverage > 0) {
+    else if (overallAverage >= 0) {
         return 'Low';
     } 
     else {
