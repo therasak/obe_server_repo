@@ -235,24 +235,23 @@ route.get('/download/mark', async (req, res) =>
     
 // Dept Mark Entry Excel Download
 
-route.get('/download/deptmarkentry', async (req, res) => 
+route.get('/download/ese', async (req, res) => 
 {
     try 
     {
         const markData = await markentry.findAll();
         
         const formattedData = [
-            ['reg_no', 'course_code', 'course_id', 'c1_lot', 'c1_hot', 
-                'c1_mot', 'c1_total'],
-            ...markData.map(entry => [
-                entry.reg_no,
-                entry.course_code,
-                entry.course_id,
-                entry.c1_lot,
-                entry.c1_hot,
-                entry.c1_mot,
-                entry.c1_total
-            ])
+            ['reg_no', 'course_code','ese_lot', 'ese_hot', 
+                'ese_mot', 'ese_total'],
+            // ...markData.map(entry => [
+            //     entry.reg_no,
+            //     entry.course_code,
+            //     entry.ese_lot,
+            //     entry.ese_hot,
+            //     entry.ese_mot,
+            //     entry.ese_total
+            // ])
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
