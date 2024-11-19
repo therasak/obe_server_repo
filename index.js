@@ -29,6 +29,7 @@ const studentoutcome = require('./routes/studentoutcome');
 const markmanage = require('./routes/markmanage');
 const tutorreport = require('./routes/tutorreport');
 const courseoutcome = require('./routes/courseoutcome');
+const staffcoursemanage = require('./routes/staffcoursemanage');
 
 const app = express();
 app.use(cors());
@@ -50,6 +51,7 @@ app.use('/api', markrelease);
 app.use('/api', markmanage);
 app.use('/api', tutorreport);
 app.use('/api', courseoutcome);
+app.use('/api', staffcoursemanage);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
