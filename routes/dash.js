@@ -6,8 +6,6 @@ const report = require('../models/report');
 const coursemapping = require('../models/coursemapping');
 const { Sequelize } = require('sequelize');
 
-
-
 // ------------------------------------------------------------------------------------------------------- //
 
 // Student Staff Programme Course Count
@@ -195,7 +193,7 @@ route.post('/processedChartData', async (req, res) => {
 
         // Extract unique course_codes
         const stud_coursecodes = [...new Set(course_codes.map(entry => entry.course_code))];
-        console.log("Unique Course Codes:", stud_coursecodes);
+        // console.log("Unique Course Codes:", stud_coursecodes);
 
         // Iterate over each course code
         for (let course_code of stud_coursecodes) {
@@ -217,7 +215,7 @@ route.post('/processedChartData', async (req, res) => {
             if (allEseEqual2) counts.ese++;
         }
 
-        console.log(counts); // Log the counts for each field
+        // console.log(counts); // Log the counts for each field
         res.status(200).json({ uniqueCourseCodes: stud_coursecodes, counts }); // Send the result to the client
     } catch (error) {
         console.error('Error processing chart data:', error);
