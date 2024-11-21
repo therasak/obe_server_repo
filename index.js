@@ -450,3 +450,46 @@ app.post('/activesem', async (req, res) => {
 })
 
 // ------------------------------------------------------------------------------------------------------- //
+
+
+app.get("/api/academic", async (req, res) => {
+    try {
+      const data = await academic.findAll();
+      res.json({ academic_data: data });
+    } catch (err) {
+      console.error("Error fetching academic data:", err);
+      res.status(500).json({ error: "Error fetching academic data." });
+    }
+  });
+  
+  // Get Course Mapping Data
+  app.get("/coursemapping", async (req, res) => {
+    try {
+      const { academic_year, category, dept_name, course_id, section, semester } = req.query;
+        // console.log("ACADEMIC YEAR",academic_year, category, dept_name, course_id, section, semester);
+      const filters = {};
+      if (academic_year) filters.active_sem = academic_year;
+      if (category) filters.category = category;
+      if (dept_name) filters.dept_name = dept_name;
+      if (course_id) filters.course_id = course_id;
+      if (section) filters.section = section;
+      if (semester) filters.semester = semester;
+  
+      const data = await coursemapping.findAll({ where: filters });
+      res.json(data);
+    } catch (err) {
+      console.error("Error fetching course mapping data:", err);
+      res.status(500).json({ error: "Error fetching course mapping data." });
+    }
+  });
+  //------------------------------- search data ---------------------------//
+  app.post('/searchdata',async(req, res) =>{
+    try{
+        const {selectedAcademicYear,selectedCategory,selectedDepartment,selectedClass,selectedSection,selectedSemester}=req.body;
+        console.log("Search DATAS",selectedAcademicYear,selectedCategory,selectedDepartment,selectedClass,selectedSection,selectedSemester)
+
+    } catch(err){
+
+    }
+    res.json({"message":"hello  datas recive broh"})
+  });

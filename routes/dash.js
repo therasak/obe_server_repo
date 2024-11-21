@@ -20,17 +20,19 @@ route.get('/counts', async (req, res) =>
         })
 
         const studentCount = await studentmaster.count({
-            where: { active_sem: String(academicdata.academic_year) }
+            where: {active_sem: String(academicdata.academic_year)}
         });
 
         const staffCount = await staffmaster.count();
 
         const uniqueCourseCount = await coursemapping.count({
+            where: {active_sem: String(academicdata.academic_year)},
             distinct: true,
             col: 'course_code'
         });
 
         const uniqueProgramCount = await coursemapping.count({
+            where: {active_sem: String(academicdata.academic_year)},
             distinct: true,
             col: 'course_id'
         });
@@ -122,13 +124,16 @@ route.get('/staffpiechart', async (req, res) =>
 
         const aided = await staffmaster.count({ where: {
             category: 'AIDED'
-        }})
+        }});
+
         const sfm = await staffmaster.count({ where: {
             category: 'SFM'
-        }})
+        }});
+
         const sfw = await staffmaster.count({ where: {
             category: 'SFW'
-        }})
+        }});
+
         res.json({ data: result, aided, sfm, sfw });
     }
     catch (error) {
@@ -145,33 +150,49 @@ route.post('/componentreport', async (req, res) =>
 {
     try 
     {
-        const totalCount = await report.count();
+        const academicdata = await academic.findOne({
+            where: { active_sem: 1 }
+        })
+
+        const totalCount = await report.count({
+            where: {active_sem: String(academicdata.academic_year)}
+        });
+
         const cia_1 = await report.count({
             where: {
+                active_sem: String(academicdata.academic_year),
                 cia_1: '2'
             }
         });
+
         const cia_2 = await report.count({
             where: {
+                active_sem: String(academicdata.academic_year),
                 cia_2: '2'
             }
         });
+
         const ass_1 = await report.count({
             where: {
-            
+                active_sem: String(academicdata.academic_year),
                 ass_1: '2'
             }
         });
+
         const ass_2 = await report.count({
             where: {
+                active_sem: String(academicdata.academic_year),
                 ass_2: '2'
             },
         });
+
         const ese = await report.count({
             where: {
+                active_sem: String(academicdata.academic_year),
                 ese: '2'
             },
         });
+
         res.json({cia_1, cia_2, ass_1, ass_2, ese, totalCount});
     }
     catch (error) {
@@ -184,17 +205,16 @@ module.exports = route;
 
 // ------------------------------------------------------------------------------------------------------- //
 
-
-
-route.post('/processedChartData', async (req, res) => {
-    try {
-        // Fetch all reports with relevant fields
+route.post('/processedChartData', async (req, res) => 
+{
+    try 
+    {
         const course_codes = await report.findAll({
             attributes: ['course_code', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'],
         });
 
-        // Create an object to store counts for each field individually
-        const counts = {
+        const counts = 
+        {
             cia_1: 0,
             cia_2: 0,
             ass_1: 0,
@@ -202,33 +222,27 @@ route.post('/processedChartData', async (req, res) => {
             ese: 0,
         };
 
-        // Extract unique course_codes
         const stud_coursecodes = [...new Set(course_codes.map(entry => entry.course_code))];
-        // console.log("Unique Course Codes:", stud_coursecodes);
 
-        // Iterate over each course code
-        for (let course_code of stud_coursecodes) {
-            // Filter rows for the current course_code
-            const courseRows = course_codes.filter(entry => entry.course_code === course_code);
-
-            // Check if all rows for the course have cia_1 = 2, cia_2 = 2, ass_1 = 2, ass_2 = 2, ese = 2
+        for (let course_code of stud_coursecodes) 
+        {
+            const courseRows    = course_codes.filter(entry => entry.course_code === course_code);
             const allCia1Equal2 = courseRows.every(row => row.cia_1 === 2);
             const allCia2Equal2 = courseRows.every(row => row.cia_2 === 2);
             const allAss1Equal2 = courseRows.every(row => row.ass_1 === 2);
             const allAss2Equal2 = courseRows.every(row => row.ass_2 === 2);
-            const allEseEqual2 = courseRows.every(row => row.ese === 2);
+            const allEseEqual2  = courseRows.every(row => row.ese === 2);
 
-            // Increment count for the field if all rows have the value 2
             if (allCia1Equal2) counts.cia_1++;
             if (allCia2Equal2) counts.cia_2++;
             if (allAss1Equal2) counts.ass_1++;
             if (allAss2Equal2) counts.ass_2++;
             if (allEseEqual2) counts.ese++;
         }
-
-        // console.log(counts); // Log the counts for each field
-        res.status(200).json({ uniqueCourseCodes: stud_coursecodes, counts }); // Send the result to the client
-    } catch (error) {
+        
+        res.status(200).json({ uniqueCourseCodes: stud_coursecodes, counts }); 
+    } 
+    catch (error) {
         console.error('Error processing chart data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }

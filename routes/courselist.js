@@ -4,6 +4,8 @@ const coursemapping = require('../models/coursemapping');
 const studentmaster = require('../models/studentmaster');
 const markentry = require('../models/markentry');
 const report = require('../models/report');
+const academic = require('../models/academic');
+const calculation = require('../models/calculation');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -29,21 +31,47 @@ route.post('/coursemap', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
+// Course Mapping Details Getting Coding
+
+route.post('/maxmark', async (req, res) => 
+{
+    try 
+    {
+        const academicdata = await academic.findOne({
+            where: { active_sem: 1 }
+        })
+
+        const maxMark = await calculation.findOne({
+            where: { active_sem: academicdata.academic_year }
+        })
+
+        res.json(maxMark);
+    }
+    catch (err) {
+        res.status(500).json({ error: 'An error occurred while fetching data.' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
 // Course Mapping Status Details Getting Coding
 
 route.post('/report/status', async (req, res) => 
 {
-    const { category, dept_name, degree, section, semester, course_code } = req.body;
-    try 
-    {
+    const { category, dept_name, section, course_code } = req.body;
+
+    try {
+
         const courseMappingStatus = await report.findAll({
-            where: {
+            where: 
+            {
                 category: category,
                 dept_name: dept_name,
                 section: section,
                 course_code: course_code,
             }
         });
+
         const isCompleted = courseMappingStatus.length > 0 &&
         courseMappingStatus.every
         (
@@ -53,6 +81,7 @@ route.post('/report/status', async (req, res) =>
                 record.ass_1 === 2 &&
                 record.ass_2 === 2
         )
+        
         res.status(200).json({status: isCompleted ? 'Completed' : 'Pending',courseMappingStatus});
         // console.log(courseMappingStatus);
     }
