@@ -119,6 +119,45 @@ route.get('/hod', async (req, res) =>
     }
 });
 
+route.delete('/hod/:id', async (req, res) => {
+    const { id } = req.params; // Extract the ID from the route parameter
+    try {
+        const deleted = await hod.destroy({
+            where: { staff_id: id }, // Use the appropriate column for matching
+        });
+
+        if (deleted) {
+            res.status(200).json({ message: `HOD with staff ID ${id} deleted successfully.` });
+        } else {
+            res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while deleting the record.' });
+    }
+});
+
+route.put('/hod/:id', async (req, res) => {
+    const { id } = req.params;
+    const { hod_name, category, degree, dept_name } = req.body; // Fields to be updated
+    try {
+        const [updated] = await hod.update(
+            { hod_name, category, degree, dept_name },
+            { where: { staff_id: id } }
+        );
+
+        if (updated) {
+            res.status(200).json({ message: `HOD with staff ID ${id} updated successfully.` });
+        } else {
+            res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while updating the record.' });
+    }
+});
+
+
 // ------------------------------------------------------------------------------------------------------- //
 
 route.get('/mentor', async (req, res) => 
@@ -133,4 +172,48 @@ route.get('/mentor', async (req, res) =>
     }
 })
 
+route.delete("/mentor/:id", async (req, res) => {
+    const { id } = req.params; 
+    try {
+        const deleted = await mentor.destroy({
+            where: { staff_id: id },
+        });
+        
+
+        if (deleted) {
+            res.status(200).json({ message: `Mentor with staff ID ${id} deleted successfully.` });
+        } else {
+            res.status(404).json({ error: `Mentor with staff ID ${id} not found.` });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "An error occurred while deleting the record." });
+    }
+});
+
+// PUT route to update a mentor by staff ID
+route.put("/mentor/:id", async (req, res) => {
+    const { id } = req.params; 
+    const { batch, staff_name, category, degree, dept_name, section } = req.body; 
+
+    try {
+        const [updated] = await mentor.update(
+            { batch, staff_name, category, degree, dept_name, section }, 
+            { where: { staff_id: id } } 
+        );
+
+        if (updated) {
+            res.status(200).json({ message: `Mentor with staff ID ${id} updated successfully.` });
+        } else {
+            res.status(404).json({ error: `Mentor with staff ID ${id} not found.` });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "An error occurred while updating the record." });
+    }
+});
+
+  
+
 module.exports = route;
+
