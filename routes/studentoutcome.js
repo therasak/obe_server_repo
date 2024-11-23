@@ -33,8 +33,7 @@ route.post('/checkstaffId', async (req, res) =>
     res.json({ courseHandleStaffId, tutorHandleStaffId });
 })
 
-const getUniqueValues = (data, key) => 
-{
+const getUniqueValues = (data, key) => {
     return [...new Set(data.map(entry => entry[key]))];
 }
 
@@ -44,7 +43,7 @@ route.get('/markentry', async (req, res) =>
 {
     const { batch, active_sem, course_id, category } = req.query;
 
-    try     
+    try 
     {
         const where = {};
         if (batch) where.batch = batch;
@@ -65,10 +64,49 @@ route.get('/markentry', async (req, res) =>
             course_code: getUniqueValues(entries, 'course_code')
         }
         res.json(uniqueEntries);
-    } 
+    }
     catch (error) {
         console.error('Error Fetching Mark Entries:', error);
         res.status(500).json({ message: 'Error fetching mark entries' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+route.get("/academic", async (req, res) => 
+{
+    try {
+        const data = await academic.findAll();
+        res.json({ academic_data: data });
+    } 
+    catch (err) {
+        console.error("Error Fetching Academic Data :", err);
+        res.status(500).json({ error: "Error Fetching Academic Data." });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+route.get("/coursemapping", async (req, res) => 
+{
+    try 
+    {
+        const { academic_year, category, dept_name, course_id, section, semester } = req.query;
+
+        const filters = {};
+        if (academic_year) filters.active_sem = academic_year;
+        if (category) filters.category = category;
+        if (dept_name) filters.dept_name = dept_name;
+        if (course_id) filters.course_id = course_id;
+        if (section) filters.section = section;
+        if (semester) filters.semester = semester;
+
+        const data = await coursemapping.findAll({ where: filters });
+        res.json(data);
+    } 
+    catch (err) {
+        console.error("Error Fetching Course Mapping Data :", err);
+        res.status(500).json({ error: "Error Fetching Course Mapping Data." });
     }
 })
 
@@ -83,28 +121,31 @@ route.get('/studentmaster', async (req, res) =>
         })
         const uniqueSections = [...new Set(students.map(student => student.section))];
         res.json(uniqueSections);
-    } 
+    }
     catch (error) {
-        console.error('Error Fetching Student Sections:', error);
-        res.status(500).json({ message: 'Error fetching student sections' });
+        console.error('Error Fetching Student Sections :', error);
+        res.status(500).json({ message: 'Error Fetching Student Sections' });
     }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.get('/studOutcome', async (req, res) => 
+route.post('/adminstuoutcome', async (req, res) => 
 {
-    const { selectedBatch, selectedSem, selectedCourseId, selectedCategory, selectedCourseCode, selectedSection } = req.query;
+    const 
+    { 
+        selectedAcademicYear, selectedCategory, selectedDepartment, 
+        selectedClass, selectedSection, selectedSemester } = req.body;
 
     try 
     {
         const students = await studentmaster.findAll(
         {
             where: {
-                batch: selectedBatch,
-                course_id: selectedCourseId,
-                category: selectedCategory,
-                section: selectedSection
+                active_sem: selectedAcademicYear,
+                semester: selectedSemester,
+                course_id: selectedClass,
+                category: selectedCategory
             },
             attributes: ['reg_no']
         })
@@ -114,7 +155,7 @@ route.get('/studOutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                active_sem: selectedSem
+                active_sem: selectedAcademicYear
             }
         })
 
@@ -132,7 +173,7 @@ route.get('/studOutcome', async (req, res) =>
             let {
                 c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0, ese_lot = 0,
                 c1_mot = 0, c2_mot = 0, ese_mot = 0,
-                c1_hot = 0, c2_hot = 0, ese_hot = 0
+                c1_hot = 0, c2_hot = 0, ese_hot = 0 
             } = entry.dataValues;
 
             const lot_total = (cal.c1_lot || 0) + (cal.c2_lot || 0) + (cal.a1_lot || 0) + (cal.a2_lot || 0);
@@ -144,9 +185,9 @@ route.get('/studOutcome', async (req, res) =>
             const lot_percentage = ((c1_lot || 0) + (c2_lot || 0) + (a1_lot || 0) + (a2_lot || 0)) / (lot_total || 1) * 100;
             const mot_percentage = ((c1_mot || 0) + (c2_mot || 0)) / (mot_total || 1) * 100;
             const hot_percentage = ((c1_hot || 0) + (c2_hot || 0)) / (hot_total || 1) * 100;
-            const elot_percentage = (ese_lot || 0) / 25 * 100;
-            const emot_percentage = (ese_mot || 0) / 40 * 100;
-            const ehot_percentage = (ese_hot || 0) / 10 * 100;
+            const elot_percentage = (ese_lot || 0) / cal.e_lot * 100;
+            const emot_percentage = (ese_mot || 0) / cal.e_mot * 100;
+            const ehot_percentage = (ese_hot || 0) / cal.e_hot * 100;
 
             const lot_attainment = await calculateCategory(lot_percentage);
             const mot_attainment = await calculateCategory(mot_percentage);
@@ -158,6 +199,23 @@ route.get('/studOutcome', async (req, res) =>
             const overAll_lot = (lot_attainment * (cia_weightage / 100)) + (elot_attainment * (ese_weightage / 100));
             const overAll_mot = (mot_attainment * (cia_weightage / 100)) + (emot_attainment * (ese_weightage / 100));
             const overAll_hot = (hot_attainment * (cia_weightage / 100)) + (ehot_attainment * (ese_weightage / 100));
+
+            const average_score = (overAll_lot + overAll_mot + overAll_hot) / 3;
+
+            let final_grade = "N / A";
+
+            if (average_score >= 2.5) 
+            {
+                final_grade = "High";
+            } 
+            else if (average_score >= 1.5) 
+            {
+                final_grade = "Medium";
+            } 
+            else if (average_score >= 0) 
+            {
+                final_grade = "Low";
+            }
 
             return {
                 ...entry.dataValues,
@@ -175,15 +233,15 @@ route.get('/studOutcome', async (req, res) =>
                 ehot_attainment,
                 overAll_lot,
                 overAll_mot,
-                overAll_hot
+                overAll_hot,
+                final_grade
             }
         }))
         res.json(calculatedData);
-    } 
-    catch (error) 
-    {
+    }
+    catch (error) {
         console.error('Error Fetching Student Sections:', error);
-        res.status(500).json({ message: 'Error fetching student sections' });
+        res.status(500).json({ message: 'Error Fetching Student Sections:' });
     }
 })
 
@@ -207,24 +265,24 @@ async function calculateCategory(percentage)
         })
 
         if (!data) {
-            console.error("Calculation data not found for the Specified Academic Year");
+            console.error("Calculation Data not found for the Specified Academic Year");
             return null;
         }
 
         if (percentage >= data.so_l3_ug) {
             return 3;
-        } 
+        }
         else if (percentage >= data.so_l2_ug) {
             return 2;
-        } 
+        }
         else if (percentage >= data.so_l1_ug) {
             return 1;
-        } 
+        }
         else if (percentage > data.so_l0_ug) {
             return 0;
         }
         return 0;
-    } 
+    }
     catch (error) {
         console.error('Error fetching Academic or Calculation Data:', error);
     }

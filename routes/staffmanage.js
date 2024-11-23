@@ -3,6 +3,8 @@ const route = express.Router();
 
 const staffmaster = require('../models/staffmaster');
 const scope = require('../models/scope');
+const hod = require('../models/hod');
+const mentor = require('../models/mentor'); 
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -50,10 +52,10 @@ route.post('/newstaff', async (req, res) =>
             relationship_matrix: permissions.rsm ? 1 : 0,
             settings: permissions.setting ? 1 : 0,
         })
-        return res.json({ message: 'New staff and Permissions Added Successfully' });
+        return res.json({ message: 'New Staff and Permissions Added Successfully' });
     } 
     catch (err) {
-        console.error('Error inserting data into the database:', err);
+        console.error('Error Inserting Data into the DataBase:', err);
         return res.status(500).json({ message: 'Database error' });
     }
 })
@@ -68,17 +70,18 @@ route.put('/staffupdate',async (req,res)=>
     try
     {
         const updated_staff = await staffmaster.update(
-            { staff_name:newstaffname, 
-              staff_pass:newpassword,
-              staff_dept:newdept,
-              category:newcategory
+            { 
+                staff_name:newstaffname, 
+                staff_pass:newpassword,
+                staff_dept:newdept,
+                category:newcategory
             },
             { where: { staff_id: newstaffid } }
-        );
+        )
         res.json({ message: 'Staff Updated Successfully' })
     }
     catch(err) {
-        console.log("error while update")
+        console.log("Error while Update")
     }
 })
 
@@ -98,7 +101,35 @@ route.post('/staffdelete', async (req,res)=>
     }
     catch(err)
     {
-        console.log(err,"delete error")
+        console.log(err,"Delete Error")
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+route.get('/hod', async (req, res) => 
+{
+    try {
+        const hodData = await hod.findAll(); 
+        res.json(hodData); 
+    } 
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while fetching data from the HOD Table.' });
+    }
+});
+
+// ------------------------------------------------------------------------------------------------------- //
+
+route.get('/mentor', async (req, res) => 
+{
+    try {
+        const mentorData = await mentor.findAll(); 
+        res.json(mentorData); 
+    } 
+    catch (err) {
+        console.error(err); 
+        res.status(500).json({ error: 'An error occurred while fetching data from the Mentor Table.' });
     }
 })
 
