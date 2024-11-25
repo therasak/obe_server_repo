@@ -134,7 +134,7 @@ route.post('/adminstuoutcome', async (req, res) =>
 {
     const 
     { 
-        selectedAcademicYear, selectedCategory, selectedDepartment, 
+        academicYear, selectedCategory, selectedDepartment, 
         selectedClass, selectedSection, selectedSemester } = req.body;
 
     try 
@@ -142,10 +142,11 @@ route.post('/adminstuoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                active_sem: selectedAcademicYear,
+                active_sem: academicYear,
                 semester: selectedSemester,
                 course_id: selectedClass,
-                category: selectedCategory
+                category: selectedCategory,
+                section: selectedSection
             },
             attributes: ['reg_no']
         })
@@ -155,7 +156,7 @@ route.post('/adminstuoutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                active_sem: selectedAcademicYear
+                active_sem: academicYear
             }
         })
 
