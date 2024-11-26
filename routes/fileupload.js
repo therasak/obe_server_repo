@@ -287,8 +287,8 @@ route.post('/ese', upload.single('file'), async (req, res) =>
 
             const updatedData = {
                 ese_lot: row.ese_lot,
-                ese_hot: row.ese_hot,
                 ese_mot: row.ese_mot,
+                ese_hot: row.ese_hot,
                 ese_total: row.ese_total,
             };
 
@@ -301,7 +301,7 @@ route.post('/ese', upload.single('file'), async (req, res) =>
                 });
             }
         }
-        res.status(200).send('Department Mark Data Imported Successfully');
+        res.status(200).send('Mark Data Imported Successfully');
     }
     catch (error) {
         console.error(error);

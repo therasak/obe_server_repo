@@ -1,14 +1,105 @@
-
 const express = require('express');
-const route = express.Router();
+const router = express.Router();
+const CourseMapping = require('../models/coursemapping');
+const Report = require('../models/report');
 
-const coursemapping = require('../models/coursemapping');
-
-
-route.get('/staffcoursemanage', async (req,res)=>
-{
-    const staffcourse = await coursemapping.findAll();
+// Get all staff course details
+router.get('/staffcoursemanage', async (req, res) => {
+  try {
+    const staffcourse = await CourseMapping.findAll();
     res.json(staffcourse);
-})
+  } catch (error) {
+    console.error('Error fetching staff course data:', error);
+    res.status(500).json({ error: 'Error fetching staff data' });
+  }
+});
 
-module.exports=route;
+// Add a new staff record and corresponding report entry
+router.post('/addstaff', async (req, res) => {
+  try {
+    const {
+      staff_id, staff_name, category, section, course_id, course_code, course_title,
+      degree, batch, semester, dept_name, active_sem
+    } = req.body;
+
+    // Validate fields
+    if (!staff_id || !staff_name || !category || !section || !course_id || !course_code || 
+        !course_title || !degree || !batch || !semester || !dept_name || !active_sem) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Add a new course mapping
+    const newStaffCourse = await CourseMapping.create({
+      staff_id, staff_name, category, section, course_id, course_code, course_title,
+      degree, batch, semester, dept_name, active_sem
+    });
+
+    // Add a corresponding report entry
+    const newReport = await Report.create({
+      staff_id,
+      course_code,
+      category,
+      section,
+      dept_name,
+      active_sem,
+      cia_1: 0,
+      cia_2: 0,
+      ass_1: 0,
+      ass_2: 0,
+      ese: 0,
+      l_c1: 0,
+      l_c2: 0,
+      l_a1: 0,
+      l_a2: 0,
+      l_ese: 0
+    });
+
+    res.status(201).json({
+      message: 'Staff course and report added successfully!',
+      staff: newStaffCourse,
+      report: newReport
+    });
+  } catch (error) {
+    console.error('Error adding staff course:', error);
+    res.status(500).json({ error: 'Failed to add staff course' });
+  }
+});
+
+// Delete a specific staff-course entry
+router.delete('/deletestaff/:staffId/:courseCode', async (req, res) => {
+  const { staffId, courseCode } = req.params;
+
+  try {
+    // Delete the specific staff-course entry from CourseMapping table
+    const deletedStaffCourse = await CourseMapping.destroy({
+      where: {
+        staff_id: staffId,
+        course_code: courseCode
+      }
+    });
+
+    if (!deletedStaffCourse) {
+      return res.status(404).json({ error: 'Staff-course entry not found' });
+    }
+
+    // Delete the corresponding entry from Report table
+    const deletedReport = await Report.destroy({
+      where: {
+        staff_id: staffId,
+        course_code: courseCode
+      }
+    });
+
+    if (!deletedReport) {
+      return res.status(404).json({ error: 'Report entry not found' });
+    }
+
+    res.status(200).json({ message: 'Staff-course entry and corresponding report deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting staff-course entry:', error);
+    res.status(500).json({ error: 'Error deleting staff-course entry' });
+  }
+});
+
+module.exports = router;
+ 

@@ -383,26 +383,26 @@ route.get('/download/ese', async (req, res) =>
         const markData = await markentry.findAll();
         
         const formattedData = [
-            ['reg_no', 'course_code','ese_lot', 'ese_hot', 
-                'ese_mot', 'ese_total'],
+            ['reg_no', 'course_code','ese_lot', 'ese_mot', 'ese_hot', 
+                 'ese_total'],
             ...markData.map(entry => [
                 entry.reg_no,
                 entry.course_code,
                 entry.ese_lot,
-                entry.ese_hot,
                 entry.ese_mot,
+                entry.ese_hot,
                 entry.ese_total
             ])
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Dept Mark Entry Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'ESE Mark Entry Data');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
         res.setHeader('Content-Disposition', 'attachment; filename = Dept Mark Entry.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
-    } 
+    }
     catch (error) {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
@@ -418,13 +418,13 @@ route.get('/download/esemodel', async (req, res) =>
             const markData = await markentry.findAll();
             
             const formattedData = [
-                ['reg_no', 'course_code','ese_lot', 'ese_hot', 
-                    'ese_mot', 'ese_total'],
+                ['reg_no', 'course_code','ese_lot', 'ese_mot', 'ese_hot', 
+                     'ese_total'],
                 ];
 
                 const ws = XLSX.utils.aoa_to_sheet(formattedData);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Dept Mark Entry Data');
+                XLSX.utils.book_append_sheet(wb, ws, 'ESE Mark Entry Data');
                 const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
                 res.setHeader('Content-Disposition', 'attachment; filename = Dept Mark Entry.xlsx');
                 res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -562,71 +562,28 @@ route.get('/download/mentor', async (req, res) =>
     }
 })
 
+// ------------------------------------------------------------------------------------------------------- //
+
 // Sample Model File Download
 
 route.get('/download/mentormodel', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const mentorData = await mentor.findAll();
-    
-            const formattedData = [
-                ['sno', 'graduate', 'course_code', 'category','degree','dept_name','section','batch','staff_id','staff_name', 'active_sem'],
+        const mentorData = await mentor.findAll();
 
-            ]
+        const formattedData = [
+            ['sno', 'graduate', 'course_code', 'category','degree','dept_name','section','batch','staff_id','staff_name', 'active_sem'],
 
-            const ws = XLSX.utils.aoa_to_sheet(formattedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Mentor Data');
-    
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-    
-            res.setHeader('Content-Disposition', 'attachment; filename = Mentor Data.xlsx');
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            res.send(excelBuffer);
-        } 
-        catch (error) {
-            console.error('Error generating Excel file:', error);
-            res.status(500).send('Server error');
-        }
-    })
-    
-
-// ------------------------------------------------------------------------------------------------------- //
-
-// Mentor Excel Download
-
-route.get('/download/hod', async (req, res) => 
-    {
-        try 
-        {
-            const hodData = await hod.findAll();
-    
-            const formattedData = [
-                ['sno', 'graduate', 'course_id', 'category','degree','dept_name','section','batch','staff_id','hod_name','type'],
-            ...hodData.map((hod, index) => 
-            [ 
-                index + 1,
-                hod.graduate,
-                hod.course_id,
-                hod.category,
-                hod.degree,
-                hod.dept_name,                    
-                hod.section,
-                hod.batch,
-                hod.staff_id,            
-                hod.hod_name,
-                hod.type
-            ])
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Hod Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Mentor Data');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
 
-        res.setHeader('Content-Disposition', 'attachment; filename = Hod Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Mentor Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     } 
@@ -634,18 +591,63 @@ route.get('/download/hod', async (req, res) =>
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
+})   
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Mentor Excel Download
+
+route.get('/download/hod', async (req, res) => 
+{
+    try 
+    {
+        const hodData = await hod.findAll();
+
+        const formattedData = [
+            ['sno', 'graduate', 'course_id', 'category','degree','dept_name','section','batch','staff_id','hod_name','type'],
+        ...hodData.map((hod, index) => 
+        [ 
+            index + 1,
+            hod.graduate,
+            hod.course_id,
+            hod.category,
+            hod.degree,
+            hod.dept_name,                    
+            hod.section,
+            hod.batch,
+            hod.staff_id,            
+            hod.hod_name,
+            hod.type
+        ])]
+
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Hod Data');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+
+        res.setHeader('Content-Disposition', 'attachment; filename = Hod Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } 
+    catch (error) {
+        console.error('Error Generating Excel File :', error);
+        res.status(500).send('Server error');
+    }
 })
+
+// ------------------------------------------------------------------------------------------------------- //
 
 // Sample Model File Download
 
 route.get('/download/hodmodel', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const mentorData = await hod.findAll();
-    
-            const formattedData = [
-                ['sno', 'graduate', 'course_id', 'category','degree','dept_name','section','batch','staff_id','hod_name','type'],
+        const mentorData = await hod.findAll();
+
+        const formattedData = [
+            ['sno', 'graduate', 'course_id', 'category','degree','dept_name','section','batch','staff_id','hod_name','type'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
@@ -659,8 +661,8 @@ route.get('/download/hodmodel', async (req, res) =>
         res.send(excelBuffer);
     } 
     catch (error) {
-        console.error('Error generating Excel file:', error);
-        res.status(500).send('Server error');
+        console.error('Error Generating Excel File :', error);
+        res.status(500).send('Server Error');
     }
 })
 

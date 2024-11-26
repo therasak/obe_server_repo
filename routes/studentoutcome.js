@@ -6,6 +6,7 @@ const calculation = require('../models/calculation');
 const academic = require('../models/academic');
 const mentor = require('../models/mentor');
 const coursemapping = require('../models/coursemapping');
+const hod = require('../models/hod');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -30,7 +31,14 @@ route.post('/checkstaffId', async (req, res) =>
             active_sem: academicdata.academic_year
         }
     })
-    res.json({ courseHandleStaffId, tutorHandleStaffId });
+
+    const hodHandleStaffId = await hod.findOne({
+        where: {
+            staff_id: staff_id
+        }
+    })
+
+    res.json({ courseHandleStaffId, tutorHandleStaffId, hodHandleStaffId });
 })
 
 const getUniqueValues = (data, key) => {

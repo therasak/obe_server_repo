@@ -21,19 +21,7 @@ const hod = sequelize_conn.define('hod',
         type: DataTypes.STRING,
         allowNull: true
     },
-    degree: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
     dept_name: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    section: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    batch: {
         type: DataTypes.STRING,
         allowNull: true
     },
@@ -42,10 +30,6 @@ const hod = sequelize_conn.define('hod',
         allowNull: false,
     },
     hod_name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    type: {
         type: DataTypes.STRING,
         allowNull: false,
     }
