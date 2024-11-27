@@ -139,10 +139,10 @@ route.delete('/hod/:id', async (req, res) => {
 
 route.put('/hod/:id', async (req, res) => {
     const { id } = req.params;
-    const { hod_name, category, degree, dept_name } = req.body; // Fields to be updated
+    const { hod_name, graduate, course_id, category, dept_name } = req.body; // Fields to be updated
     try {
         const [updated] = await hod.update(
-            { hod_name, category, degree, dept_name },
+            { hod_name, graduate, course_id, category, dept_name },
             { where: { staff_id: id } }
         );
 
@@ -216,4 +216,3 @@ route.put("/mentor/:id", async (req, res) => {
   
 
 module.exports = route;
-
