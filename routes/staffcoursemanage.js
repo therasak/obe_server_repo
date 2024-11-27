@@ -65,41 +65,47 @@ router.post('/addstaff', async (req, res) => {
   }
 });
 
-// Delete a specific staff-course entry
-router.delete('/deletestaff/:staffId/:courseCode', async (req, res) => {
-  const { staffId, courseCode } = req.params;
+router.delete('/deletestaff', async (req, res) => {
+  const { staff_id, course_code, category, section, course_id } = req.query;
 
   try {
-    // Delete the specific staff-course entry from CourseMapping table
+    // Delete the specific staff-course entry from the CourseMapping table
     const deletedStaffCourse = await CourseMapping.destroy({
       where: {
-        staff_id: staffId,
-        course_code: courseCode
-      }
+        staff_id: staff_id,
+        course_code: course_code,
+        category: category,
+        section: section
+      },
     });
 
     if (!deletedStaffCourse) {
-      return res.status(404).json({ error: 'Staff-course entry not found' });
+      return res.status(404).json({ error: "Staff-course entry not found" });
     }
 
-    // Delete the corresponding entry from Report table
+    // Delete the corresponding entry from the Report table
     const deletedReport = await Report.destroy({
       where: {
-        staff_id: staffId,
-        course_code: courseCode
-      }
+        staff_id: staff_id,
+        course_code: course_code,
+        category: category,
+        section: section
+      },
     });
 
     if (!deletedReport) {
-      return res.status(404).json({ error: 'Report entry not found' });
+      return res.status(404).json({ error: "Report entry not found" });
     }
 
-    res.status(200).json({ message: 'Staff-course entry and corresponding report deleted successfully' });
+    res.status(200).json({
+      message: "Staff-course entry and corresponding report deleted successfully",
+    });
   } catch (error) {
-    console.error('Error deleting staff-course entry:', error);
-    res.status(500).json({ error: 'Error deleting staff-course entry' });
+    console.error("Error deleting staff-course entry:", error);
+    res.status(500).json({ error: "Error deleting staff-course entry" });
   }
 });
+
 
 module.exports = router;
  

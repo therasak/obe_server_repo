@@ -54,7 +54,8 @@ route.post('/checkTutorCOC', async (req, res) =>
         where: { staff_id: staff_id }
     })
 
-    const stuRegNo = await studentmaster.findAll({
+    const stuRegNo = await studentmaster.findAll(
+    {
         where: {
             category: tutorHandleStaffId.category,
             course_id: tutorHandleStaffId.course_id,

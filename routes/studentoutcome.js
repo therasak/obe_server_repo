@@ -138,6 +138,38 @@ route.get('/studentmaster', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
+route.post('/tutordetails', async (req, res) => 
+{
+    const {staffId} = req.body;
+    try 
+    {
+        const tutorDetails = await mentor.findOne({
+            where: {
+                staff_id : staffId
+            }
+        })
+
+        const studentSection = await studentmaster.findOne({
+            where: {
+                course_id : tutorDetails.course_id,
+                section : tutorDetails.section,
+                category : tutorDetails.category,
+                batch : tutorDetails.batch,
+                active_sem : tutorDetails.active_sem
+            },
+            attributes:['semester']
+        })
+    
+        res.json({tutorDetails, studentSection});
+    }
+    catch (error) {
+        console.error('Error Fetching Student Sections :', error);
+        res.status(500).json({ message: 'Error Fetching Student Sections' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
 route.post('/adminstuoutcome', async (req, res) => 
 {
     const 
@@ -155,6 +187,121 @@ route.post('/adminstuoutcome', async (req, res) =>
                 course_id: selectedClass,
                 category: selectedCategory,
                 section: selectedSection
+            },
+            attributes: ['reg_no']
+        })
+
+        const stud_regs = students.map(student => student.reg_no);
+
+        const marks = await markentry.findAll({
+            where: {
+                reg_no: stud_regs,
+                active_sem: academicYear
+            }
+        })
+
+        const academicdata = await academic.findOne({
+            where: { active_sem: 1 }
+        })
+
+        const cal = await calculation.findOne({
+            where: { active_sem: academicdata.academic_year }
+
+        })
+
+        const calculatedData = await Promise.all(marks.map(async entry => 
+        {
+            let {
+                c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0, ese_lot = 0,
+                c1_mot = 0, c2_mot = 0, ese_mot = 0,
+                c1_hot = 0, c2_hot = 0, ese_hot = 0 
+            } = entry.dataValues;
+
+            const lot_total = (cal.c1_lot || 0) + (cal.c2_lot || 0) + (cal.a1_lot || 0) + (cal.a2_lot || 0);
+            const mot_total = (cal.c1_mot || 0) + (cal.c2_mot || 0);
+            const hot_total = (cal.c1_hot || 0) + (cal.c2_hot || 0);
+            const cia_weightage = cal.cia_weightage || 0;
+            const ese_weightage = cal.ese_weightage || 0;
+
+            const lot_percentage = ((c1_lot || 0) + (c2_lot || 0) + (a1_lot || 0) + (a2_lot || 0)) / (lot_total || 1) * 100;
+            const mot_percentage = ((c1_mot || 0) + (c2_mot || 0)) / (mot_total || 1) * 100;
+            const hot_percentage = ((c1_hot || 0) + (c2_hot || 0)) / (hot_total || 1) * 100;
+            const elot_percentage = (ese_lot || 0) / cal.e_lot * 100;
+            const emot_percentage = (ese_mot || 0) / cal.e_mot * 100;
+            const ehot_percentage = (ese_hot || 0) / cal.e_hot * 100;
+
+            const lot_attainment = await calculateCategory(lot_percentage);
+            const mot_attainment = await calculateCategory(mot_percentage);
+            const hot_attainment = await calculateCategory(hot_percentage);
+            const elot_attainment = await calculateCategory(elot_percentage);
+            const emot_attainment = await calculateCategory(emot_percentage);
+            const ehot_attainment = await calculateCategory(ehot_percentage);
+
+            const overAll_lot = (lot_attainment * (cia_weightage / 100)) + (elot_attainment * (ese_weightage / 100));
+            const overAll_mot = (mot_attainment * (cia_weightage / 100)) + (emot_attainment * (ese_weightage / 100));
+            const overAll_hot = (hot_attainment * (cia_weightage / 100)) + (ehot_attainment * (ese_weightage / 100));
+
+            const average_score = (overAll_lot + overAll_mot + overAll_hot) / 3;
+
+            let final_grade = "N / A";
+
+            if (average_score >= 2.5) 
+            {
+                final_grade = "High";
+            } 
+            else if (average_score >= 1.5) 
+            {
+                final_grade = "Medium";
+            } 
+            else if (average_score >= 0) 
+            {
+                final_grade = "Low";
+            }
+
+            return {
+                ...entry.dataValues,
+                lot_percentage,
+                mot_percentage,
+                hot_percentage,
+                elot_percentage,
+                emot_percentage,
+                ehot_percentage,
+                lot_attainment,
+                mot_attainment,
+                hot_attainment,
+                elot_attainment,
+                emot_attainment,
+                ehot_attainment,
+                overAll_lot,
+                overAll_mot,
+                overAll_hot,
+                final_grade
+            }
+        }))
+        res.json(calculatedData);
+    }
+    catch (error) {
+        console.error('Error Fetching Student Sections:', error);
+        res.status(500).json({ message: 'Error Fetching Student Sections:' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+route.post('/tutorstuoutcome', async (req, res) => 
+{
+    const { category, department, deptId , semester, section, academicYear } = req.body;
+
+    try 
+    {
+        const students = await studentmaster.findAll(
+        {
+            where: {
+                active_sem: academicYear,
+                semester: semester,
+                course_id: deptId,
+                category: category,
+                section: section
             },
             attributes: ['reg_no']
         })

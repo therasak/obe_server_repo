@@ -9,6 +9,10 @@ const hod = sequelize_conn.define('hod',
         primaryKey: true,
         autoIncrement: true
     },
+    graduate: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     course_id: {
         type: DataTypes.STRING,
         allowNull: true

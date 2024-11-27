@@ -452,22 +452,18 @@ route.post('/hod', upload.single('file'), async (req, res) =>
 
         const activeSemester = activeAcademic.academic_year;
 
-        for (const row of rows) {
+        for (const row of rows) 
+        {
             await hod.upsert({
                 s_no: row.s_no,
                 graduate: row.graduate,
                 course_id: row.course_id,
                 category: row.category,
-                degree: row.degree,
                 dept_name: row.dept_name,
-                section: row.section,
-                batch: row.batch,
                 staff_id: row.staff_id,
                 hod_name: row.hod_name,
-                type: row.type
             });
         }
-
         res.status(200).send('HOD Data Imported and Updated Successfully');
     } 
     catch (error) {
@@ -475,5 +471,5 @@ route.post('/hod', upload.single('file'), async (req, res) =>
         res.status(500).send('An error occurred while processing the HOD file');
     }
 })
-
+    
 module.exports = route;

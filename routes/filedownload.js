@@ -605,20 +605,17 @@ route.get('/download/hod', async (req, res) =>
 
         const formattedData = [
             ['sno', 'graduate', 'course_id', 'category','degree','dept_name','section','batch','staff_id','hod_name','type'],
-        ...hodData.map((hod, index) => 
-        [ 
-            index + 1,
-            hod.graduate,
-            hod.course_id,
-            hod.category,
-            hod.degree,
-            hod.dept_name,                    
-            hod.section,
-            hod.batch,
-            hod.staff_id,            
-            hod.hod_name,
-            hod.type
-        ])]
+            ...hodData.map((hod, index) => 
+            [ 
+                index + 1,
+                hod.graduate,
+                hod.course_id,
+                hod.category,
+                hod.dept_name,                    
+                hod.staff_id,            
+                hod.hod_name,
+            ])
+        ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
@@ -631,7 +628,7 @@ route.get('/download/hod', async (req, res) =>
         res.send(excelBuffer);
     } 
     catch (error) {
-        console.error('Error Generating Excel File :', error);
+        console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
 })
@@ -647,7 +644,7 @@ route.get('/download/hodmodel', async (req, res) =>
         const mentorData = await hod.findAll();
 
         const formattedData = [
-            ['sno', 'graduate', 'course_id', 'category','degree','dept_name','section','batch','staff_id','hod_name','type'],
+            ['sno', 'graduate', 'course_id', 'category','dept_name','staff_id','hod_name'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
@@ -661,8 +658,8 @@ route.get('/download/hodmodel', async (req, res) =>
         res.send(excelBuffer);
     } 
     catch (error) {
-        console.error('Error Generating Excel File :', error);
-        res.status(500).send('Server Error');
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
     }
 })
 
