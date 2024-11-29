@@ -7,6 +7,7 @@ const academic = require('../models/academic');
 const mentor = require('../models/mentor');
 const coursemapping = require('../models/coursemapping');
 const hod = require('../models/hod');
+const rsmatrix = require('../models/rsmatrix');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -188,6 +189,57 @@ route.post('/checkTutorCOC', async (req, res) =>
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
+//Capso Calculation
+    for (const course_code of stud_coursecodes) {
+        if (!attainedScores.capso) {
+            attainedScores.capso = {};
+        }
+
+        const cop = await rsmatrix.findAll({
+            where: { course_code: course_code }
+        });
+
+        const lot = attainedScores.overall[course_code]?.lot;
+        const mot = attainedScores.overall[course_code]?.mot;
+        const hot = attainedScores.overall[course_code]?.hot;
+
+        for (const entry of cop) {
+            // console.log('check co1_pso1', course_code, entry.co1_pso1);
+            // console.log('lot', course_code, lot, ',', mot, ',', hot);
+
+            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
+                            (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
+                            (hot * entry.co1_pso5)) /
+                            (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
+            const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
+                            (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
+                            (hot * entry.co2_pso5)) /
+                            (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
+            const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
+                            (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
+                            (hot * entry.co3_pso5)) /
+                            (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
+            const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
+                            (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
+                            (hot * entry.co4_pso5)) /
+                            (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
+            const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
+                            (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+                            (hot * entry.co5_pso5)) /
+                            (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+
+            attainedScores.capso[course_code] = {
+                capso1,
+                capso2,
+                capso3,
+                capso4,
+                capso5,
+                capso: (capso1+capso2+capso3+capso4+capso5)/5,
+            };
+        }
+        // console.log(attainedScores.capso);
+
+    }
     res.json({attainedScores});
 })
 
@@ -316,6 +368,58 @@ route.post('/checkAdminCOC', async (req, res) =>
     
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
+    }
+
+    //Capso Calculation
+    for (const course_code of stud_coursecodes) {
+        if (!attainedScores.capso) {
+            attainedScores.capso = {};
+        }
+
+        const cop = await rsmatrix.findAll({
+            where: { course_code: course_code }
+        });
+
+        const lot = attainedScores.overall[course_code]?.lot;
+        const mot = attainedScores.overall[course_code]?.mot;
+        const hot = attainedScores.overall[course_code]?.hot;
+
+        for (const entry of cop) {
+            // console.log('check co1_pso1', course_code, entry.co1_pso1);
+            // console.log('lot', course_code, lot, ',', mot, ',', hot);
+
+            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
+                            (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
+                            (hot * entry.co1_pso5)) /
+                            (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
+            const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
+                            (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
+                            (hot * entry.co2_pso5)) /
+                            (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
+            const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
+                            (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
+                            (hot * entry.co3_pso5)) /
+                            (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
+            const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
+                            (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
+                            (hot * entry.co4_pso5)) /
+                            (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
+            const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
+                            (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+                            (hot * entry.co5_pso5)) /
+                            (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+
+            attainedScores.capso[course_code] = {
+                capso1,
+                capso2,
+                capso3,
+                capso4,
+                capso5,
+                capso: (capso1+capso2+capso3+capso4+capso5)/5,
+            };
+        }
+        // console.log(attainedScores.capso);
+
     }
     res.json({attainedScores});
 })
@@ -450,6 +554,57 @@ route.post('/checkCourseCOC', async (req, res) =>
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
+
+    //Capso Calculation
+    for (const course_code of stud_coursecodes) {
+        if (!attainedScores.capso) {
+            attainedScores.capso = {};
+        }
+
+        const cop = await rsmatrix.findAll({
+            where: { course_code: course_code }
+        });
+
+        const lot = attainedScores.overall[course_code]?.lot;
+        const mot = attainedScores.overall[course_code]?.mot;
+        const hot = attainedScores.overall[course_code]?.hot;
+
+        for (const entry of cop) {
+            // console.log('check co1_pso1', course_code, entry.co1_pso1);
+            // console.log('lot', course_code, lot, ',', mot, ',', hot);
+
+            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
+                            (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
+                            (hot * entry.co1_pso5)) /
+                            (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
+            const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
+                            (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
+                            (hot * entry.co2_pso5)) /
+                            (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
+            const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
+                            (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
+                            (hot * entry.co3_pso5)) /
+                            (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
+            const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
+                            (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
+                            (hot * entry.co4_pso5)) /
+                            (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
+            const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
+                            (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+                            (hot * entry.co5_pso5)) /
+                            (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+
+            attainedScores.capso[course_code] = {
+                capso1,
+                capso2,
+                capso3,
+                capso4,
+                capso5,
+                capso: (capso1+capso2+capso3+capso4+capso5)/5,
+            };
+        }
+        // console.log(attainedScores.capso);
+    }
     res.json({attainedScores});
 })
 
@@ -464,8 +619,9 @@ route.post('/checkHodCOC', async (req, res) =>
     const hodDeptHandle = await hod.findAll(
     {
         where: { 
-            staff_id: staff_id },
-            attributes: ['course_id']
+            staff_id: staff_id 
+        },
+        attributes: ['course_id']
     })  
 
     const hod_dept_id = [...new Set(hodDeptHandle.map(entry => entry.course_id))];
@@ -591,6 +747,57 @@ route.post('/checkHodCOC', async (req, res) =>
     
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
+    }
+
+    //Capso Calculation
+    for (const course_code of stud_coursecodes) {
+        if (!attainedScores.capso) {
+            attainedScores.capso = {};
+        }
+
+        const cop = await rsmatrix.findAll({
+            where: { course_code: course_code }
+        });
+
+        const lot = attainedScores.overall[course_code]?.lot;
+        const mot = attainedScores.overall[course_code]?.mot;
+        const hot = attainedScores.overall[course_code]?.hot;
+
+        for (const entry of cop) {
+            // console.log('check co1_pso1', course_code, entry.co1_pso1);
+            // console.log('lot', course_code, lot, ',', mot, ',', hot);
+
+            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
+                            (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
+                            (hot * entry.co1_pso5)) /
+                            (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
+            const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
+                            (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
+                            (hot * entry.co2_pso5)) /
+                            (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
+            const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
+                            (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
+                            (hot * entry.co3_pso5)) /
+                            (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
+            const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
+                            (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
+                            (hot * entry.co4_pso5)) /
+                            (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
+            const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
+                            (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+                            (hot * entry.co5_pso5)) /
+                            (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+
+            attainedScores.capso[course_code] = {
+                capso1,
+                capso2,
+                capso3,
+                capso4,
+                capso5,
+                capso: (capso1+capso2+capso3+capso4+capso5)/5,
+            };
+        }
+        // console.log(attainedScores.capso);
     }
     res.json({attainedScores});
 })

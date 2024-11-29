@@ -3,10 +3,15 @@ const sequelize_conn = require('./dbconnection');
 
 const studentmaster = sequelize_conn.define('studentmaster',
 {
+    s_no: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true
+    },
     reg_no : {
         type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: true
     },
     stu_name : {
         type: DataTypes.STRING,

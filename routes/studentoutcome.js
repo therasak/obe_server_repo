@@ -526,7 +526,7 @@ route.post('/hoduoutcome', async (req, res) =>
 route.post('/staffstuoutcome', async (req, res) => 
     {
         const { academicYear, selectedCategory, selectedDepartment, selectedClass, selectedSection, selectedSemester, staffId } = req.body;
-        console.log(academicYear, selectedCategory, selectedDepartment, selectedClass, selectedSection, selectedSemester, staffId)
+        // console.log(academicYear, selectedCategory, selectedDepartment, selectedClass, selectedSection, selectedSemester, staffId)
         try 
         {
             const students = await studentmaster.findAll(
@@ -541,7 +541,7 @@ route.post('/staffstuoutcome', async (req, res) =>
                 attributes: ['reg_no']
             })
 
-            const course_mapping = await coursemapping.findOne({
+            const course_mapping = await coursemapping.findAll({
                 where: {
                     active_sem: academicYear,
                     semester: selectedSemester,
@@ -553,10 +553,12 @@ route.post('/staffstuoutcome', async (req, res) =>
                 attributes: ['course_code']
             });
             
+
             // Extract course_code from the result
-            const course_code = course_mapping ? course_mapping.course_code : null;
+            const course_codes = course_mapping.map((mapping) => mapping.course_code);
+
             
-            if (!course_code) {
+            if (!course_codes) {
                 throw new Error("Course code not found for the given criteria.");
             }
             
@@ -566,7 +568,7 @@ route.post('/staffstuoutcome', async (req, res) =>
                 where: {
                     reg_no: stud_regs,
                     active_sem: academicYear,
-                    course_code: course_code // Use the extracted string
+                    course_code: course_codes // Use the extracted string
                 }
             });
     
@@ -699,7 +701,7 @@ async function calculateCategory(percentage)
     }
 }
 
-module.exports = route;
+
 
 
 
@@ -715,9 +717,9 @@ module.exports = route;
 
 
 // category
-route.get('/category', async (req, res) => {
+route.get('/category/:staffId', async (req, res) => {
     const { staffId } = req.query;
-    // console.log(staffId);
+    console.log(staffId);
     try {
         const staffcategory = await coursemapping.findAll({
             where: {
@@ -727,7 +729,7 @@ route.get('/category', async (req, res) => {
         res.json(staffcategory);
     } catch (err) {
         console.log(err);
-    }
+}
 })
 //-------------------------------------------------------
 //coursemapping for studendoutcome
@@ -819,3 +821,5 @@ route.post('/hoduoutcome', async (req, res) => {
         res.json({ "message": "error" })
     }
 });
+
+module.exports = route;

@@ -5,6 +5,8 @@ const staffmaster = require('../models/staffmaster');
 const scope = require('../models/scope');
 const hod = require('../models/hod');
 const mentor = require('../models/mentor'); 
+const coursemapping = require('../models/coursemapping'); 
+const report = require('../models/report'); 
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -89,19 +91,34 @@ route.put('/staffupdate',async (req,res)=>
 
 // Staff Deletion
 
-route.post('/staffdelete', async (req,res)=>
+route.post('/staffdelete', async (req, res) => 
 {
-    const {deletestaffid}=req.body;
-    try
+    const { deletestaffid } = req.body;
+
+    try 
     {
         const deleteresult = await staffmaster.destroy({
             where: { staff_id: deletestaffid }
         })
-        res.json({message:"Staff Successfully Deleted"})
+        const deletestaffcoursemap = await coursemapping.destroy({
+            where: { staff_id: deletestaffid }
+        })
+        const tuturedelete = await mentor.destroy({
+            where: { staff_id: deletestaffid }
+        })
+
+        const hoddelete = await hod.destroy({
+            where: { staff_id: deletestaffid }
+        })
+
+        const reportdelete = await report.destroy({
+            where: { staff_id: deletestaffid }
+        })
+    
+        res.json({ message: "Staff Successfully Deleted" })
     }
-    catch(err)
-    {
-        console.log(err,"Delete Error")
+    catch (err) {
+        console.log(err, "Error in Delete")
     }
 })
 
@@ -109,7 +126,8 @@ route.post('/staffdelete', async (req,res)=>
 
 route.get('/hod', async (req, res) => 
 {
-    try {
+    try 
+    {
         const hodData = await hod.findAll(); 
         res.json(hodData); 
     } 
@@ -118,6 +136,8 @@ route.get('/hod', async (req, res) =>
         res.status(500).json({ error: 'An error occurred while fetching data from the HOD Table.' });
     }
 });
+
+// ------------------------------------------------------------------------------------------------------- //
 
 route.delete('/hod/:id', async (req, res) => {
     const { id } = req.params; // Extract the ID from the route parameter
