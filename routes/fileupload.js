@@ -7,12 +7,12 @@ const XLSX = require('xlsx');
 const academic = require('../models/academic');
 const coursemapping = require('../models/coursemapping');
 const report = require('../models/report');
-const studentmaster = require('../models/studentmaster');
-const staffmaster = require('../models/staffmaster');
 const markentry = require('../models/markentry');
 const scope = require('../models/scope');
 const mentor = require('../models/mentor');
 const hod = require('../models/hod');
+const studentmaster = require('../models/studentmaster');
+const staffmaster = require('../models/staffmaster');
 
 // ------------------------------------------------------------------------------------------------------- //
 

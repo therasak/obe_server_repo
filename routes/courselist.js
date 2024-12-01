@@ -83,7 +83,6 @@ route.post('/report/status', async (req, res) =>
         )
         
         res.status(200).json({status: isCompleted ? 'Completed' : 'Pending',courseMappingStatus});
-        // console.log(courseMappingStatus);
     }
     catch (err) {
         res.status(500).json({ error: 'An error occurred while fetching data.' });
@@ -175,6 +174,7 @@ route.post('/studentdetails', async (req, res) =>
 route.get('/getreport', async (req, res) => 
 {
     const { courseCode, deptName, section, category, academicYear } = req.query;
+    
     const checkActive = await report.findOne({
         where: {
             course_code: courseCode,

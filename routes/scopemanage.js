@@ -23,7 +23,8 @@ route.put('/updateScope', async (req, res) =>
         for (const staffId of staffIds) 
         {
             const updateData = updates[staffId];
-            await scope.update(updateData, {
+            await scope.update(updateData, 
+            {
                 where: {
                     staff_id: staffId,
                 }

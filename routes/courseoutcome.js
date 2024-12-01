@@ -189,8 +189,11 @@ route.post('/checkTutorCOC', async (req, res) =>
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
-//Capso Calculation
-    for (const course_code of stud_coursecodes) {
+    
+    // Capso Calculation
+
+    for (const course_code of stud_coursecodes) 
+    {
         if (!attainedScores.capso) {
             attainedScores.capso = {};
         }
@@ -203,10 +206,8 @@ route.post('/checkTutorCOC', async (req, res) =>
         const mot = attainedScores.overall[course_code]?.mot;
         const hot = attainedScores.overall[course_code]?.hot;
 
-        for (const entry of cop) {
-            // console.log('check co1_pso1', course_code, entry.co1_pso1);
-            // console.log('lot', course_code, lot, ',', mot, ',', hot);
-
+        for (const entry of cop) 
+        {
             const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
                             (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
                             (hot * entry.co1_pso5)) /
@@ -228,7 +229,8 @@ route.post('/checkTutorCOC', async (req, res) =>
                             (hot * entry.co5_pso5)) /
                             (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
 
-            attainedScores.capso[course_code] = {
+            attainedScores.capso[course_code] = 
+            {
                 capso1,
                 capso2,
                 capso3,
@@ -237,8 +239,6 @@ route.post('/checkTutorCOC', async (req, res) =>
                 capso: (capso1+capso2+capso3+capso4+capso5)/5,
             };
         }
-        // console.log(attainedScores.capso);
-
     }
     res.json({attainedScores});
 })
@@ -370,8 +370,10 @@ route.post('/checkAdminCOC', async (req, res) =>
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
 
-    //Capso Calculation
-    for (const course_code of stud_coursecodes) {
+    // Capso Calculation
+
+    for (const course_code of stud_coursecodes) 
+    {
         if (!attainedScores.capso) {
             attainedScores.capso = {};
         }
@@ -384,10 +386,8 @@ route.post('/checkAdminCOC', async (req, res) =>
         const mot = attainedScores.overall[course_code]?.mot;
         const hot = attainedScores.overall[course_code]?.hot;
 
-        for (const entry of cop) {
-            // console.log('check co1_pso1', course_code, entry.co1_pso1);
-            // console.log('lot', course_code, lot, ',', mot, ',', hot);
-
+        for (const entry of cop) 
+        {
             const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
                             (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
                             (hot * entry.co1_pso5)) /
@@ -409,7 +409,8 @@ route.post('/checkAdminCOC', async (req, res) =>
                             (hot * entry.co5_pso5)) /
                             (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
 
-            attainedScores.capso[course_code] = {
+            attainedScores.capso[course_code] = 
+            {
                 capso1,
                 capso2,
                 capso3,
@@ -418,8 +419,6 @@ route.post('/checkAdminCOC', async (req, res) =>
                 capso: (capso1+capso2+capso3+capso4+capso5)/5,
             };
         }
-        // console.log(attainedScores.capso);
-
     }
     res.json({attainedScores});
 })
@@ -555,8 +554,10 @@ route.post('/checkCourseCOC', async (req, res) =>
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
 
-    //Capso Calculation
-    for (const course_code of stud_coursecodes) {
+    // Capso Calculation
+
+    for (const course_code of stud_coursecodes) 
+    {
         if (!attainedScores.capso) {
             attainedScores.capso = {};
         }
@@ -569,10 +570,8 @@ route.post('/checkCourseCOC', async (req, res) =>
         const mot = attainedScores.overall[course_code]?.mot;
         const hot = attainedScores.overall[course_code]?.hot;
 
-        for (const entry of cop) {
-            // console.log('check co1_pso1', course_code, entry.co1_pso1);
-            // console.log('lot', course_code, lot, ',', mot, ',', hot);
-
+        for (const entry of cop) 
+        {
             const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
                             (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
                             (hot * entry.co1_pso5)) /
@@ -594,7 +593,8 @@ route.post('/checkCourseCOC', async (req, res) =>
                             (hot * entry.co5_pso5)) /
                             (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
 
-            attainedScores.capso[course_code] = {
+            attainedScores.capso[course_code] = 
+            {
                 capso1,
                 capso2,
                 capso3,
@@ -603,7 +603,6 @@ route.post('/checkCourseCOC', async (req, res) =>
                 capso: (capso1+capso2+capso3+capso4+capso5)/5,
             };
         }
-        // console.log(attainedScores.capso);
     }
     res.json({attainedScores});
 })
@@ -749,8 +748,10 @@ route.post('/checkHodCOC', async (req, res) =>
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
 
-    //Capso Calculation
-    for (const course_code of stud_coursecodes) {
+    // Capso Calculation
+
+    for (const course_code of stud_coursecodes) 
+    {
         if (!attainedScores.capso) {
             attainedScores.capso = {};
         }
@@ -763,10 +764,8 @@ route.post('/checkHodCOC', async (req, res) =>
         const mot = attainedScores.overall[course_code]?.mot;
         const hot = attainedScores.overall[course_code]?.hot;
 
-        for (const entry of cop) {
-            // console.log('check co1_pso1', course_code, entry.co1_pso1);
-            // console.log('lot', course_code, lot, ',', mot, ',', hot);
-
+        for (const entry of cop) 
+        {
             const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
                             (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
                             (hot * entry.co1_pso5)) /
@@ -788,7 +787,8 @@ route.post('/checkHodCOC', async (req, res) =>
                             (hot * entry.co5_pso5)) /
                             (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
 
-            attainedScores.capso[course_code] = {
+            attainedScores.capso[course_code] = 
+            {
                 capso1,
                 capso2,
                 capso3,
@@ -797,7 +797,6 @@ route.post('/checkHodCOC', async (req, res) =>
                 capso: (capso1+capso2+capso3+capso4+capso5)/5,
             };
         }
-        // console.log(attainedScores.capso);
     }
     res.json({attainedScores});
 })

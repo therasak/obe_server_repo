@@ -58,39 +58,56 @@ route.get('/studentpiechart', async (req, res) =>
 {
     try 
     {
-        const studentPieData = await studentmaster.findAll();
-
-        const categoryCounts = {};
-
-        studentPieData.forEach(student => 
+        const academicdata = await academic.findOne(
         {
-            const category = student.category;
-            if (category) {
-                if (!categoryCounts[category]) {
-                    categoryCounts[category] = 0;
-                }
-                categoryCounts[category]++;
+            where: { active_sem: 1 }
+        });
+
+        const totalStudents = await studentmaster.count(
+        {
+            where: { 
+                active_sem: academicdata.academic_year 
             }
         });
 
-        const result = Object.keys(categoryCounts).map(key => ({
-            type: key,
-            count: categoryCounts[key]
-        }));
+        const aidedCount = await studentmaster.count(
+        {
+            where: { 
+                category: 'AIDED', 
+                active_sem: academicdata.academic_year 
+            }
+        });
 
-        const aided = await studentmaster.count({ where: {
-            category: 'AIDED'
-        }})
-        const sfm = await studentmaster.count({ where: {
-            category: 'SFM'
-        }})
-        const sfw = await studentmaster.count({ where: {
-            category: 'SFW'
-        }})
-        res.json({ data: result, aided, sfm, sfw });
-    }
+        const sfmCount = await studentmaster.count(
+        {
+            where: { 
+                category: 'SFM', 
+                active_sem: academicdata.academic_year 
+            }
+        });
+
+        const sfwCount = await studentmaster.count(
+        {
+            where: { 
+                category: 'SFW', 
+                active_sem: academicdata.academic_year 
+            }
+        });
+
+        const result = 
+        {
+            total: totalStudents,
+            categories: [
+                { label: 'AIDED', count: aidedCount, percentage: ((aidedCount / totalStudents) * 100).toFixed(1) },
+                { label: 'SFM', count: sfmCount, percentage: ((sfmCount / totalStudents) * 100).toFixed(1) },
+                { label: 'SFW', count: sfwCount, percentage: ((sfwCount / totalStudents) * 100).toFixed(1) },
+            ]
+        }
+
+        res.json(result);
+    } 
     catch (error) {
-        console.error('Error fetching student pie data:', error);
+        console.error('Error Fetching Student Pie Data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
@@ -103,48 +120,33 @@ route.get('/staffpiechart', async (req, res) =>
 {
     try 
     {
-        const staffData = await staffmaster.findAll();
-        const categoryCounts = {};
+        const totalStaff = await staffmaster.count();
 
-        staffData.forEach(staff => 
+        const aidedCount = await staffmaster.count({ where: { category: 'AIDED' } });
+        const sfmCount = await staffmaster.count({ where: { category: 'SFM' } });
+        const sfwCount = await staffmaster.count({ where: { category: 'SFW' } });
+
+        const result = 
         {
-            const category = staff.category;
-            if (category) {
-                if (!categoryCounts[category]) {
-                    categoryCounts[category] = 0;
-                }
-                categoryCounts[category]++;
-            }
-        });
+            total: totalStaff,
+            categories: [
+                { label: 'AIDED', count: aidedCount, percentage: ((aidedCount / totalStaff) * 100).toFixed(1) },
+                { label: 'SFM', count: sfmCount, percentage: ((sfmCount / totalStaff) * 100).toFixed(1) },
+                { label: 'SFW', count: sfwCount, percentage: ((sfwCount / totalStaff) * 100).toFixed(1) },
+            ]
+        }
 
-        const result = Object.keys(categoryCounts).map(key => ({
-            type: key,
-            count: categoryCounts[key]
-        }));
-
-        const aided = await staffmaster.count({ where: {
-            category: 'AIDED'
-        }});
-
-        const sfm = await staffmaster.count({ where: {
-            category: 'SFM'
-        }});
-
-        const sfw = await staffmaster.count({ where: {
-            category: 'SFW'
-        }});
-
-        res.json({ data: result, aided, sfm, sfw });
-    }
+        res.json(result);
+    } 
     catch (error) {
         console.error('Error fetching staff pie data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-});
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Component Report Table
+// Course Mapping Completion Status
 
 route.post('/componentreport', async (req, res) => 
 {
@@ -155,19 +157,21 @@ route.post('/componentreport', async (req, res) =>
         })
 
         const totalCount = await report.count({
-            where: {active_sem: String(academicdata.academic_year)}
+            where: {
+                active_sem: String(academicdata.academic_year)
+            }
         });
 
         const cia_1 = await report.count({
             where: {
-                active_sem: String(academicdata.academic_year),
+                active_sem: academicdata.academic_year,
                 cia_1: '2'
             }
         });
 
         const cia_2 = await report.count({
             where: {
-                active_sem: String(academicdata.academic_year),
+                active_sem: academicdata.academic_year,
                 cia_2: '2'
             }
         });
@@ -209,7 +213,26 @@ route.post('/processedChartData', async (req, res) =>
 {
     try 
     {
-        const course_codes = await report.findAll({
+        const academicdata = await academic.findOne({
+            where: { active_sem: 1 }
+        })
+
+        const courseCode = await report.findAll(
+        {
+            where: {
+                active_sem: String(academicdata.academic_year),
+            },
+            attributes: ['course_code']
+        })
+
+        const unique_coursecodes = [...new Set(courseCode.map((entry) => entry.course_code)),];
+
+        const countUniqueCourseCodes = unique_coursecodes.length;
+        
+        const course_codes = await report.findAll(
+        {   where: {
+                active_sem: String(academicdata.academic_year),
+            },
             attributes: ['course_code', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'],
         });
 
@@ -240,7 +263,7 @@ route.post('/processedChartData', async (req, res) =>
             if (allEseEqual2) counts.ese++;
         }
         
-        res.status(200).json({ uniqueCourseCodes: stud_coursecodes, counts }); 
+        res.status(200).json({ countUniqueCourseCodes, counts }); 
     } 
     catch (error) {
         console.error('Error processing chart data:', error);

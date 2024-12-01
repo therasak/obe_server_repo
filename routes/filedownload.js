@@ -10,7 +10,6 @@ const scope = require('../models/scope');
 const mentor = require('../models/mentor');
 const hod = require('../models/hod');
 
-
 // ------------------------------------------------------------------------------------------------------- //
 
 // Course Mapping Downlaod Excel 
@@ -54,32 +53,34 @@ route.get('/download/coursemap', async (req, res) =>
     }
 })
 
+// ------------------------------------------------------------------------------------------------------- //
+
 // Sample Model File Download
 
 route.get('/download/coursemapmodel', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const courseData = await coursemapping.findAll();
-            
-            const formattedData = [
-                ['category', 'batch', 'course_id', 'degree', 'dept_name', 'semester', 
-                    'section', 'course_code', 'staff_id', 'staff_name', 'course_title', 'active_sem'],
-            ]
+        const courseData = await coursemapping.findAll();
+        
+        const formattedData = [
+            ['category', 'batch', 'course_id', 'degree', 'dept_name', 'semester', 
+                'section', 'course_code', 'staff_id', 'staff_name', 'course_title', 'active_sem'],
+        ]
 
-            const ws = XLSX.utils.aoa_to_sheet(formattedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Course Mapping Data');
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-            res.setHeader('Content-Disposition', 'attachment; filename = Course Mapping Data.xlsx');
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            res.send(excelBuffer);
-        } 
-        catch (error) {
-            console.error('Error generating Excel file:', error);
-            res.status(500).send('Server error');
-        }
-    })
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Course Mapping Data');
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename = Course Mapping Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } 
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+})
 // ------------------------------------------------------------------------------------------------------- //
     
 // Staff Master Download Excel
@@ -115,34 +116,34 @@ route.get('/download/staff', async (req, res) =>
     }
 })
 
+// ------------------------------------------------------------------------------------------------------- //
    
 // Sample Model File Download
 
 route.get('/download/staffmodel', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const staffData = await staffmaster.findAll();
-            const formattedData = [
-                ['staff_id', 'staff_name', 'staff_pass', 'staff_dept', 'category'],
+        const staffData = await staffmaster.findAll();
+        const formattedData = [
+            ['staff_id', 'staff_name', 'staff_pass', 'staff_dept', 'category'],
 
-            ]
+        ]
 
-            const ws = XLSX.utils.aoa_to_sheet(formattedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Staff Data');
-            const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-            res.setHeader('Content-Disposition', 'attachment; filename = Staff Master Data.xlsx');
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            res.send(excelBuffer);
-        }
-        catch (error) {
-            console.error('Error generating Excel file:', error);
-            res.status(500).send('Server error');
-        }
-    })
-    
-    
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Staff Data');
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename = Staff Master Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    }
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+})
+
 // ------------------------------------------------------------------------------------------------------- //
     
 // Student Master Excel Download
@@ -184,35 +185,35 @@ route.get('/download/studentmaster', async (req, res) =>
     }
 })
 
+// ------------------------------------------------------------------------------------------------------- //
+
 // Sample Model File Download
  
 route.get('/download/studentmastermodel', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const studentData = await studentmaster.findAll();
-    
-            const formattedData = [
-                ['reg_no', 'stu_name', 'course_id', 'category', 'semester', 
-                    'section', 'batch', 'mentor', 'emis', 'active_sem'],
+        const studentData = await studentmaster.findAll();
 
-                ];
+        const formattedData = [
+            ['reg_no', 'stu_name', 'course_id', 'category', 'semester', 
+                'section', 'batch', 'mentor', 'emis', 'active_sem'],
+        ];
 
-                const ws = XLSX.utils.aoa_to_sheet(formattedData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Student Master Data');
-                const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-                res.setHeader('Content-Disposition', 'attachment; filename = Student Master Data.xlsx');
-                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.send(excelBuffer);
-            } 
-            catch (error) {
-                console.error('Error generating Excel file:', error);
-                res.status(500).send('Server error');
-            }
-        })
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Student Master Data');
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename = Student Master Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } 
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+})
         
-    
 // ------------------------------------------------------------------------------------------------------- //
 
 // Scope Excel Download
@@ -223,7 +224,8 @@ route.get('/download/scope', async (req, res) =>
     {
         const scopeData = await scope.findAll();
 
-        const formattedData = [
+        const formattedData = 
+        [
             ['staff_id', 'role', 'dashboard', 'course_list', 'course_outcome', 
                 'student_outcome', 'program_outcome', 'program_specific_outcome', 
                 'mentor_report', 'hod_report', 'report', 'input_files', 
@@ -262,35 +264,38 @@ route.get('/download/scope', async (req, res) =>
     }
 });
 
+// ------------------------------------------------------------------------------------------------------- //
+
 // Sample Model File Download
 
 route.get('/download/scopemodel', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const scopeData = await scope.findAll();
-    
-            const formattedData = [
-                ['staff_id', 'role', 'dashboard', 'course_list', 'course_outcome', 
-                    'student_outcome', 'program_outcome', 'program_specific_outcome', 
-                    'mentor_report', 'hod_report', 'report', 'input_files', 
-                    'manage', 'relationship_matrix', 'settings', 'logout'],
+        const scopeData = await scope.findAll();
 
-                ]
+        const formattedData = [
+            ['staff_id', 'role', 'dashboard', 'course_list', 'course_outcome', 
+                'student_outcome', 'program_outcome', 'program_specific_outcome', 
+                'mentor_report', 'hod_report', 'report', 'input_files', 
+                'manage', 'relationship_matrix', 'settings', 'logout'
+            ],
+        ]
 
-                const ws = XLSX.utils.aoa_to_sheet(formattedData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Scope Data');
-                const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-                res.setHeader('Content-Disposition', 'attachment; filename = Scope Data.xlsx'); 
-                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.send(excelBuffer);
-            } 
-            catch (error) {
-                console.error('Error generating Excel file:', error);
-                res.status(500).send('Server error');
-            }
-        });
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Scope Data');
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename = Scope Data.xlsx'); 
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } 
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+})
+
 // ------------------------------------------------------------------------------------------------------- //
 
 // Student Mark Entry Excel Download
@@ -342,35 +347,35 @@ route.get('/download/mark', async (req, res) =>
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
-});
+})
+
+// ------------------------------------------------------------------------------------------------------- //
     
 // Sample Model File Download
 
-
 route.get('/download/markmodel', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const markData = await markentry.findAll();
-            const formattedData = [
-                ['s_no', 'batch', 'category', 'course_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_hot', 'c1_mot', 'c1_total',
-                    'c2_lot', 'c2_hot', 'c2_mot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_hot', 'ese_mot', 'ese_total'],
+        const markData = await markentry.findAll();
+        const formattedData = [
+            ['s_no', 'batch', 'category', 'course_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_hot', 'c1_mot', 'c1_total',
+            'c2_lot', 'c2_hot', 'c2_mot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_hot', 'ese_mot', 'ese_total'],
+        ]
 
-                ]
-
-                const ws = XLSX.utils.aoa_to_sheet(formattedData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Mark Data');
-                const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-                res.setHeader('Content-Disposition', 'attachment; filename = Mark Entry Data.xlsx');
-                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.send(excelBuffer);
-            }
-            catch (error) {
-                console.error('Error generating Excel file:', error);
-                res.status(500).send('Server error');
-            }
-        });
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Mark Data');
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename = Mark Entry Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    }
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+})
 
 // ------------------------------------------------------------------------------------------------------- //
     
@@ -409,32 +414,35 @@ route.get('/download/ese', async (req, res) =>
     }
 });
 
+// ------------------------------------------------------------------------------------------------------- //
+
 // Sample Model File Download
 
 route.get('/download/esemodel', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const markData = await markentry.findAll();
-            
-            const formattedData = [
-                ['reg_no', 'course_code','ese_lot', 'ese_mot', 'ese_hot', 
-                     'ese_total'],
-                ];
+        const markData = await markentry.findAll();
+        
+        const formattedData = [
+            ['reg_no', 'course_code','ese_lot', 'ese_mot', 'ese_hot', 
+                    'ese_total'],
+        ];
 
-                const ws = XLSX.utils.aoa_to_sheet(formattedData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'ESE Mark Entry Data');
-                const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-                res.setHeader('Content-Disposition', 'attachment; filename = Dept Mark Entry.xlsx');
-                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.send(excelBuffer);
-            } 
-            catch (error) {
-                console.error('Error generating Excel file:', error);
-                res.status(500).send('Server error');
-            }
-        });
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'ESE Mark Entry Data');
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename = Dept Mark Entry.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } 
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+});
+
 // ------------------------------------------------------------------------------------------------------- //
 
 // Report Excel Download
@@ -487,37 +495,38 @@ route.get('/download/report', async (req, res) =>
     }
 })
 
+// ------------------------------------------------------------------------------------------------------- //
 
 // Sample Model File Download
 
 route.get('/download/reportmodel', async (req, res) => 
+{
+    try 
     {
-        try 
-        {
-            const reportData = await report.findAll();
-    
-            const formattedData = [
-                ['sno', 'staff_id', 'course_code', 'category', 'section', 'dept_name', 
-                 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese', 
-                 'l_c1', 'l_c2', 'l_a1', 'l_a2', 'l_ese', 'active_sem'],
+        const reportData = await report.findAll();
 
-                ]
+        const formattedData = [
+            ['sno', 'staff_id', 'course_code', 'category', 'section', 'dept_name', 
+            'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese', 
+            'l_c1', 'l_c2', 'l_a1', 'l_a2', 'l_ese', 'active_sem'],
+        ]
 
-                const ws = XLSX.utils.aoa_to_sheet(formattedData);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Report Data');
-        
-                const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        
-                res.setHeader('Content-Disposition', 'attachment; filename = Report Data.xlsx');
-                res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-                res.send(excelBuffer);
-            } 
-            catch (error) {
-                console.error('Error generating Excel file:', error);
-                res.status(500).send('Server error');
-            }
-        })
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Report Data');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+
+        res.setHeader('Content-Disposition', 'attachment; filename = Report Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    } 
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+})
+
 // ------------------------------------------------------------------------------------------------------- //
 
 // Mentor Excel Download
@@ -574,7 +583,6 @@ route.get('/download/mentormodel', async (req, res) =>
 
         const formattedData = [
             ['sno', 'graduate', 'course_code', 'category','degree','dept_name','section','batch','staff_id','staff_name', 'active_sem'],
-
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
