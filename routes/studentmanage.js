@@ -9,23 +9,27 @@ const { where } = require("sequelize");
 
 // Student Details Fetching 
 
-route.get('/studetails', async (req, res) => {
+route.get('/studetails', async (req, res) => 
+{
 	const activeAcademic = await academic.findOne({
 		where: { active_sem: 1 },
 	})
+
 	const studata = await studentmaster.findAll({
 		where: { active_sem: activeAcademic.academic_year, course_id: 'MCA' },
-	});
+	})
+
 	res.json(studata);
 })
 
 // ------------------------------------------------------------------------------------------------------- //
 
-//fetch category
+// Fetch Category
 
-route.get('/category', async (req, res) => {
-	try {
-		// Fetch active academic year
+route.get('/category', async (req, res) => 
+{
+	try 
+	{
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
 		});
@@ -36,65 +40,63 @@ route.get('/category', async (req, res) => {
 		}
 
 		const activeSemester = activeAcademic.academic_year;
-		// console.log('Active Semester:', activeSemester);
 
-		// Fetch categories for the active semester
+		// Fetch Categories for the Active Semester
+
 		const categories = await studentmaster.findAll({
 			where: { active_sem: activeSemester },
-			attributes: ['category'], // Select only the 'category' column
+			attributes: ['category'], 
 		});
 
-		// Extract unique categories
+		// Extract Unique Categories
+
 		const uniqueCategory = [...new Set(categories.map(entry => entry.category))];
 
-		// Log and respond with the unique categories
-		// console.log('Unique Categories:', uniqueCategory);
 		res.json(uniqueCategory);
-	} catch (error) {
+	} 
+	catch (error) {
 		console.error('Error fetching categories:', error);
 		res.status(500).json({ error: 'Failed to fetch categories' });
 	}
-});
+})
 
 //-----------------------------------------------------------------------------------------------------------//
-//get course id based on the selected category
 
-route.post('/courseid', async (req, res) => {
-	try {
-		const { category } = req.body; // Extract category from the request body
-		// console.log("Received category:", category);
+// Get Course Id based on the Selected Category
 
-		// Get the active semester
+route.post('/courseid', async (req, res) => 
+{
+	try 
+	{
+		const { category } = req.body; 
+
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
-		});
+		})
 
 		if (!activeAcademic) {
-			return res.status(404).json({ error: "Active academic year not found" });
+			return res.status(404).json({ error: "Active Academic Year not Found" });
 		}
 
 		const activeSemester = activeAcademic.academic_year;
 
-		// Find course IDs for the selected category and active semester
-		const courseid = await studentmaster.findAll({
-			where: { active_sem: activeSemester, category: category }, // Combine conditions
+		const courseid = await studentmaster.findAll(
+		{
+			where: { 
+				active_sem: activeSemester, 
+				category: category 
+			}, 
 			attributes: ['course_id'],
-		});
+		})
 
-		// Extract unique course IDs
-		const uniqueCourseId = [
-			...new Set(courseid.map((course) => course.course_id)),
-		];
-
-		// Send the unique course IDs as the response
+		const uniqueCourseId = [...new Set(courseid.map((course) => course.course_id))]
 		res.status(200).json(uniqueCourseId);
-
-	} catch (error) {
-		console.error("Error in /courseid route:", error);
-		res.status(500).json({ error: "Internal server error" });
+	} 
+	catch (error) {
+		console.error("Error in Course Id Route:", error);
+		res.status(500).json({ error: "Internal Server Error" });
 	}
-});
-
+})
 
 //-----------------------------------------------------------------------------------------------------------//
 
@@ -264,18 +266,19 @@ route.post("/addstudent", async (req, res) => {
 			mentor,
 			category,
 			course_id,
+			course_codes,
 		} = req.body;
 
-		console.log(
-			stu_name,
-			reg_no,
-			batch,
-			emis,
-			section,
-			semester,
-			mentor,
-			category,
-			course_id)
+		// console.log(
+		// 	stu_name,
+		// 	reg_no,
+		// 	batch,
+		// 	emis,
+		// 	section,
+		// 	semester,
+		// 	mentor,
+		// 	category,
+		// 	course_id)
 
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
@@ -306,13 +309,50 @@ route.post("/addstudent", async (req, res) => {
 			active_sem: activeSemester
 		});
 
-		console.log(newStudent);
+		// Loop through the course_codes array and create multiple entries in markentry
+		const markEntryPromises = course_codes.map(async (course_code) => {
+			// Ensure that each course_code is a string
+			if (typeof course_code !== 'string') {
+				throw new Error(`Invalid course_code: ${course_code} should be a string.`);
+			}
+
+			// Create a new markentry for each course_code
+			return await markentry.create({
+				stu_name: stu_name,
+				reg_no: reg_no,
+				semester: semester,
+				batch: batch,
+				category: category,
+				course_id: course_id,
+				course_code: course_code,
+				active_sem: activeSemester,
+				// Use NULL for numeric fields
+				c1_lot: null,
+				c1_hot: null,
+				c1_mot: null,
+				c1_total: null,
+				c2_lot: null,
+				c2_mot: null,
+				c2_hot: null,
+				c2_total: null,
+				a1_lot: null,
+				a2_lot: null,
+				ese_lot: null,
+				ese_hot: null,
+				ese_mot: null,
+				ese_total: null,
+			});
+		});
+
+		// Wait for all mark entry promises to resolve
+		const markEntries = await Promise.all(markEntryPromises);
 
 		// Respond with success
-		// res.status(201).json({
-		//     message: "Student added successfully",
-		//     student: newStudent,
-		// });
+		res.status(201).json({
+			message: "Student and mark entries added successfully",
+			student: newStudent,
+			markEntries: markEntries,
+		});
 	} catch (error) {
 		console.error("Error adding student:", error);
 		res.status(500).json({ error: "Failed to add student" });
@@ -341,27 +381,6 @@ route.delete('/deletestudent/:reg_no', async (req, res) => {
 	}
 });
 
-//--------------------------------------------------------------------------------------
-
-// Fetch a single record by ID
-// async function getSingleRecord() {
-//   const activeAcademic = await academic.findOne({
-//     where: { active_sem: 1 },
-//   });
-//   console.log(activeAcademic);
-
-//   const activeSemester = activeAcademic.academic_year;
-//   console.log(activeSemester)
-// }
-
-
-// getSingleRecord();
-
-// route.post('/addstudent', async(req, res) =>{
-//   const activeAcademic = await academic.findOne({
-//     where: {active_sem: 1}
-//   })
-// })
 
 
 
