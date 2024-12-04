@@ -7,6 +7,7 @@ const hod = require('../models/hod');
 const mentor = require('../models/mentor');
 const coursemapping = require('../models/coursemapping');
 const tutor = require('../models/mentor');
+const academic = require('../models/academic');
 const { Op } = require('sequelize');
 
 
@@ -193,8 +194,16 @@ route.get('/mentor', async (req, res) => {
 route.delete("/mentor/:id", async (req, res) => {
     const { id } = req.params;
     try {
+
+        const activeAcademic = await academic.findOne({
+            where: { active_sem: 1 },
+        })
+
         const deleted = await mentor.destroy({
-            where: { staff_id: id },
+            where: { 
+                staff_id: id,
+                active_sem: activeAcademic.academic_year
+             },
         });
 
 
