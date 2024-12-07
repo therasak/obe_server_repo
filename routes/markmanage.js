@@ -1,6 +1,7 @@
 const express = require('express');
 const route = express.Router();
 const calculation = require('../models/calculation');
+const academic = require('../models/academic');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -8,7 +9,7 @@ route.post('/calculation', async (req, res) =>
 {
     try 
     {
-        const { cia1, cia2, ass1, ass2, maxCia, maxEse, academicYear, inputValue } = req.body;
+        const { cia1, cia2, ass1, ass2, maxCia, maxEse, academicYear, inputValue,level0, level1,level2,level3 } = req.body;
         
         if (!cia1 || !cia2 || !ass1 || !ass2 || !maxCia || !maxEse) {
             return res.status(400).json({ error: 'All fields are Required.' });
@@ -29,7 +30,16 @@ route.post('/calculation', async (req, res) =>
             ese_weightage: maxEse.weightage,
             cia_weightage: cia1.weightage,
             active_sem: academicYear,
-            co_thresh_value: inputValue
+            co_thresh_value: inputValue,
+            so_l0_ug: level0.ugEndRange,
+            so_l1_ug: level1.ugEndRange,
+            so_l2_ug: level2.ugEndRange,
+            so_l3_ug: level3.ugEndRange,
+            so_l0_pg: level0.pgEndRange,
+            so_l1_pg: level1.pgEndRange,
+            so_l2_pg: level2.pgEndRange,
+            so_l3_pg: level3.pgEndRange,
+            
         }
 
         const decition = await calculation.findAll({
@@ -48,54 +58,24 @@ route.post('/calculation', async (req, res) =>
         res.status(201).json({ message: 'Data Saved Successfully!' });
     } 
     catch (error) {
-        console.error("Error saving data:", error);
-        res.status(500).json({ error: 'Failed to save data.' });
+        console.error("Error Saving Data:", error);
+        res.status(500).json({ error: 'Failed to Save Data.' });
     }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.post('/calculationlevel', async (req, res) => 
+route.get('/fetchCalDatas', async (req, res) => 
 {
-    try 
-    {
-        const { level0, level1, level2, level3, academicYear } = req.body;
+    const activeAcademic = await academic.findOne({
+        where: { active_sem: 1 },
+    })
 
-        if (!level0 || !level1 || !level2 || !level3) {
-            return res.status(400).json({ error: 'All fields are Required.' });
-        }
+    const markData = await calculation.findOne({
+        where: { active_sem: activeAcademic.academic_year},
+    })
 
-        const calculationData = {
-            so_l0_ug: level0.ug,
-            so_l0_pg: level0.pg,
-            so_l1_ug: level1.ug,
-            so_l1_pg: level1.pg,
-            so_l2_ug: level2.ug,
-            so_l2_pg: level2.pg,
-            so_l3_ug: level3.ug,
-            so_l3_pg: level3.pg,
-            active_sem: academicYear
-        }
-
-        const decition = await calculation.findAll({
-            where: { active_sem: academicYear }
-        })
-
-        if (decition.length > 0) 
-        {
-            await calculation.update(calculationData, {
-                where: { active_sem: academicYear }
-            })
-        }
-        else {
-            await calculation.create(calculationData);
-        }
-        res.status(201).json({ message: 'Data Saved Successfully!' });
-    } 
-    catch (error) {
-        console.error("Error saving data:", error);
-        res.status(500).json({ error: 'Failed to Save Data.' });
-    }
+    res.json(markData);
 })
-
+    
 module.exports = route;
