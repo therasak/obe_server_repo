@@ -286,11 +286,11 @@ route.post('/ese', upload.single('file'), async (req, res) =>
             });
 
             const updatedData = {
-                ese_lot: row.ese_lot,
-                ese_mot: row.ese_mot,
-                ese_hot: row.ese_hot,
-                ese_total: row.ese_total,
-            };
+                ese_lot: typeof row.ese_lot === 'number' ? row.ese_lot : -1,
+                ese_mot: typeof row.ese_mot === 'number' ? row.ese_mot : -1,
+                ese_hot: typeof row.ese_hot === 'number' ? row.ese_hot : -1,
+                ese_total: typeof row.ese_total === 'number' ? row.ese_total : -1,
+            }
 
             if (existingEntry) {
                 await markentry.update(updatedData, {

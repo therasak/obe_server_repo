@@ -360,26 +360,38 @@ route.post("/addstudent", async (req, res) => {
 });
 
 // ------------------------------------------------------------------------------------------------------- //
-// Delete Student
 route.delete('/deletestudent/:reg_no', async (req, res) => {
-	try {
-		const { reg_no } = req.params;
+    try {
+        const { reg_no } = req.params;
 
-		// Delete the student record
-		const deletedStudent = await studentmaster.destroy({
-			where: { reg_no },
-		});
+        // Log reg_no for debugging
+        console.log(`Deleting student with reg_no: ${reg_no}`);
 
-		if (deletedStudent) {
-			res.status(200).json({ message: 'Student deleted successfully!' });
-		} else {
-			res.status(404).json({ error: 'Student not found!' });
-		}
-	} catch (error) {
-		console.error('Error deleting student:', error);
-		res.status(500).json({ error: 'Failed to delete student' });
-	}
+        // Delete the mark entries associated with the student
+        const deletedMarks = await markentry.destroy({
+            where: { reg_no },
+        });
+
+        console.log(`Deleted marks entries: ${deletedMarks}`);
+
+        // Delete the student record
+        const deletedStudent = await studentmaster.destroy({
+            where: { reg_no },
+        });
+
+        if (deletedStudent) {
+            res.status(200).json({ 
+                message: 'Student and associated marks deleted successfully!' 
+            });
+        } else {
+            res.status(404).json({ error: 'Student not found!' });
+        }
+    } catch (error) {
+        console.error('Error deleting student and associated marks:', error);
+        res.status(500).json({ error: 'Failed to delete student and associated marks' });
+    }
 });
+
 
 
 

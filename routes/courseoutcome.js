@@ -192,8 +192,14 @@ route.post('/checkTutorCOC', async (req, res) =>
     
     // Capso Calculation
 
-    for (const course_code of stud_coursecodes) 
-    {
+    // Capso & Pso Calculation
+    let totalCapso1 = 0;
+    let totalCapso2 = 0;
+    let totalCapso3 = 0;
+    let totalCapso4 = 0;
+    let totalCapso5 = 0;
+    
+    for (const course_code of stud_coursecodes) {
         if (!attainedScores.capso) {
             attainedScores.capso = {};
         }
@@ -201,44 +207,64 @@ route.post('/checkTutorCOC', async (req, res) =>
         const cop = await rsmatrix.findAll({
             where: { course_code: course_code }
         });
-
+        console.log("cop",cop)
         const lot = attainedScores.overall[course_code]?.lot;
         const mot = attainedScores.overall[course_code]?.mot;
         const hot = attainedScores.overall[course_code]?.hot;
 
-        for (const entry of cop) 
-        {
+        for (const entry of cop) {
             const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
-                            (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
-                            (hot * entry.co1_pso5)) /
-                            (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
+                (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
+                (hot * entry.co1_pso5)) /
+                (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
             const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
-                            (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
-                            (hot * entry.co2_pso5)) /
-                            (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
+                (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
+                (hot * entry.co2_pso5)) /
+                (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
             const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
-                            (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
-                            (hot * entry.co3_pso5)) /
-                            (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
+                (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
+                (hot * entry.co3_pso5)) /
+                (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
             const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
-                            (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
-                            (hot * entry.co4_pso5)) /
-                            (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
+                (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
+                (hot * entry.co4_pso5)) /
+                (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
             const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
-                            (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
-                            (hot * entry.co5_pso5)) /
-                            (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+                (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+                (hot * entry.co5_pso5)) /
+                (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
 
-            attainedScores.capso[course_code] = 
+                totalCapso1 += capso1;
+                totalCapso2 += capso2;
+                totalCapso3 += capso3;
+                totalCapso4 += capso4;
+                totalCapso5 += capso5;
+            attainedScores.capso[course_code] =
             {
                 capso1,
                 capso2,
                 capso3,
                 capso4,
                 capso5,
-                capso: (capso1+capso2+capso3+capso4+capso5)/5,
+                capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
+
             };
         }
+        const totalCourses = stud_coursecodes.length;
+        const pso1 = totalCapso1 / totalCourses;
+        const pso2 = totalCapso2 / totalCourses;
+        const pso3 = totalCapso3 / totalCourses;
+        const pso4 = totalCapso4 / totalCourses;
+        const pso5 = totalCapso5 / totalCourses;
+
+        attainedScores.meanScores = {
+            pso1,
+            pso2,
+            pso3,
+            pso4,
+            pso5,
+            pso: (pso1 + pso2 + pso3 + pso4 + pso5) / 5,
+        };
     }
     res.json({attainedScores});
 })

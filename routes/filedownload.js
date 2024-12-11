@@ -230,6 +230,7 @@ route.get('/download/scope', async (req, res) =>
                 'student_outcome', 'program_outcome', 'program_specific_outcome', 
                 'mentor_report', 'hod_report', 'report', 'input_files', 
                 'manage', 'relationship_matrix', 'settings', 'logout'],
+
             ...scopeData.map(scope => [
                 scope.staff_id,
                 scope.role,
@@ -306,33 +307,34 @@ route.get('/download/mark', async (req, res) =>
     {
         const markData = await markentry.findAll();
         const formattedData = [
+            
             ['s_no', 'batch', 'category', 'course_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_hot', 'c1_mot', 'c1_total',
                 'c2_lot', 'c2_hot', 'c2_mot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_hot', 'ese_mot', 'ese_total'],
 
             ...markData.map(student =>
-                [
-                    student.s_no,
-                    student.batch,
-                    student.category,
-                    student.course_id,
-                    student.reg_no,
-                    student.course_code,
-                    student.semester,
-                    student.c1_lot,
-                    student.c1_hot,
-                    student.c1_mot,
-                    student.c1_total,
-                    student.c2_lot,
-                    student.c2_hot,
-                    student.c2_mot,
-                    student.c2_total,
-                    student.a1_lot,
-                    student.a2_lot,
-                    student.ese_lot,
-                    student.ese_hot,
-                    student.ese_mot,
-                    student.ese_total
-                ])
+            [
+                student.s_no,
+                student.batch,
+                student.category,
+                student.course_id,
+                student.reg_no,
+                student.course_code,
+                student.semester,
+                student.c1_lot,
+                student.c1_hot,
+                student.c1_mot,
+                student.c1_total,
+                student.c2_lot,
+                student.c2_hot,
+                student.c2_mot,
+                student.c2_total,
+                student.a1_lot,
+                student.a2_lot,
+                student.ese_lot,
+                student.ese_hot,
+                student.ese_mot,
+                student.ese_total
+            ])
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);

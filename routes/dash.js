@@ -5,6 +5,7 @@ const staffmaster = require('../models/staffmaster');
 const report = require('../models/report');
 const academic = require('../models/academic')
 const coursemapping = require('../models/coursemapping');
+const markentry = require('../models/markentry');
 const { Sequelize } = require('sequelize');
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -214,26 +215,33 @@ route.post('/processedChartData', async (req, res) =>
     try 
     {
         const academicdata = await academic.findOne({
-            where: { active_sem: 1 }
-        })
+            where: { active_sem: 1 },
+        });
 
-        const courseCode = await report.findAll(
+        const courseCode = await report.findAll({
+            where: {
+                active_sem: String(academicdata.academic_year),
+            },
+            attributes: ['course_code'],
+        });
+
+        const unique_coursecodes = [...new Set(courseCode.map((entry) => entry.course_code))];
+
+        const countUniqueCourseCodes = unique_coursecodes.length;
+
+        const course_codes = await report.findAll(
         {
             where: {
                 active_sem: String(academicdata.academic_year),
             },
-            attributes: ['course_code']
-        })
+            attributes: ['course_code', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'],
+        });
 
-        const unique_coursecodes = [...new Set(courseCode.map((entry) => entry.course_code)),];
-
-        const countUniqueCourseCodes = unique_coursecodes.length;
-        
-        const course_codes = await report.findAll(
-        {   where: {
+        const markentryData = await markentry.findAll({
+            where: {
                 active_sem: String(academicdata.academic_year),
             },
-            attributes: ['course_code', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'],
+            attributes: ['course_code', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total'],
         });
 
         const counts = 
@@ -245,25 +253,40 @@ route.post('/processedChartData', async (req, res) =>
             ese: 0,
         };
 
-        const stud_coursecodes = [...new Set(course_codes.map(entry => entry.course_code))];
+        const stud_coursecodes = [...new Set(course_codes.map((entry) => entry.course_code))];
 
         for (let course_code of stud_coursecodes) 
         {
-            const courseRows    = course_codes.filter(entry => entry.course_code === course_code);
-            const allCia1Equal2 = courseRows.every(row => row.cia_1 === 2);
-            const allCia2Equal2 = courseRows.every(row => row.cia_2 === 2);
-            const allAss1Equal2 = courseRows.every(row => row.ass_1 === 2);
-            const allAss2Equal2 = courseRows.every(row => row.ass_2 === 2);
-            const allEseEqual2  = courseRows.every(row => row.ese === 2);
+            const courseRows = course_codes.filter((entry) => entry.course_code === course_code);
+            const allCia1Equal2 = courseRows.every((row) => row.cia_1 === 2);
+            const allCia2Equal2 = courseRows.every((row) => row.cia_2 === 2);
+            const allAss1Equal2 = courseRows.every((row) => row.ass_1 === 2);
+            const allAss2Equal2 = courseRows.every((row) => row.ass_2 === 2);
 
             if (allCia1Equal2) counts.cia_1++;
             if (allCia2Equal2) counts.cia_2++;
             if (allAss1Equal2) counts.ass_1++;
             if (allAss2Equal2) counts.ass_2++;
-            if (allEseEqual2) counts.ese++;
         }
-        
-        res.status(200).json({ countUniqueCourseCodes, counts }); 
+
+        const markentry_coursecodes = [...new Set(markentryData.map((entry) => entry.course_code))];
+
+        for (let course_code of markentry_coursecodes) 
+        {
+            const courseRows = markentryData.filter((entry) => entry.course_code === course_code);
+
+            const allEseValuesNotNull = courseRows.every(
+                (row) =>
+                    row.ese_lot !== null &&
+                    row.ese_mot !== null &&
+                    row.ese_hot !== null &&
+                    row.ese_total !== null
+            );
+
+            if (allEseValuesNotNull) counts.ese++;
+        }
+
+        res.status(200).json({ countUniqueCourseCodes, counts });
     } 
     catch (error) {
         console.error('Error processing chart data:', error);
