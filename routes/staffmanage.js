@@ -15,7 +15,8 @@ const { Op } = require('sequelize');
 
 // Staff Details Fetching Coding
 
-route.get('/staffdetails', async (req, res) => {
+route.get('/staffdetails', async (req, res) =>
+{
     const staffDetails = await staffmaster.findAll();
     res.json(staffDetails);
 })

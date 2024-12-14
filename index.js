@@ -342,14 +342,18 @@ const secretKey = process.env.SECRET_KEY;
 
 // Validation Coding
 
-app.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => 
+{
     const { staff_id, staff_pass } = req.body;
 
-    try {
+    try 
+    {
         const user = await staffmaster.findOne({
             where: { staff_id: staff_id }
-        });
-        if (user) {
+        })
+
+        if (user) 
+        {
             if (user.staff_pass === staff_pass) {
                 return res.json({ success: true, message: "Login Successful" });
             }
@@ -372,20 +376,22 @@ app.post('/login', async (req, res) => {
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => {
+app.get('/scope/:staffId', async (req, res) => 
+{
     const { staffId } = req.params;
 
-    try {
+    try 
+    {
         const scopeDetails = await scope.findOne({
             where: { staff_id: staffId }
-        });
+        })
         res.json(scopeDetails);
     }
     catch (err) {
         console.error('Error fetching scope details:', err);
         res.status(500).json({ error: 'An error occurred while fetching data.' });
     }
-});
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -407,19 +413,22 @@ sequelize_conn.authenticate()
 
 // Academic Year Setting Coding
 
-app.put('/academic', async (req, res) => {
+app.put('/academic', async (req, res) => 
+{
     const { academicsem } = req.body;
-    try {
+
+    try 
+    {
         await academic.update(
             { active_sem: 0 },
             { where: {} }
-        );
+        )
 
         const academicupdate = await academic.findOne({
             where: {
                 academic_year: academicsem,
             }
-        });
+        })
 
         if (academicupdate) {
             academicupdate.active_sem = 1;
@@ -434,7 +443,7 @@ app.put('/academic', async (req, res) => {
         console.error('Error: ', error);
         res.status(500).json({ error: "Something went wrong with the Server" });
     }
-});
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 

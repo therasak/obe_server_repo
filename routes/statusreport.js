@@ -3,7 +3,9 @@ const route = express.Router();
 const report = require('../models/report');
 const coursemapping = require('../models/coursemapping');
 const rsmatrix = require('../models/rsmatrix');
-const staffmaster=require('../models/staffmaster');
+const staffmaster = require('../models/staffmaster');
+const academic =require('../models/academic');
+const markentry = require('../models/markentry');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -189,6 +191,69 @@ route.post('/matrixcount', async (req, res) =>
     catch (err) {
         console.error('Error Fetching Data:', err);
         res.status(500).send('Error Fetching Data');
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Ese Incomplete Code
+
+route.get('/esereport', async (req, res) => 
+{
+    try 
+    {
+        const academicdata = await academic.findOne({
+            where: { active_sem: 1 },
+        })
+
+        const markentryData = await markentry.findAll(
+        {
+            where: {
+                active_sem: String(academicdata.academic_year),
+            },
+            attributes: ['course_code', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total'],
+        })
+
+        const uniqueCourseCodes = [...new Set(markentryData.map((entry) => entry.course_code))];
+
+        const validCourseCodes = [];
+
+        for (let course_code of uniqueCourseCodes) 
+        {
+            const courseRows = markentryData.filter((entry) => entry.course_code === course_code);
+
+            const allEseValuesNotNull = courseRows.every(
+                (row) =>
+                    row.ese_lot !== null &&
+                    row.ese_mot !== null &&
+                    row.ese_hot !== null &&
+                    row.ese_total !== null
+            )
+
+            if(!allEseValuesNotNull)
+            {
+                validCourseCodes.push(course_code);
+            }
+        }
+
+        const codeAndTitle = await coursemapping.findAll(
+        {
+            where: {
+                course_code: validCourseCodes, 
+            },
+            attributes: ['course_code', 'course_title'], 
+        })
+
+        const uniqueCodeAndTitle = Array.from(
+            new Map(
+                codeAndTitle.map((item) => [item.course_code, item])
+            ).values()
+        )
+        res.status(200).json({ courses: uniqueCodeAndTitle });
+    } 
+    catch (error) {
+        console.error('Error Processing Ese Report :', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 })
 
