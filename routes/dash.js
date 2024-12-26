@@ -275,7 +275,7 @@ route.post('/processedChartData', async (req, res) =>
         {
             const courseRows = markentryData.filter((entry) => entry.course_code === course_code);
 
-            const allEseValuesNotNull = courseRows.every(
+            const allEseValuesNotNull = courseRows.some(
                 (row) =>
                     row.ese_lot !== null &&
                     row.ese_mot !== null &&

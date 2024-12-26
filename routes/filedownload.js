@@ -614,7 +614,7 @@ route.get('/download/hod', async (req, res) =>
         const hodData = await hod.findAll();
 
         const formattedData = [
-            ['sno', 'graduate', 'course_id', 'category','degree','dept_name','section','batch','staff_id','hod_name','type'],
+            ['sno', 'graduate', 'course_id', 'category','dept_name','staff_id','hod_name'],
             ...hodData.map((hod, index) => 
             [ 
                 index + 1,
