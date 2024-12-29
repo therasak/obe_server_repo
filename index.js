@@ -30,6 +30,7 @@ const markmanage = require('./routes/markmanage');
 const courseoutcome = require('./routes/courseoutcome');
 const staffcoursemanage = require('./routes/staffcoursemanage');
 const hodreport = require('./routes/hodreport');
+const tutorreport = require('./routes/tutorreport');
 
 const app = express();
 app.use(cors());
@@ -52,6 +53,7 @@ app.use('/api', markmanage);
 app.use('/api', courseoutcome);
 app.use('/api', staffcoursemanage);
 app.use('/api', hodreport);
+app.use('/api', tutorreport);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 

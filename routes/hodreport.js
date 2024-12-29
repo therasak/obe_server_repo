@@ -43,6 +43,7 @@ route.post('/deptStatus', async (req, res) =>
                 });
 
                 const details = courseInfo.map(userReport => {
+                    
                     const matchingStaff = reportInfo.find(staff =>
                         staff.category === userReport.category &&
                         staff.course_code === userReport.course_code &&
