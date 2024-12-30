@@ -16,7 +16,7 @@ route.get('/studetails', async (req, res) =>
 	})
 
 	const studata = await studentmaster.findAll({
-		where: { active_sem: activeAcademic.academic_year, course_id: 'MCA' },
+		where: { active_sem: activeAcademic.academic_year },
 	})
 
 	res.json(studata);
