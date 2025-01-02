@@ -13,6 +13,8 @@ route.post('/tutorStatusReport', async (req, res) =>
 {
     const { staff_id } = req.body;
 
+    // console.log(staff_id)
+
     try {
 
         const academicdata = await academic.findOne({
@@ -28,6 +30,8 @@ route.post('/tutorStatusReport', async (req, res) =>
             raw: true
         })
 
+        con
+
         const courseInfo = await coursemapping.findAll({
             where: {
                 category: user.category,
@@ -38,6 +42,8 @@ route.post('/tutorStatusReport', async (req, res) =>
             },
             raw: true
         })
+
+        console.log(courseInfo)
 
         const reportDetails = await Promise.all(courseInfo.map(async (details) => {
 
@@ -62,7 +68,8 @@ route.post('/tutorStatusReport', async (req, res) =>
                     (reportInfo.semester === 3 || reportInfo.semester === 4) ? 2 : 3 : 'N/A'
             }
         }))
-        res.json(reportDetails)
+        res.json(reportDetails);
+        console.log(reportDetails)
     }
     catch (err) { }
 })

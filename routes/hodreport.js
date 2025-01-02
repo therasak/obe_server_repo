@@ -1,5 +1,6 @@
 const express = require('express');
 const route = express.Router();
+const { Op } = require('sequelize');
 const hod = require('../models/hod');
 const report = require('../models/report');
 const academic = require('../models/academic');
@@ -33,9 +34,18 @@ route.post('/deptStatus', async (req, res) =>
             {
                
                 const reportInfo = await report.findAll({
-                    where: { category, dept_name, active_sem: academicdata.academic_year },
+                    where: { 
+                        category: category, 
+                        dept_name: dept_name, 
+                        active_sem: academicdata.academic_year, 
+                        // cia_1: {
+                        //     [Op.in]: [0, 1]
+                        // }
+                    },
                     raw: true
                 })
+
+                // console.log(reportInfo);
 
                 const courseInfo = await coursemapping.findAll({
                     where: { category, dept_name, course_id, active_sem: academicdata.academic_year },

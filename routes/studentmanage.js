@@ -41,14 +41,10 @@ route.get('/category', async (req, res) =>
 
 		const activeSemester = activeAcademic.academic_year;
 
-		// Fetch Categories for the Active Semester
-
 		const categories = await studentmaster.findAll({
 			where: { active_sem: activeSemester },
 			attributes: ['category'], 
-		});
-
-		// Extract Unique Categories
+		})
 
 		const uniqueCategory = [...new Set(categories.map(entry => entry.category))];
 
@@ -100,62 +96,53 @@ route.post('/courseid', async (req, res) =>
 
 //-----------------------------------------------------------------------------------------------------------//
 
-// get semester based on selected course id
+// Get Semester based on selected Course Id
 
-route.post('/semester', async (req, res) => {
-	try {
-		const { category, courseId } = req.body; // Extract both category and courseId from the request body
-		console.log("Received category:", category);
-		console.log("Received courseId:", courseId);
+route.post('/semester', async (req, res) => 
+{
+	try 
+	{
+		const { category, courseId } = req.body;
 
-		// Get the active semester
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
-		});
+		})
 
 		if (!activeAcademic) {
-			return res.status(404).json({ error: "Active academic year not found" });
+			return res.status(404).json({ error: "Active Academic Year Not Found" });
 		}
 
 		const activeSemester = activeAcademic.academic_year;
 
-		// Find semesters for the given category, courseId, and active semester
 		const semesters = await studentmaster.findAll({
 			where: {
 				active_sem: activeSemester,
 				category: category,
 				course_id: courseId,
 			},
-			attributes: ['semester'], // Select only the 'semester' column
+			attributes: ['semester'], 
 		});
 
-		// Extract unique semesters
-		const uniqueSemesters = [
-			...new Set(semesters.map((entry) => entry.semester)),
-		];
-
-		// Respond with the unique semesters
+		const uniqueSemesters = [ ...new Set(semesters.map((entry) => entry.semester)) ]
 		res.status(200).json(uniqueSemesters);
-		// console.log(uniqueSemesters)
 
-	} catch (error) {
-		console.error("Error in /semester route:", error);
-		res.status(500).json({ error: "Internal server error" });
+	} 
+	catch (error) {
+		console.error("Error in Semester Route:", error);
+		res.status(500).json({ error: "Internal Server Error" });
 	}
-});
+})
 
 //-----------------------------------------------------------------------------------------------------------//
 
-// to fetch the section 
+// To fetch the Section 
 
-route.post('/section', async (req, res) => {
-	try {
-		const { category, courseId, semester } = req.body; // Extract category, courseId, and semester from the request body
-		// console.log("Received category:", category);
-		// console.log("Received courseId:", courseId);
-		// console.log("Received semester:", semester);
+route.post('/section', async (req, res) => 
+{
+	try 
+	{
+		const { category, courseId, semester } = req.body; 
 
-		// Get the active semester
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
 		});
@@ -166,7 +153,6 @@ route.post('/section', async (req, res) => {
 
 		const activeSemester = activeAcademic.academic_year;
 
-		// Find sections for the given conditions
 		const sections = await studentmaster.findAll({
 			where: {
 				active_sem: activeSemester,
@@ -174,31 +160,28 @@ route.post('/section', async (req, res) => {
 				course_id: courseId,
 				semester: semester,
 			},
-			attributes: ['section'], // Select only the 'section' column
+			attributes: ['section'], 
 		});
 
-		// Extract unique sections
-		const uniqueSections = [
-			...new Set(sections.map((entry) => entry.section)),
-		];
+		const uniqueSections = [ ...new Set(sections.map((entry) => entry.section)) ]
 
-		// Respond with the unique sections
 		res.status(200).json(uniqueSections);
-		// console.log(uniqueSections)
 
-	} catch (error) {
-		console.error("Error in /section route:", error);
-		res.status(500).json({ error: "Internal server error" });
+	} 
+	catch (error) {
+		console.error("Error in Section Route:", error);
+		res.status(500).json({ error: "Internal Server Error" });
 	}
-});
+})
 
 //-----------------------------------------------------------------------------------------------------------//
 
-route.post('/coursecode', async (req, res) => {
-	try {
+route.post('/coursecode', async (req, res) => 
+{
+	try 
+	{
 		const { category, courseId, semester, section } = req.body;
 
-		// Get the active semester
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
 		});
@@ -209,76 +192,41 @@ route.post('/coursecode', async (req, res) => {
 
 		const activeSemester = activeAcademic.academic_year;
 
-		// // Log the received data
-		// console.log("Received Data:");
-		// console.log("Category:", category);
-		// console.log("Course ID:", courseId);
-		// console.log("Semester:", semester);
-		// console.log("Section:", section);
-
-		// Query for the course code based on the given criteria
 		const courseCodes = await markentry.findAll({
 			where: {
 				active_sem: activeSemester,
 				category: category,
 				course_id: courseId,
-				semester: semester,
-				// section: section, // Include section in the filtering
+				semester: semester
 			},
-			attributes: ['course_code'], // Fetch only the course_code column
-		});
+			attributes: ['course_code'],
+		})
 
-		// Check if any course codes are found
 		if (courseCodes.length === 0) {
 			return res.status(404).json({ error: "No course code found for the provided details." });
 		}
 
-		// Extract unique course codes
 		const uniqueCourseCodes = [...new Set(courseCodes.map((entry) => entry.course_code))];
 
-		console.log(uniqueCourseCodes)
-
-		// Respond with the unique course codes
 		res.status(200).json(uniqueCourseCodes);
 
-	} catch (error) {
+	} 
+	catch (error) {
 		console.error("Error in /coursecode route:", error);
 		res.status(500).json({ error: "Internal server error" });
 	}
-});
-
-
-
+})
 
 //-----------------------------------------------------------------------------------------------------------//
+
 // Add new Student 
 
-route.post("/addstudent", async (req, res) => {
-	try {
-		// Destructure the incoming data from the request body
-		const {
-			stu_name,
-			reg_no,
-			batch,
-			emis,
-			section,
-			semester,
-			mentor,
-			category,
-			course_id,
-			course_codes,
-		} = req.body;
-
-		// console.log(
-		// 	stu_name,
-		// 	reg_no,
-		// 	batch,
-		// 	emis,
-		// 	section,
-		// 	semester,
-		// 	mentor,
-		// 	category,
-		// 	course_id)
+route.post("/addstudent", async (req, res) => 
+{
+	try 
+	{
+		const { stu_name, reg_no, batch, emis, section, semester, mentor, 
+		category, course_id, course_codes } = req.body;
 
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
@@ -290,111 +238,77 @@ route.post("/addstudent", async (req, res) => {
 
 		const activeSemester = activeAcademic.academic_year;
 
-		// Ensure that required fields are provided
 		if (!stu_name || !reg_no) {
 			return res.status(400).json({ error: "Student name and registration number are required." });
 		}
 
-		// Use the destructured data to create a new student record
 		const newStudent = await studentmaster.create({
-			stu_name: stu_name,
-			reg_no: reg_no,
-			batch: batch,
-			emis: emis,
-			section: section,
-			semester: semester,
-			mentor: mentor,
-			category: category,
-			course_id: course_id,
+			stu_name: stu_name, reg_no: reg_no, batch: batch,
+			emis: emis, section: section, semester: semester,
+			mentor: mentor, category: category, course_id: course_id,
 			active_sem: activeSemester
 		});
 
-		// Loop through the course_codes array and create multiple entries in markentry
-		const markEntryPromises = course_codes.map(async (course_code) => {
-			// Ensure that each course_code is a string
+		const markEntryPromises = course_codes.map(async (course_code) => 
+		{
 			if (typeof course_code !== 'string') {
 				throw new Error(`Invalid course_code: ${course_code} should be a string.`);
 			}
 
-			// Create a new markentry for each course_code
 			return await markentry.create({
-				stu_name: stu_name,
-				reg_no: reg_no,
-				semester: semester,
-				batch: batch,
-				category: category,
-				course_id: course_id,
-				course_code: course_code,
-				active_sem: activeSemester,
-				// Use NULL for numeric fields
-				c1_lot: null,
-				c1_hot: null,
-				c1_mot: null,
-				c1_total: null,
-				c2_lot: null,
-				c2_mot: null,
-				c2_hot: null,
-				c2_total: null,
-				a1_lot: null,
-				a2_lot: null,
-				ese_lot: null,
-				ese_hot: null,
-				ese_mot: null,
+				stu_name: stu_name, reg_no: reg_no, semester: semester, batch: batch,
+				category: category, course_id: course_id, course_code: course_code,
+				active_sem: activeSemester, c1_lot: null, c1_hot: null, c1_mot: null,
+				c1_total: null, c2_lot: null, c2_mot: null, c2_hot: null, c2_total: null,
+				a1_lot: null, a2_lot: null, ese_lot: null, ese_hot: null, ese_mot: null,
 				ese_total: null,
-			});
-		});
+			})
+		})
 
-		// Wait for all mark entry promises to resolve
 		const markEntries = await Promise.all(markEntryPromises);
 
-		// Respond with success
 		res.status(201).json({
-			message: "Student and mark entries added successfully",
+			message: "Student and Mark Entries Added Successfully",
 			student: newStudent,
 			markEntries: markEntries,
-		});
-	} catch (error) {
-		console.error("Error adding student:", error);
-		res.status(500).json({ error: "Failed to add student" });
+		})
+	} 
+	catch (error) {
+		console.error("Error Adding Student:", error);
+		res.status(500).json({ error: "Failed to Add Student" });
 	}
-});
+})
 
 // ------------------------------------------------------------------------------------------------------- //
-route.delete('/deletestudent/:reg_no', async (req, res) => {
-    try {
+
+route.delete('/deletestudent/:reg_no', async (req, res) => 
+{
+    try 
+	{
         const { reg_no } = req.params;
 
-        // Log reg_no for debugging
-        console.log(`Deleting student with reg_no: ${reg_no}`);
-
-        // Delete the mark entries associated with the student
         const deletedMarks = await markentry.destroy({
-            where: { reg_no },
-        });
+            where: { reg_no }
+        })
 
-        console.log(`Deleted marks entries: ${deletedMarks}`);
-
-        // Delete the student record
         const deletedStudent = await studentmaster.destroy({
-            where: { reg_no },
+            where: { reg_no }
         });
 
-        if (deletedStudent) {
+        if (deletedStudent) 
+		{
             res.status(200).json({ 
-                message: 'Student and associated marks deleted successfully!' 
-            });
-        } else {
-            res.status(404).json({ error: 'Student not found!' });
+                message: 'Student and Associated Marks Deleted Successfully!' 
+            })
+        } 
+		else {
+            res.status(404).json({ error: 'Student not Found!' });
         }
-    } catch (error) {
-        console.error('Error deleting student and associated marks:', error);
-        res.status(500).json({ error: 'Failed to delete student and associated marks' });
+    } 
+	catch (error) {
+        console.error('Error deleting Student and Associated Marks:', error);
+        res.status(500).json({ error: 'Failed to delete Student and Associated Marks' });
     }
-});
-
-
-
-
-
+})
 
 module.exports = route;

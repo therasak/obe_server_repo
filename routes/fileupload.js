@@ -375,10 +375,9 @@ route.post('/report', upload.single('file'), async (req, res) =>
 
 // Mentor File Upload
 
-route.post('/mentor', upload.single('file'), async (req, res) => 
-{
-    try 
-    {
+route.post('/mentor', upload.single('file'), async (req, res) => {
+
+    try {
         const file = req.file;
 
         if (!file) {
@@ -391,8 +390,8 @@ route.post('/mentor', upload.single('file'), async (req, res) =>
         const rows = XLSX.utils.sheet_to_json(worksheet);
 
         const activeAcademic = await academic.findOne({
-            where: { active_sem: 1 }
-        })
+            where: { active_sem: 1 },
+        });
 
         if (!activeAcademic) {
             return res.status(400).send('No Active Academic Year Found');
@@ -401,34 +400,48 @@ route.post('/mentor', upload.single('file'), async (req, res) =>
         const activeSemester = activeAcademic.academic_year;
 
         for (const row of rows) {
-            await mentor.upsert({
-                sno: row.sno,
-                graduate: row.graduate,
-                course_id: row.course_id,
-                category: row.category,
-                degree: row.degree,
-                dept_name: row.dept_name,
-                section: row.section,
-                batch: row.batch,
-                staff_id: row.staff_id,
-                staff_name: row.staff_name,
-                active_sem: activeSemester
+
+            const existingScope = await scope.findOne({
+                where: { staff_id: row.staff_id },
             });
+
+            if (existingScope && existingScope.mentor_report === 0) {
+
+                await mentor.upsert({
+                    sno: row.sno,
+                    graduate: row.graduate,
+                    course_id: row.course_id,
+                    category: row.category,
+                    degree: row.degree,
+                    dept_name: row.dept_name,
+                    section: row.section,
+                    batch: row.batch,
+                    staff_id: row.staff_id,
+                    staff_name: row.staff_name,
+                    active_sem: activeSemester,
+                });
+
+                await scope.update(
+                    { mentor_report: 1 },
+                    { where: { staff_id: row.staff_id } }
+                );
+            }
         }
-        res.status(200).send('Mentor Data Imported and Updated Successfully');
+
+        res.status(200).send('Mentor Data and Scope Updated Successfully');
     } 
     catch (error) {
         console.error('Error Processing Mentor Upload:', error);
-        res.status(500).send('An error occurred while processing the mentor');
+        res.status(500).send('An error occurred while processing the mentor upload');
     }
-})
+});
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Hod File Upload
 
-route.post('/hod', upload.single('file'), async (req, res) => 
-{
+route.post('/hod', upload.single('file'), async (req, res) => {
+
     try 
     {
         const file = req.file;
@@ -442,9 +455,10 @@ route.post('/hod', upload.single('file'), async (req, res) =>
         const worksheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(worksheet);
 
+
         const activeAcademic = await academic.findOne({
-            where: { active_sem: 1 }
-        })
+            where: { active_sem: 1 },
+        });
 
         if (!activeAcademic) {
             return res.status(400).send('No Active Academic Year Found');
@@ -452,8 +466,7 @@ route.post('/hod', upload.single('file'), async (req, res) =>
 
         const activeSemester = activeAcademic.academic_year;
 
-        for (const row of rows) 
-        {
+        for (const row of rows) {
             await hod.upsert({
                 s_no: row.s_no,
                 graduate: row.graduate,
@@ -464,12 +477,24 @@ route.post('/hod', upload.single('file'), async (req, res) =>
                 hod_name: row.hod_name,
             });
         }
-        res.status(200).send('HOD Data Imported and Updated Successfully');
+
+        const staffIds = rows.map(row => row.staff_id);
+
+        await scope.update(
+            { hod_report: 1 },
+            {
+                where: {
+                    staff_id: staffIds,
+                },
+            }
+        );
+
+        res.status(200).send('HOD Data Imported and Scope Table Updated Successfully');
     } 
     catch (error) {
         console.error('Error Processing HOD Upload:', error);
         res.status(500).send('An error occurred while processing the HOD file');
-    }
+    } 
 })
-    
+
 module.exports = route;
