@@ -88,7 +88,6 @@ route.post('/deptStatus', async (req, res) => {
                 reportDetails.push(...details);
             }
             res.json(reportDetails);
-
         }
         else {
             res.status(404).json({ message: "No records found for the given Staff ID." });

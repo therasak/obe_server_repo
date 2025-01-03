@@ -401,6 +401,26 @@ app.get('/scope/:staffId', async (req, res) =>
 
 // Database Authenticate Coding
 
+
+app.post('/staffName', async(req, res) => {
+
+    const { staffId } = req.body;
+    
+    const user = await staffmaster.findOne({
+        where: {
+            staff_id: staffId
+        },
+        attributes: ['staff_name'],
+        raw: true
+    })
+
+    res.json(user)
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Database Authenticate Coding
+
 sequelize_conn.authenticate()
 
     .then(() => {
