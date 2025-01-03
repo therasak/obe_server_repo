@@ -1,5 +1,6 @@
 const express = require('express');
 const route = express.Router();
+const { Op } = require('sequelize');
 const mentor = require('../models/mentor');
 const report = require('../models/report');
 const academic = require('../models/academic');
@@ -30,8 +31,6 @@ route.post('/tutorStatusReport', async (req, res) =>
             raw: true
         })
 
-        con
-
         const courseInfo = await coursemapping.findAll({
             where: {
                 category: user.category,
@@ -43,7 +42,7 @@ route.post('/tutorStatusReport', async (req, res) =>
             raw: true
         })
 
-        console.log(courseInfo)
+        // console.log(courseInfo);
 
         const reportDetails = await Promise.all(courseInfo.map(async (details) => {
 
@@ -53,11 +52,13 @@ route.post('/tutorStatusReport', async (req, res) =>
                     course_code: details.course_code,
                     category: details.category,
                     section: details.section,
-                    dept_name: details.dept_name
-                }
+                    dept_name: details.dept_name,
+                    active_sem: academicdata.academic_year,
+                },
+                raw: true
             })
-
             return {
+
                 ...details,
                 cia_1: reportInfo.cia_1 === 2 ? 'Completed' : reportInfo.cia_1 === 1 ? 'Processing' : 'Incomplete',
                 cia_2: reportInfo.cia_2 === 2 ? 'Completed' : reportInfo.cia_2 === 1 ? 'Processing' : 'Incomplete',
@@ -69,7 +70,6 @@ route.post('/tutorStatusReport', async (req, res) =>
             }
         }))
         res.json(reportDetails);
-        console.log(reportDetails)
     }
     catch (err) { }
 })
