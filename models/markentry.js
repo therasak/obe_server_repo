@@ -37,11 +37,11 @@ const markentry = sequelize_conn.define('markentry',
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    c1_hot: {
+    c1_mot: {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    c1_mot: {
+    c1_hot: {
         type: DataTypes.INTEGER,
         allowNull: true
     },
@@ -53,11 +53,11 @@ const markentry = sequelize_conn.define('markentry',
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    c2_hot: {
+    c2_mot: {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    c2_mot: {
+    c2_hot: {
         type: DataTypes.INTEGER,
         allowNull: true
     },
@@ -77,11 +77,11 @@ const markentry = sequelize_conn.define('markentry',
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    ese_hot: {
+    ese_mot: {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    ese_mot: {
+    ese_hot: {
         type: DataTypes.INTEGER,
         allowNull: true
     },

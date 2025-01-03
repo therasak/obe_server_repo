@@ -8,10 +8,6 @@ const scope = sequelize_conn.define('scope',
         allowNull: false,
         primaryKey: true
     },
-    role: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
     dashboard: {
         type: DataTypes.INTEGER,
         allowNull: true
