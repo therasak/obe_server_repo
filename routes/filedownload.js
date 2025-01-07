@@ -361,8 +361,8 @@ route.get('/download/markmodel', async (req, res) =>
     {
         const markData = await markentry.findAll();
         const formattedData = [
-            ['s_no', 'batch', 'category', 'course_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_hot', 'c1_mot', 'c1_total',
-            'c2_lot', 'c2_hot', 'c2_mot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_hot', 'ese_mot', 'ese_total'],
+            ['s_no', 'batch', 'category', 'course_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_mot', 'c1_hot', 'c1_total',
+            'c2_lot', 'c2_mot', 'c2_hot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
