@@ -36,7 +36,7 @@ route.post('/chkstaffId', async (req, res) =>
     })
 
     const hodHandleStaffId = await hod.findOne({
-        where: { 
+        where: {
             staff_id: staff_id
         }
     })
@@ -78,7 +78,7 @@ route.post('/checkTutorCOC', async (req, res) =>
     const academicdata = await academic.findOne({
         where: { active_sem: 1 }
     })
-    
+
     const cal = await calculation.findOne({
         where: { active_sem: academicdata.academic_year }
     })
@@ -100,14 +100,14 @@ route.post('/checkTutorCOC', async (req, res) =>
 
     await Promise.all(marks.map(async entry => 
     {
-        const 
-        {
-            course_code,
-            c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
-            c1_mot = 0, c2_mot = 0,
-            c1_hot = 0, c2_hot = 0,
-            ese_lot = 0, ese_mot = 0, ese_hot = 0
-        } = entry.dataValues;
+        const
+            {
+                course_code,
+                c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
+                c1_mot = 0, c2_mot = 0,
+                c1_hot = 0, c2_hot = 0,
+                ese_lot = 0, ese_mot = 0, ese_hot = 0
+            } = entry.dataValues;
 
         const lot_percentage = ((c1_lot || 0) + (c2_lot || 0) + (a1_lot || 0) + (a2_lot || 0)) / (cal.c_lot || 1) * 100;
         const mot_percentage = ((c1_mot || 0) + (c2_mot || 0)) / (cal.c_mot || 1) * 100;
@@ -169,37 +169,41 @@ route.post('/checkTutorCOC', async (req, res) =>
         attainedScores.elot[course_code] = await calculateCategory(percentageAboveThreshold.elot[course_code]);
         attainedScores.emot[course_code] = await calculateCategory(percentageAboveThreshold.emot[course_code]);
         attainedScores.ehot[course_code] = await calculateCategory(percentageAboveThreshold.ehot[course_code]);
-    
-        attainedScores.overall[course_code] = 
+
+        attainedScores.overall[course_code] =
         {
-            lot: (attainedScores.lot[course_code] * (cal.cia_weightage / 100)) + 
-                 (attainedScores.elot[course_code] * (cal.ese_weightage / 100)),
-            mot: (attainedScores.mot[course_code] * (cal.cia_weightage / 100)) + 
-                 (attainedScores.emot[course_code] * (cal.ese_weightage / 100)),
-            hot: (attainedScores.hot[course_code] * (cal.cia_weightage / 100)) + 
-                 (attainedScores.ehot[course_code] * (cal.ese_weightage / 100))
+            lot: (attainedScores.lot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.elot[course_code] * (cal.ese_weightage / 100)),
+            mot: (attainedScores.mot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.emot[course_code] * (cal.ese_weightage / 100)),
+            hot: (attainedScores.hot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.ehot[course_code] * (cal.ese_weightage / 100))
         }
-    
+
         const avgOverallScore = (
             attainedScores.overall[course_code].lot +
             attainedScores.overall[course_code].mot +
             attainedScores.overall[course_code].hot
         ) / 3;
-    
+
+        // console.log(avgOverallScore);
+
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
-    
+
     // Capso Calculation
 
     // Capso & Pso Calculation
+
     let totalCapso1 = 0;
     let totalCapso2 = 0;
     let totalCapso3 = 0;
     let totalCapso4 = 0;
     let totalCapso5 = 0;
-    
-    for (const course_code of stud_coursecodes) {
+
+    for (const course_code of stud_coursecodes) 
+    {
         if (!attainedScores.capso) {
             attainedScores.capso = {};
         }
@@ -207,16 +211,17 @@ route.post('/checkTutorCOC', async (req, res) =>
         const cop = await rsmatrix.findAll({
             where: { course_code: course_code }
         });
-        console.log("cop",cop)
+
         const lot = attainedScores.overall[course_code]?.lot;
         const mot = attainedScores.overall[course_code]?.mot;
         const hot = attainedScores.overall[course_code]?.hot;
 
-        for (const entry of cop) {
-            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
-                (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
-                (hot * entry.co1_pso5)) /
-                (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
+        for (const entry of cop) 
+        {
+            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co2_pso1) +
+                (mot * entry.co3_pso1) + (mot * entry.co4_pso1) +
+                (hot * entry.co5_pso1)) /
+                (entry.co1_pso1 + entry.co2_pso1 + entry.co3_pso1 + entry.co4_pso1 + entry.co5_pso1)
             const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
                 (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
                 (hot * entry.co2_pso5)) /
@@ -234,11 +239,11 @@ route.post('/checkTutorCOC', async (req, res) =>
                 (hot * entry.co5_pso5)) /
                 (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
 
-                totalCapso1 += capso1;
-                totalCapso2 += capso2;
-                totalCapso3 += capso3;
-                totalCapso4 += capso4;
-                totalCapso5 += capso5;
+            totalCapso1 += capso1;
+            totalCapso2 += capso2;
+            totalCapso3 += capso3;
+            totalCapso4 += capso4;
+            totalCapso5 += capso5;
             attainedScores.capso[course_code] =
             {
                 capso1,
@@ -247,8 +252,7 @@ route.post('/checkTutorCOC', async (req, res) =>
                 capso4,
                 capso5,
                 capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
-
-            };
+            }
         }
         const totalCourses = stud_coursecodes.length;
         const pso1 = totalCapso1 / totalCourses;
@@ -266,7 +270,7 @@ route.post('/checkTutorCOC', async (req, res) =>
             pso: (pso1 + pso2 + pso3 + pso4 + pso5) / 5,
         };
     }
-    res.json({attainedScores});
+    res.json({ attainedScores });
 })
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -284,7 +288,7 @@ route.post('/checkAdminCOC', async (req, res) =>
     const academicdata = await academic.findOne({
         where: { active_sem: 1 }
     })
-    
+
     const cal = await calculation.findOne({
         where: { active_sem: academicdata.academic_year }
     })
@@ -304,16 +308,15 @@ route.post('/checkAdminCOC', async (req, res) =>
 
     const studentCountsByCourse = {};
 
-    await Promise.all(marks.map(async entry => 
-    {
-        const 
-        {
-            course_code,
-            c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
-            c1_mot = 0, c2_mot = 0,
-            c1_hot = 0, c2_hot = 0,
-            ese_lot = 0, ese_mot = 0, ese_hot = 0
-        } = entry.dataValues;
+    await Promise.all(marks.map(async entry => {
+        const
+            {
+                course_code,
+                c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
+                c1_mot = 0, c2_mot = 0,
+                c1_hot = 0, c2_hot = 0,
+                ese_lot = 0, ese_mot = 0, ese_hot = 0
+            } = entry.dataValues;
 
         const lot_percentage = ((c1_lot || 0) + (c2_lot || 0) + (a1_lot || 0) + (a2_lot || 0)) / (cal.c_lot || 1) * 100;
         const mot_percentage = ((c1_mot || 0) + (c2_mot || 0)) / (cal.c_mot || 1) * 100;
@@ -375,23 +378,23 @@ route.post('/checkAdminCOC', async (req, res) =>
         attainedScores.elot[course_code] = await calculateCategory(percentageAboveThreshold.elot[course_code]);
         attainedScores.emot[course_code] = await calculateCategory(percentageAboveThreshold.emot[course_code]);
         attainedScores.ehot[course_code] = await calculateCategory(percentageAboveThreshold.ehot[course_code]);
-    
-        attainedScores.overall[course_code] = 
+
+        attainedScores.overall[course_code] =
         {
-            lot: (attainedScores.lot[course_code] * (cal.cia_weightage / 100)) + 
-                    (attainedScores.elot[course_code] * (cal.ese_weightage / 100)),
-            mot: (attainedScores.mot[course_code] * (cal.cia_weightage / 100)) + 
-                    (attainedScores.emot[course_code] * (cal.ese_weightage / 100)),
-            hot: (attainedScores.hot[course_code] * (cal.cia_weightage / 100)) + 
-                    (attainedScores.ehot[course_code] * (cal.ese_weightage / 100))
+            lot: (attainedScores.lot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.elot[course_code] * (cal.ese_weightage / 100)),
+            mot: (attainedScores.mot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.emot[course_code] * (cal.ese_weightage / 100)),
+            hot: (attainedScores.hot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.ehot[course_code] * (cal.ese_weightage / 100))
         }
-    
+
         const avgOverallScore = (
             attainedScores.overall[course_code].lot +
             attainedScores.overall[course_code].mot +
             attainedScores.overall[course_code].hot
         ) / 3;
-    
+
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
@@ -414,41 +417,41 @@ route.post('/checkAdminCOC', async (req, res) =>
 
         for (const entry of cop) 
         {
-            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
-                            (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
-                            (hot * entry.co1_pso5)) /
-                            (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
+            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co2_pso1) +
+                (mot * entry.co3_pso1) + (mot * entry.co4_pso1) +
+                (hot * entry.co5_pso1)) /
+                (entry.co1_pso1 + entry.co2_pso1 + entry.co3_pso1 + entry.co4_pso1 + entry.co5_pso1)
             const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
-                            (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
-                            (hot * entry.co2_pso5)) /
-                            (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
+                (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
+                (hot * entry.co2_pso5)) /
+                (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
             const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
-                            (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
-                            (hot * entry.co3_pso5)) /
-                            (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
+                (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
+                (hot * entry.co3_pso5)) /
+                (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
             const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
-                            (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
-                            (hot * entry.co4_pso5)) /
-                            (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
+                (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
+                (hot * entry.co4_pso5)) /
+                (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
             const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
-                            (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
-                            (hot * entry.co5_pso5)) /
-                            (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+                (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+                (hot * entry.co5_pso5)) /
+                (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
 
-            attainedScores.capso[course_code] = 
+            attainedScores.capso[course_code] =
             {
                 capso1,
                 capso2,
                 capso3,
                 capso4,
                 capso5,
-                capso: (capso1+capso2+capso3+capso4+capso5)/5,
+                capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
             };
         }
     }
-    res.json({attainedScores});
+    res.json({ attainedScores });
 })
-   
+
 // ------------------------------------------------------------------------------------------------------- //
 
 // Course Handler Course Outcome
@@ -458,17 +461,18 @@ route.post('/checkCourseCOC', async (req, res) =>
     const { staff_id } = req.body;
 
     const courseHandleStaffId = await coursemapping.findAll({
-        where: { 
-            staff_id: staff_id },
-            attributes: ['course_code']
-    })  
+        where: {
+            staff_id: staff_id
+        },
+        attributes: ['course_code']
+    })
 
     const stud_coursecodes = [...new Set(courseHandleStaffId.map(entry => entry.course_code))];
 
     const academicdata = await academic.findOne({
         where: { active_sem: 1 }
     })
-    
+
     const cal = await calculation.findOne({
         where: { active_sem: academicdata.academic_year }
     })
@@ -488,16 +492,15 @@ route.post('/checkCourseCOC', async (req, res) =>
 
     const studentCountsByCourse = {};
 
-    await Promise.all(marks.map(async entry => 
-    {
-        const 
-        {
-            course_code,
-            c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
-            c1_mot = 0, c2_mot = 0,
-            c1_hot = 0, c2_hot = 0,
-            ese_lot = 0, ese_mot = 0, ese_hot = 0
-        } = entry.dataValues;
+    await Promise.all(marks.map(async entry => {
+        const
+            {
+                course_code,
+                c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
+                c1_mot = 0, c2_mot = 0,
+                c1_hot = 0, c2_hot = 0,
+                ese_lot = 0, ese_mot = 0, ese_hot = 0
+            } = entry.dataValues;
 
         const lot_percentage = ((c1_lot || 0) + (c2_lot || 0) + (a1_lot || 0) + (a2_lot || 0)) / (cal.c_lot || 1) * 100;
         const mot_percentage = ((c1_mot || 0) + (c2_mot || 0)) / (cal.c_mot || 1) * 100;
@@ -559,23 +562,23 @@ route.post('/checkCourseCOC', async (req, res) =>
         attainedScores.elot[course_code] = await calculateCategory(percentageAboveThreshold.elot[course_code]);
         attainedScores.emot[course_code] = await calculateCategory(percentageAboveThreshold.emot[course_code]);
         attainedScores.ehot[course_code] = await calculateCategory(percentageAboveThreshold.ehot[course_code]);
-    
-        attainedScores.overall[course_code] = 
+
+        attainedScores.overall[course_code] =
         {
-            lot: (attainedScores.lot[course_code] * (cal.cia_weightage / 100)) + 
-                    (attainedScores.elot[course_code] * (cal.ese_weightage / 100)),
-            mot: (attainedScores.mot[course_code] * (cal.cia_weightage / 100)) + 
-                    (attainedScores.emot[course_code] * (cal.ese_weightage / 100)),
-            hot: (attainedScores.hot[course_code] * (cal.cia_weightage / 100)) + 
-                    (attainedScores.ehot[course_code] * (cal.ese_weightage / 100))
+            lot: (attainedScores.lot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.elot[course_code] * (cal.ese_weightage / 100)),
+            mot: (attainedScores.mot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.emot[course_code] * (cal.ese_weightage / 100)),
+            hot: (attainedScores.hot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.ehot[course_code] * (cal.ese_weightage / 100))
         }
-    
+
         const avgOverallScore = (
             attainedScores.overall[course_code].lot +
             attainedScores.overall[course_code].mot +
             attainedScores.overall[course_code].hot
         ) / 3;
-    
+
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
@@ -597,40 +600,40 @@ route.post('/checkCourseCOC', async (req, res) =>
         const hot = attainedScores.overall[course_code]?.hot;
 
         for (const entry of cop) 
-        {
-            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
-                            (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
-                            (hot * entry.co1_pso5)) /
-                            (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
+        {   
+            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co2_pso1) +
+                (mot * entry.co3_pso1) + (mot * entry.co4_pso1) +
+                (hot * entry.co5_pso1)) /
+                (entry.co1_pso1 + entry.co2_pso1 + entry.co3_pso1 + entry.co4_pso1 + entry.co5_pso1)
             const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
-                            (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
-                            (hot * entry.co2_pso5)) /
-                            (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
+                (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
+                (hot * entry.co2_pso5)) /
+                (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
             const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
-                            (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
-                            (hot * entry.co3_pso5)) /
-                            (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
+                (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
+                (hot * entry.co3_pso5)) /
+                (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
             const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
-                            (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
-                            (hot * entry.co4_pso5)) /
-                            (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
+                (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
+                (hot * entry.co4_pso5)) /
+                (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
             const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
-                            (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
-                            (hot * entry.co5_pso5)) /
-                            (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+                (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+                (hot * entry.co5_pso5)) /
+                (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
 
-            attainedScores.capso[course_code] = 
+            attainedScores.capso[course_code] =
             {
                 capso1,
                 capso2,
                 capso3,
                 capso4,
                 capso5,
-                capso: (capso1+capso2+capso3+capso4+capso5)/5,
+                capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
             };
         }
     }
-    res.json({attainedScores});
+    res.json({ attainedScores });
 })
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -642,19 +645,20 @@ route.post('/checkHodCOC', async (req, res) =>
     const { staff_id } = req.body;
 
     const hodDeptHandle = await hod.findAll(
-    {
-        where: { 
-            staff_id: staff_id 
-        },
-        attributes: ['course_id']
-    })  
+        {
+            where: {
+                staff_id: staff_id
+            },
+            attributes: ['course_id']
+        })
 
     const hod_dept_id = [...new Set(hodDeptHandle.map(entry => entry.course_id))];
 
     const courseHandleStaffId = await markentry.findAll({
-        where: { 
-            course_id: hod_dept_id },
-            attributes: ['course_code']
+        where: {
+            course_id: hod_dept_id
+        },
+        attributes: ['course_code']
     })
 
     const stud_coursecodes = [...new Set(courseHandleStaffId.map(entry => entry.course_code))];
@@ -662,7 +666,7 @@ route.post('/checkHodCOC', async (req, res) =>
     const academicdata = await academic.findOne({
         where: { active_sem: 1 }
     })
-    
+
     const cal = await calculation.findOne({
         where: { active_sem: academicdata.academic_year }
     })
@@ -682,16 +686,15 @@ route.post('/checkHodCOC', async (req, res) =>
 
     const studentCountsByCourse = {};
 
-    await Promise.all(marks.map(async entry => 
-    {
-        const 
-        {
-            course_code,
-            c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
-            c1_mot = 0, c2_mot = 0,
-            c1_hot = 0, c2_hot = 0,
-            ese_lot = 0, ese_mot = 0, ese_hot = 0
-        } = entry.dataValues;
+    await Promise.all(marks.map(async entry => {
+        const
+            {
+                course_code,
+                c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
+                c1_mot = 0, c2_mot = 0,
+                c1_hot = 0, c2_hot = 0,
+                ese_lot = 0, ese_mot = 0, ese_hot = 0
+            } = entry.dataValues;
 
         const lot_percentage = ((c1_lot || 0) + (c2_lot || 0) + (a1_lot || 0) + (a2_lot || 0)) / (cal.c_lot || 1) * 100;
         const mot_percentage = ((c1_mot || 0) + (c2_mot || 0)) / (cal.c_mot || 1) * 100;
@@ -735,7 +738,8 @@ route.post('/checkHodCOC', async (req, res) =>
         percentageAboveThreshold.ehot[course_code] = (countAboveThreshold.ehot[course_code] / totalStudents) * 100;
     }
 
-    let attainedScores = {
+    let attainedScores = 
+    {
         lot: {},
         mot: {},
         hot: {},
@@ -743,7 +747,7 @@ route.post('/checkHodCOC', async (req, res) =>
         emot: {},
         ehot: {},
         overall: {}
-    };
+    }
 
     for (const course_code of stud_coursecodes) 
     {
@@ -753,23 +757,23 @@ route.post('/checkHodCOC', async (req, res) =>
         attainedScores.elot[course_code] = await calculateCategory(percentageAboveThreshold.elot[course_code]);
         attainedScores.emot[course_code] = await calculateCategory(percentageAboveThreshold.emot[course_code]);
         attainedScores.ehot[course_code] = await calculateCategory(percentageAboveThreshold.ehot[course_code]);
-    
-        attainedScores.overall[course_code] = 
+
+        attainedScores.overall[course_code] =
         {
-            lot: (attainedScores.lot[course_code] * (cal.cia_weightage / 100)) + 
-                    (attainedScores.elot[course_code] * (cal.ese_weightage / 100)),
-            mot: (attainedScores.mot[course_code] * (cal.cia_weightage / 100)) + 
-                    (attainedScores.emot[course_code] * (cal.ese_weightage / 100)),
-            hot: (attainedScores.hot[course_code] * (cal.cia_weightage / 100)) + 
-                    (attainedScores.ehot[course_code] * (cal.ese_weightage / 100))
+            lot: (attainedScores.lot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.elot[course_code] * (cal.ese_weightage / 100)),
+            mot: (attainedScores.mot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.emot[course_code] * (cal.ese_weightage / 100)),
+            hot: (attainedScores.hot[course_code] * (cal.cia_weightage / 100)) +
+                (attainedScores.ehot[course_code] * (cal.ese_weightage / 100))
         }
-    
+
         const avgOverallScore = (
             attainedScores.overall[course_code].lot +
             attainedScores.overall[course_code].mot +
             attainedScores.overall[course_code].hot
         ) / 3;
-    
+
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
@@ -792,43 +796,43 @@ route.post('/checkHodCOC', async (req, res) =>
 
         for (const entry of cop) 
         {
-            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co1_pso2) +
-                            (mot * entry.co1_pso3) + (mot * entry.co1_pso4) +
-                            (hot * entry.co1_pso5)) /
-                            (entry.co1_pso1 + entry.co1_pso2 + entry.co1_pso3 + entry.co1_pso4 + entry.co1_pso5)
+            const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co2_pso1) +
+                (mot * entry.co3_pso1) + (mot * entry.co4_pso1) +
+                (hot * entry.co5_pso1)) /
+                (entry.co1_pso1 + entry.co2_pso1 + entry.co3_pso1 + entry.co4_pso1 + entry.co5_pso1)
             const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
-                            (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
-                            (hot * entry.co2_pso5)) /
-                            (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
+                (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
+                (hot * entry.co2_pso5)) /
+                (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
             const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
-                            (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
-                            (hot * entry.co3_pso5)) /
-                            (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
+                (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
+                (hot * entry.co3_pso5)) /
+                (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
             const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
-                            (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
-                            (hot * entry.co4_pso5)) /
-                            (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
+                (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
+                (hot * entry.co4_pso5)) /
+                (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
             const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
-                            (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
-                            (hot * entry.co5_pso5)) /
-                            (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+                (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+                (hot * entry.co5_pso5)) /
+                (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
 
-            attainedScores.capso[course_code] = 
+            attainedScores.capso[course_code] =
             {
                 capso1,
                 capso2,
                 capso3,
                 capso4,
                 capso5,
-                capso: (capso1+capso2+capso3+capso4+capso5)/5,
+                capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
             };
         }
     }
-    res.json({attainedScores});
+    res.json({ attainedScores });
 })
 
 // ------------------------------------------------------------------------------------------------------- //
-    
+
 async function calculateCategory(percentage) 
 {
     try 
@@ -849,18 +853,18 @@ async function calculateCategory(percentage)
 
         if (percentage >= data.so_l3_ug) {
             return 3;
-        } 
+        }
         else if (percentage >= data.so_l2_ug) {
             return 2;
-        } 
+        }
         else if (percentage >= data.so_l1_ug) {
             return 1;
-        } 
+        }
         else if (percentage > data.so_l0_ug) {
             return 0;
         }
         return 0;
-    } 
+    }
     catch (error) {
         console.error('Error fetching academic or calculation data:', error);
     }
@@ -872,13 +876,13 @@ function calculateGrade(overallAverage)
 {
     if (overallAverage >= 2.5) {
         return 'High';
-    } 
+    }
     else if (overallAverage >= 1.5 && overallAverage < 2.5) {
         return 'Medium';
-    } 
+    }
     else if (overallAverage >= 0) {
         return 'Low';
-    } 
+    }
     else {
         return 'N/A';
     }

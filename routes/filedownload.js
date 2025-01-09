@@ -391,7 +391,7 @@ route.get('/download/ese', async (req, res) =>
         
         const formattedData = [
             ['reg_no', 'course_code','ese_lot', 'ese_mot', 'ese_hot', 
-                 'ese_total'],
+                'ese_total'],
             ...markData.map(entry => [
                 entry.reg_no,
                 entry.course_code,
