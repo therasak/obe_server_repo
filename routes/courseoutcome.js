@@ -216,28 +216,30 @@ route.post('/checkTutorCOC', async (req, res) =>
         const mot = attainedScores.overall[course_code]?.mot;
         const hot = attainedScores.overall[course_code]?.hot;
 
+        console.log(lot, mot, hot);
+
         for (const entry of cop) 
         {
             const capso1 = ((lot * entry.co1_pso1) + (lot * entry.co2_pso1) +
                 (mot * entry.co3_pso1) + (mot * entry.co4_pso1) +
                 (hot * entry.co5_pso1)) /
                 (entry.co1_pso1 + entry.co2_pso1 + entry.co3_pso1 + entry.co4_pso1 + entry.co5_pso1)
-            const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
-                (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
-                (hot * entry.co2_pso5)) /
-                (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
-            const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
-                (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
-                (hot * entry.co3_pso5)) /
-                (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
-            const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
-                (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
-                (hot * entry.co4_pso5)) /
-                (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
-            const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
-                (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+            const capso2 = ((lot * entry.co1_pso2) + (lot * entry.co2_pso2) +
+                (mot * entry.co3_pso2) + (mot * entry.co4_pso2) +
+                (hot * entry.co5_pso2)) /
+                (entry.co1_pso2 + entry.co2_pso2 + entry.co3_pso2 + entry.co4_pso2 + entry.co5_pso2)
+            const capso3 = ((lot * entry.co1_pso3) + (lot * entry.co2_pso3) +
+                (mot * entry.co3_pso3) + (mot * entry.co4_pso3) +
+                (hot * entry.co5_pso3)) /
+                (entry.co1_pso3 + entry.co2_pso3 + entry.co3_pso3 + entry.co4_pso3 + entry.co5_pso3)
+            const capso4 = ((lot * entry.co1_pso4) + (lot * entry.co2_pso4) +
+                (mot * entry.co3_pso4) + (mot * entry.co4_pso4) +
+                (hot * entry.co5_pso4)) /
+                (entry.co1_pso4 + entry.co2_pso4 + entry.co3_pso4 + entry.co4_pso4 + entry.co5_pso4)
+            const capso5 = ((lot * entry.co1_pso5) + (lot * entry.co2_pso5) +
+                (mot * entry.co3_pso5) + (mot * entry.co4_pso5) +
                 (hot * entry.co5_pso5)) /
-                (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+                (entry.co1_pso5 + entry.co2_pso5 + entry.co3_pso5 + entry.co4_pso5 + entry.co5_pso5)
 
             totalCapso1 += capso1;
             totalCapso2 += capso2;
@@ -421,22 +423,22 @@ route.post('/checkAdminCOC', async (req, res) =>
                 (mot * entry.co3_pso1) + (mot * entry.co4_pso1) +
                 (hot * entry.co5_pso1)) /
                 (entry.co1_pso1 + entry.co2_pso1 + entry.co3_pso1 + entry.co4_pso1 + entry.co5_pso1)
-            const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
-                (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
-                (hot * entry.co2_pso5)) /
-                (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
-            const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
-                (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
-                (hot * entry.co3_pso5)) /
-                (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
-            const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
-                (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
-                (hot * entry.co4_pso5)) /
-                (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
-            const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
-                (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+            const capso2 = ((lot * entry.co1_pso2) + (lot * entry.co2_pso2) +
+                (mot * entry.co3_pso2) + (mot * entry.co4_pso2) +
+                (hot * entry.co5_pso2)) /
+                (entry.co1_pso2 + entry.co2_pso2 + entry.co3_pso2 + entry.co4_pso2 + entry.co5_pso2)
+            const capso3 = ((lot * entry.co1_pso3) + (lot * entry.co2_pso3) +
+                (mot * entry.co3_pso3) + (mot * entry.co4_pso3) +
+                (hot * entry.co5_pso3)) /
+                (entry.co1_pso3 + entry.co2_pso3 + entry.co3_pso3 + entry.co4_pso3 + entry.co5_pso3)
+            const capso4 = ((lot * entry.co1_pso4) + (lot * entry.co2_pso4) +
+                (mot * entry.co3_pso4) + (mot * entry.co4_pso4) +
+                (hot * entry.co5_pso4)) /
+                (entry.co1_pso4 + entry.co2_pso4 + entry.co3_pso4 + entry.co4_pso4 + entry.co5_pso4)
+            const capso5 = ((lot * entry.co1_pso5) + (lot * entry.co2_pso5) +
+                (mot * entry.co3_pso5) + (mot * entry.co4_pso5) +
                 (hot * entry.co5_pso5)) /
-                (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+                (entry.co1_pso5 + entry.co2_pso5 + entry.co3_pso5 + entry.co4_pso5 + entry.co5_pso5)
 
             attainedScores.capso[course_code] =
             {
@@ -605,22 +607,22 @@ route.post('/checkCourseCOC', async (req, res) =>
                 (mot * entry.co3_pso1) + (mot * entry.co4_pso1) +
                 (hot * entry.co5_pso1)) /
                 (entry.co1_pso1 + entry.co2_pso1 + entry.co3_pso1 + entry.co4_pso1 + entry.co5_pso1)
-            const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
-                (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
-                (hot * entry.co2_pso5)) /
-                (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
-            const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
-                (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
-                (hot * entry.co3_pso5)) /
-                (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
-            const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
-                (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
-                (hot * entry.co4_pso5)) /
-                (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
-            const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
-                (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+            const capso2 = ((lot * entry.co1_pso2) + (lot * entry.co2_pso2) +
+                (mot * entry.co3_pso2) + (mot * entry.co4_pso2) +
+                (hot * entry.co5_pso2)) /
+                (entry.co1_pso2 + entry.co2_pso2 + entry.co3_pso2 + entry.co4_pso2 + entry.co5_pso2)
+            const capso3 = ((lot * entry.co1_pso3) + (lot * entry.co2_pso3) +
+                (mot * entry.co3_pso3) + (mot * entry.co4_pso3) +
+                (hot * entry.co5_pso3)) /
+                (entry.co1_pso3 + entry.co2_pso3 + entry.co3_pso3 + entry.co4_pso3 + entry.co5_pso3)
+            const capso4 = ((lot * entry.co1_pso4) + (lot * entry.co2_pso4) +
+                (mot * entry.co3_pso4) + (mot * entry.co4_pso4) +
+                (hot * entry.co5_pso4)) /
+                (entry.co1_pso4 + entry.co2_pso4 + entry.co3_pso4 + entry.co4_pso4 + entry.co5_pso4)
+            const capso5 = ((lot * entry.co1_pso5) + (lot * entry.co2_pso5) +
+                (mot * entry.co3_pso5) + (mot * entry.co4_pso5) +
                 (hot * entry.co5_pso5)) /
-                (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+                (entry.co1_pso5 + entry.co2_pso5 + entry.co3_pso5 + entry.co4_pso5 + entry.co5_pso5)
 
             attainedScores.capso[course_code] =
             {
@@ -800,22 +802,22 @@ route.post('/checkHodCOC', async (req, res) =>
                 (mot * entry.co3_pso1) + (mot * entry.co4_pso1) +
                 (hot * entry.co5_pso1)) /
                 (entry.co1_pso1 + entry.co2_pso1 + entry.co3_pso1 + entry.co4_pso1 + entry.co5_pso1)
-            const capso2 = ((lot * entry.co2_pso1) + (lot * entry.co2_pso2) +
-                (mot * entry.co2_pso3) + (mot * entry.co2_pso4) +
-                (hot * entry.co2_pso5)) /
-                (entry.co2_pso1 + entry.co2_pso2 + entry.co2_pso3 + entry.co2_pso4 + entry.co2_pso5)
-            const capso3 = ((lot * entry.co3_pso1) + (lot * entry.co3_pso2) +
-                (mot * entry.co3_pso3) + (mot * entry.co3_pso4) +
-                (hot * entry.co3_pso5)) /
-                (entry.co3_pso1 + entry.co3_pso2 + entry.co3_pso3 + entry.co3_pso4 + entry.co3_pso5)
-            const capso4 = ((lot * entry.co4_pso1) + (lot * entry.co4_pso2) +
-                (mot * entry.co4_pso3) + (mot * entry.co4_pso4) +
-                (hot * entry.co4_pso5)) /
-                (entry.co4_pso1 + entry.co4_pso2 + entry.co4_pso3 + entry.co4_pso4 + entry.co4_pso5)
-            const capso5 = ((lot * entry.co5_pso1) + (lot * entry.co5_pso2) +
-                (mot * entry.co5_pso3) + (mot * entry.co5_pso4) +
+            const capso2 = ((lot * entry.co1_pso2) + (lot * entry.co2_pso2) +
+                (mot * entry.co3_pso2) + (mot * entry.co4_pso2) +
+                (hot * entry.co5_pso2)) /
+                (entry.co1_pso2 + entry.co2_pso2 + entry.co3_pso2 + entry.co4_pso2 + entry.co5_pso2)
+            const capso3 = ((lot * entry.co1_pso3) + (lot * entry.co2_pso3) +
+                (mot * entry.co3_pso3) + (mot * entry.co4_pso3) +
+                (hot * entry.co5_pso3)) /
+                (entry.co1_pso3 + entry.co2_pso3 + entry.co3_pso3 + entry.co4_pso3 + entry.co5_pso3)
+            const capso4 = ((lot * entry.co1_pso4) + (lot * entry.co2_pso4) +
+                (mot * entry.co3_pso4) + (mot * entry.co4_pso4) +
+                (hot * entry.co5_pso4)) /
+                (entry.co1_pso4 + entry.co2_pso4 + entry.co3_pso4 + entry.co4_pso4 + entry.co5_pso4)
+            const capso5 = ((lot * entry.co1_pso5) + (lot * entry.co2_pso5) +
+                (mot * entry.co3_pso5) + (mot * entry.co4_pso5) +
                 (hot * entry.co5_pso5)) /
-                (entry.co5_pso1 + entry.co5_pso2 + entry.co5_pso3 + entry.co5_pso4 + entry.co5_pso5)
+                (entry.co1_pso5 + entry.co2_pso5 + entry.co3_pso5 + entry.co4_pso5 + entry.co5_pso5)
 
             attainedScores.capso[course_code] =
             {
