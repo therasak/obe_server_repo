@@ -9,11 +9,11 @@ const rsmatrix = sequelize_conn.define('rsmatrix',
         primaryKey: true,
         autoIncrement: true
     },
-    academic_year : {
+    academic_sem : {
         type: DataTypes.STRING,
         allowNull: true
     },
-    course_id: {
+    dept_id: {
         type: DataTypes.STRING,
         primaryKey: true,
         allowNull: true

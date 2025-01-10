@@ -9,7 +9,7 @@ const calculation = sequelize_conn.define('calculation',
         primaryKey: true,
         autoIncrement: true
     },
-    active_sem : {
+    academic_sem : {
         type: DataTypes.STRING,
         allowNull: true
     },

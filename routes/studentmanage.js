@@ -16,7 +16,7 @@ route.get('/studetails', async (req, res) =>
 	})
 
 	const studata = await studentmaster.findAll({
-		where: { active_sem: activeAcademic.academic_year },
+		where: { academic_sem: activeAcademic.academic_sem },
 	})
 
 	res.json(studata);
@@ -39,10 +39,10 @@ route.get('/category', async (req, res) =>
 			return res.status(404).json({ error: 'Active academic year not found' });
 		}
 
-		const activeSemester = activeAcademic.academic_year;
+		const activeSemester = activeAcademic.academic_sem;
 
 		const categories = await studentmaster.findAll({
-			where: { active_sem: activeSemester },
+			where: { academic_sem: activeSemester },
 			attributes: ['category'], 
 		})
 
@@ -74,18 +74,18 @@ route.post('/courseid', async (req, res) =>
 			return res.status(404).json({ error: "Active Academic Year not Found" });
 		}
 
-		const activeSemester = activeAcademic.academic_year;
+		const activeSemester = activeAcademic.academic_sem;
 
 		const courseid = await studentmaster.findAll(
 		{
 			where: { 
-				active_sem: activeSemester, 
+				academic_sem: activeSemester, 
 				category: category 
 			}, 
-			attributes: ['course_id'],
+			attributes: ['dept_id'],
 		})
 
-		const uniqueCourseId = [...new Set(courseid.map((course) => course.course_id))]
+		const uniqueCourseId = [...new Set(courseid.map((course) => course.dept_id))]
 		res.status(200).json(uniqueCourseId);
 	} 
 	catch (error) {
@@ -112,13 +112,13 @@ route.post('/semester', async (req, res) =>
 			return res.status(404).json({ error: "Active Academic Year Not Found" });
 		}
 
-		const activeSemester = activeAcademic.academic_year;
+		const activeSemester = activeAcademic.academic_sem;
 
 		const semesters = await studentmaster.findAll({
 			where: {
-				active_sem: activeSemester,
+				academic_sem: activeSemester,
 				category: category,
-				course_id: courseId,
+				dept_id: courseId,
 			},
 			attributes: ['semester'], 
 		});
@@ -151,13 +151,13 @@ route.post('/section', async (req, res) =>
 			return res.status(404).json({ error: "Active academic year not found" });
 		}
 
-		const activeSemester = activeAcademic.academic_year;
+		const activeSemester = activeAcademic.academic_sem;
 
 		const sections = await studentmaster.findAll({
 			where: {
-				active_sem: activeSemester,
+				academic_sem: activeSemester,
 				category: category,
-				course_id: courseId,
+				dept_id: courseId,
 				semester: semester,
 			},
 			attributes: ['section'], 
@@ -190,13 +190,13 @@ route.post('/coursecode', async (req, res) =>
 			return res.status(404).json({ error: "Active academic year not found" });
 		}
 
-		const activeSemester = activeAcademic.academic_year;
+		const activeSemester = activeAcademic.academic_sem;
 
 		const courseCodes = await markentry.findAll({
 			where: {
-				active_sem: activeSemester,
+				academic_sem: activeSemester,
 				category: category,
-				course_id: courseId,
+				dept_id: courseId,
 				semester: semester
 			},
 			attributes: ['course_code'],
@@ -226,7 +226,7 @@ route.post("/addstudent", async (req, res) =>
 	try 
 	{
 		const { stu_name, reg_no, batch, emis, section, semester, mentor, 
-		category, course_id, course_codes } = req.body;
+		category, dept_id, course_codes } = req.body;
 
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
@@ -236,7 +236,7 @@ route.post("/addstudent", async (req, res) =>
 			return res.status(404).json({ error: "Active academic year not found" });
 		}
 
-		const activeSemester = activeAcademic.academic_year;
+		const activeSemester = activeAcademic.academic_sem;
 
 		if (!stu_name || !reg_no) {
 			return res.status(400).json({ error: "Student name and registration number are required." });
@@ -245,8 +245,8 @@ route.post("/addstudent", async (req, res) =>
 		const newStudent = await studentmaster.create({
 			stu_name: stu_name, reg_no: reg_no, batch: batch,
 			emis: emis, section: section, semester: semester,
-			mentor: mentor, category: category, course_id: course_id,
-			active_sem: activeSemester
+			mentor: mentor, category: category, dept_id: dept_id,
+			academic_sem: activeSemester
 		});
 
 		const markEntryPromises = course_codes.map(async (course_code) => 
@@ -257,8 +257,8 @@ route.post("/addstudent", async (req, res) =>
 
 			return await markentry.create({
 				stu_name: stu_name, reg_no: reg_no, semester: semester, batch: batch,
-				category: category, course_id: course_id, course_code: course_code,
-				active_sem: activeSemester, c1_lot: null, c1_hot: null, c1_mot: null,
+				category: category, dept_id: dept_id, course_code: course_code,
+				academic_sem: activeSemester, c1_lot: null, c1_hot: null, c1_mot: null,
 				c1_total: null, c2_lot: null, c2_mot: null, c2_hot: null, c2_total: null,
 				a1_lot: null, a2_lot: null, ese_lot: null, ese_hot: null, ese_mot: null,
 				ese_total: null,

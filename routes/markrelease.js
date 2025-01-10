@@ -21,7 +21,7 @@ route.get('/reportdata', async (req, res) =>
                 return {
                     ...match.toJSON(),
                     staff_name: matchStaff.staff_name,
-                    course_id: matchStaff.course_id,
+                    dept_id: matchStaff.dept_id,
                     course_title:matchStaff.course_title
                 }   
             }
@@ -30,7 +30,7 @@ route.get('/reportdata', async (req, res) =>
                 return {
                     ...match.toJSON(),
                     staff_name: 'unknown',
-                    course_id: 'unknown'
+                    dept_id: 'unknown'
                 }   
             }
         })

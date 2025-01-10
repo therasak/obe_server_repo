@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize_conn = require('./dbconnection');
-const coursemapping = require('./coursemapping');  
+const coursemapping = require('./coursemapping');
 
 const report = sequelize_conn.define('report', {
     s_no: {
@@ -49,27 +49,7 @@ const report = sequelize_conn.define('report', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    l_c1: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    l_c2: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    l_a1: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    l_a2: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    l_ese: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    active_sem: {
+    academic_sem: {
         type: DataTypes.STRING,
         allowNull: true
     }
@@ -77,6 +57,7 @@ const report = sequelize_conn.define('report', {
     timestamps: false,
     freezeTableName: true
 });
+
 report.belongsTo(coursemapping, { foreignKey: 'staff_id', targetKey: 'staff_id' });
 coursemapping.hasMany(report, { foreignKey: 'staff_id', sourceKey: 'staff_id' });
 

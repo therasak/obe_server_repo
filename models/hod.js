@@ -13,7 +13,7 @@ const hod = sequelize_conn.define('hod',
         type: DataTypes.STRING,
         allowNull: true
     },
-    course_id: {
+    dept_id: {
         type: DataTypes.STRING,
         allowNull: true
     },

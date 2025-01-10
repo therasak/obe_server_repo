@@ -10,13 +10,13 @@ const coursemapping = require('../models/coursemapping');
 
 route.post('/rsmcoursecode', async (req, res) => 
 {
-    const { academic_year, staff_id } = req.body;
+    const { academic_sem, staff_id } = req.body;
 
     try 
     {
         const courseMappings = await coursemapping.findAll({
             where: { 
-                active_sem: academic_year,
+                academic_sem: academic_sem,
                 staff_id: staff_id
             },
             attributes: ['course_code', 'active_sem']
@@ -38,7 +38,7 @@ route.post('/rsmcoursecode', async (req, res) =>
             })
             return {
                 course_code: item.course_code,
-                active_sem: item.active_sem,
+                academic_sem: item.active_sem,
                 completed: !!courseExists, 
             }
         })
@@ -82,8 +82,8 @@ route.post('/rsmatrix', async (req, res) =>
     {
         const data = await rsmatrix.update(
         {
-            academic_year: ac.academic_year,
-            course_id: cm.course_id,
+            academic_sem: ac.academic_sem,
+            dept_id: cm.dept_id,
             co1_po1: scores.CO1_0,
             co1_po2: scores.CO1_1,
             co1_po3: scores.CO1_2,
@@ -157,8 +157,8 @@ route.post('/rsmatrix', async (req, res) =>
         const data = await rsmatrix.create(
         {
             course_code: course_code,
-            academic_year: ac.academic_year,
-            course_id: cm.course_id,
+            academic_sem: ac.academic_sem,
+            dept_id: cm.dept_id,
             co1_po1: scores.CO1_0,
             co1_po2: scores.CO1_1,
             co1_po3: scores.CO1_2,
@@ -243,7 +243,7 @@ route.get('/rsmatrix/:course_code', async (req, res) =>
         const matrixData = await rsmatrix.findOne({
             where: {
                 course_code,
-                academic_year: ac.academic_year,
+                academic_sem: ac.academic_sem,
             }
         })
         res.status(200).json(matrixData);

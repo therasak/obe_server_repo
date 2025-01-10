@@ -13,13 +13,13 @@ const calculation = require('../models/calculation');
 
 route.post('/coursemap', async (req, res) => 
 {
-    const { staff_id, academic_year } = req.body;
+    const { staff_id, academic_sem } = req.body;
 
     try {
         const courseMapping = await coursemapping.findAll({
             where: {
                 staff_id: staff_id,
-                active_sem: academic_year
+                academic_sem: academic_sem
             }
         });
         res.json(courseMapping);
@@ -42,7 +42,7 @@ route.post('/maxmark', async (req, res) =>
         })
 
         const maxMark = await calculation.findOne({
-            where: { active_sem: academicdata.academic_year }
+            where: { academic_sem: academicdata.academic_sem }
         })
 
         res.json(maxMark);
@@ -95,13 +95,13 @@ route.post('/report/status', async (req, res) =>
 
 route.post('/studentdetails', async (req, res) => 
 {
-    const { course_id, stu_section, stu_category, stu_course_code, activeSection, academic_year } = req.body;
+    const { dept_id, stu_section, stu_category, stu_course_code, activeSection, academic_sem } = req.body;
 
     try 
     {
         const studentDetails = await studentmaster.findAll({
             where: {
-                course_id: course_id,
+                dept_id: dept_id,
                 section: stu_section,
                 category: stu_category
             }
@@ -135,7 +135,7 @@ route.post('/studentdetails', async (req, res) =>
             where: {
                 course_code: stu_course_code,
                 reg_no: registerNumbers,
-                active_sem: academic_year
+                academic_sem: academic_sem
             },
             attributes: ['reg_no', ...markFields]
         })
@@ -181,7 +181,7 @@ route.get('/getreport', async (req, res) =>
             section: section,
             category: category,
             dept_name: deptName,
-            active_sem: academicYear
+            academic_sem: academicYear
         }
     });
     res.json(checkActive);
@@ -261,7 +261,7 @@ route.put('/updateMark', async (req, res) =>
                 where: {
                     reg_no: regNo,
                     course_code: courseCode,
-                    active_sem: academicYear
+                    academic_sem: academicYear
                 }
             });
         }
@@ -293,7 +293,7 @@ route.put('/report', async (req, res) =>
                 section: section,
                 category: category,
                 dept_name: deptName,
-                active_sem: academicYear
+                academic_sem: academicYear
             }
         });
 
@@ -332,7 +332,7 @@ route.put('/report', async (req, res) =>
                 section: section,
                 category: category,
                 dept_name: deptName,
-                active_sem: academicYear,
+                academic_sem: academicYear,
                 cia_1: activeSection === "1" ? valueToSet : null,
                 cia_2: activeSection === "2" ? valueToSet : null,
                 ass_1: activeSection === "3" ? valueToSet : null,
@@ -347,7 +347,7 @@ route.put('/report', async (req, res) =>
                 section: section,
                 category: category,
                 dept_name: deptName,
-                active_sem: academicYear
+                academic_sem: academicYear
             }
         });
 

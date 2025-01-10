@@ -17,7 +17,7 @@ const coursemapping = sequelize_conn.define('coursemapping',
         type: DataTypes.STRING,
         allowNull: true
     },
-    course_id: {
+    dept_id: {
         type: DataTypes.STRING,
         allowNull: true
     },
@@ -53,7 +53,7 @@ const coursemapping = sequelize_conn.define('coursemapping',
         type: DataTypes.STRING,
         allowNull: true
     },
-    active_sem : {
+    academic_sem : {
         type: DataTypes.STRING,
         allowNull: true
     }

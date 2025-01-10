@@ -24,14 +24,14 @@ route.post('/chkstaffId', async (req, res) =>
     const courseHandleStaffId = await coursemapping.findOne({
         where: {
             staff_id: staff_id,
-            active_sem: academicdata.academic_year
+            academic_sem: academicdata.academic_sem
         }
     })
 
     const tutorHandleStaffId = await mentor.findOne({
         where: {
             staff_id: staff_id,
-            active_sem: academicdata.academic_year
+            academic_sem: academicdata.academic_sem
         }
     })
 
@@ -59,7 +59,7 @@ route.post('/checkTutorCOC', async (req, res) =>
     {
         where: {
             category: tutorHandleStaffId.category,
-            course_id: tutorHandleStaffId.course_id,
+            dept_id: tutorHandleStaffId.dept_id,
             batch: tutorHandleStaffId.batch,
             section: tutorHandleStaffId.section
         },
@@ -80,7 +80,7 @@ route.post('/checkTutorCOC', async (req, res) =>
     })
 
     const cal = await calculation.findOne({
-        where: { active_sem: academicdata.academic_year }
+        where: { academic_sem: academicdata.academic_sem }
     })
 
     const marks = await markentry.findAll({
@@ -292,7 +292,7 @@ route.post('/checkAdminCOC', async (req, res) =>
     })
 
     const cal = await calculation.findOne({
-        where: { active_sem: academicdata.academic_year }
+        where: { academic_sem: academicdata.academic_sem }
     })
 
     const marks = await markentry.findAll({
@@ -476,7 +476,7 @@ route.post('/checkCourseCOC', async (req, res) =>
     })
 
     const cal = await calculation.findOne({
-        where: { active_sem: academicdata.academic_year }
+        where: { academic_sem: academicdata.academic_sem }
     })
 
     const marks = await markentry.findAll({
@@ -651,14 +651,14 @@ route.post('/checkHodCOC', async (req, res) =>
             where: {
                 staff_id: staff_id
             },
-            attributes: ['course_id']
+            attributes: ['dept_id']
         })
 
-    const hod_dept_id = [...new Set(hodDeptHandle.map(entry => entry.course_id))];
+    const hod_dept_id = [...new Set(hodDeptHandle.map(entry => entry.dept_id))];
 
     const courseHandleStaffId = await markentry.findAll({
         where: {
-            course_id: hod_dept_id
+            dept_id: hod_dept_id
         },
         attributes: ['course_code']
     })
@@ -670,7 +670,7 @@ route.post('/checkHodCOC', async (req, res) =>
     })
 
     const cal = await calculation.findOne({
-        where: { active_sem: academicdata.academic_year }
+        where: { academic_sem: academicdata.academic_sem }
     })
 
     const marks = await markentry.findAll({
@@ -846,7 +846,7 @@ async function calculateCategory(percentage)
             return null;
         }
 
-        const data = await calculation.findOne({ where: { active_sem: academicdata.academic_year } });
+        const data = await calculation.findOne({ where: { academic_sem: academicdata.academic_sem } });
 
         if (!data) {
             console.error("Calculation data not found for the specified academic year");

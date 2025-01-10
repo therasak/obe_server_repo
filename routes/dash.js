@@ -21,21 +21,21 @@ route.get('/counts', async (req, res) =>
         })
 
         const studentCount = await studentmaster.count({
-            where: {active_sem: String(academicdata.academic_year)}
+            where: {academic_sem: String(academicdata.academic_sem)}
         });
 
         const staffCount = await staffmaster.count();
 
         const uniqueCourseCount = await coursemapping.count({
-            where: {active_sem: String(academicdata.academic_year)},
+            where: {academic_sem: String(academicdata.academic_sem)},
             distinct: true,
             col: 'course_code'
         });
 
         const uniqueProgramCount = await coursemapping.count({
-            where: {active_sem: String(academicdata.academic_year)},
+            where: {academic_sem: String(academicdata.academic_sem)},
             distinct: true,
-            col: 'course_id'
+            col: 'dept_id'
         });
 
         res.json({
@@ -67,7 +67,7 @@ route.get('/studentpiechart', async (req, res) =>
         const totalStudents = await studentmaster.count(
         {
             where: { 
-                active_sem: academicdata.academic_year 
+                academic_sem: academicdata.academic_sem 
             }
         });
 
@@ -75,7 +75,7 @@ route.get('/studentpiechart', async (req, res) =>
         {
             where: { 
                 category: 'AIDED', 
-                active_sem: academicdata.academic_year 
+                academic_sem: academicdata.academic_sem 
             }
         });
 
@@ -83,7 +83,7 @@ route.get('/studentpiechart', async (req, res) =>
         {
             where: { 
                 category: 'SFM', 
-                active_sem: academicdata.academic_year 
+                academic_sem: academicdata.academic_sem 
             }
         });
 
@@ -91,7 +91,7 @@ route.get('/studentpiechart', async (req, res) =>
         {
             where: { 
                 category: 'SFW', 
-                active_sem: academicdata.academic_year 
+                academic_sem: academicdata.academic_sem 
             }
         });
 
@@ -159,41 +159,41 @@ route.post('/componentreport', async (req, res) =>
 
         const totalCount = await report.count({
             where: {
-                active_sem: String(academicdata.academic_year)
+                academic_sem: String(academicdata.academic_sem)
             }
         });
 
         const cia_1 = await report.count({
             where: {
-                active_sem: academicdata.academic_year,
+                academic_sem: academicdata.academic_sem,
                 cia_1: '2'
             }
         });
 
         const cia_2 = await report.count({
             where: {
-                active_sem: academicdata.academic_year,
+                academic_sem: academicdata.academic_sem,
                 cia_2: '2'
             }
         });
 
         const ass_1 = await report.count({
             where: {
-                active_sem: String(academicdata.academic_year),
+                academic_sem: String(academicdata.academic_sem),
                 ass_1: '2'
             }
         });
 
         const ass_2 = await report.count({
             where: {
-                active_sem: String(academicdata.academic_year),
+                academic_sem: String(academicdata.academic_sem),
                 ass_2: '2'
             },
         });
 
         const ese = await report.count({
             where: {
-                active_sem: String(academicdata.academic_year),
+                academic_sem: String(academicdata.academic_sem),
                 ese: '2'
             },
         });
@@ -220,7 +220,7 @@ route.post('/processedChartData', async (req, res) =>
 
         const courseCode = await report.findAll({
             where: {
-                active_sem: String(academicdata.academic_year),
+                academic_sem: String(academicdata.academic_sem),
             },
             attributes: ['course_code'],
         });
@@ -232,14 +232,14 @@ route.post('/processedChartData', async (req, res) =>
         const course_codes = await report.findAll(
         {
             where: {
-                active_sem: String(academicdata.academic_year),
+                academic_sem: String(academicdata.academic_sem),
             },
             attributes: ['course_code', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'],
         });
 
         const markentryData = await markentry.findAll({
             where: {
-                active_sem: String(academicdata.academic_year),
+                academic_sem: String(academicdata.academic_sem),
             },
             attributes: ['course_code', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total'],
         });

@@ -13,7 +13,7 @@ const mentor = sequelize_conn.define('mentor',
         type: DataTypes.STRING,
         allowNull: true
     },
-    course_id: {
+    dept_id: {
         type: DataTypes.STRING,
         allowNull: true
     },
@@ -45,7 +45,7 @@ const mentor = sequelize_conn.define('mentor',
         type: DataTypes.STRING,
         allowNull: true
     },
-    active_sem: {
+    academic_sem: {
         type: DataTypes.STRING,
         allowNull: true 
     }

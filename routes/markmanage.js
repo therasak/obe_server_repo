@@ -72,7 +72,7 @@ route.get('/fetchCalDatas', async (req, res) =>
     })
 
     const markData = await calculation.findOne({
-        where: { active_sem: activeAcademic.academic_year},
+        where: { active_sem: activeAcademic.academic_sem},
     })
 
     res.json(markData);

@@ -25,9 +25,9 @@ route.post('/tutorStatusReport', async (req, res) =>
         const user = await mentor.findOne({
             where: {
                 staff_id: staff_id,
-                active_sem: academicdata.academic_year
+                academic_sem: academicdata.academic_sem
             },
-            attributes: ['course_id', 'category', 'section', 'batch'],
+            attributes: ['dept_id', 'category', 'section', 'batch'],
             raw: true
         })
 
@@ -35,9 +35,9 @@ route.post('/tutorStatusReport', async (req, res) =>
             where: {
                 category: user.category,
                 section: user.section,
-                course_id: user.course_id,
+                dept_id: user.dept_id,
                 batch: user.batch,
-                active_sem: academicdata.academic_year
+                academic_sem: academicdata.academic_sem
             },
             raw: true
         })
@@ -53,7 +53,7 @@ route.post('/tutorStatusReport', async (req, res) =>
                     category: details.category,
                     section: details.section,
                     dept_name: details.dept_name,
-                    active_sem: academicdata.academic_year,
+                    academic_sem: academicdata.academic_sem,
                 },
                 raw: true
             })

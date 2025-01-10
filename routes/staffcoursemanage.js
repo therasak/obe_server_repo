@@ -18,19 +18,19 @@ router.get('/staffcoursemanage', async (req, res) => {
 router.post('/addstaff', async (req, res) => {
     try {
         const {
-            staff_id, staff_name, category, section, course_id, course_code, course_title,
+            staff_id, staff_name, category, section, dept_id, course_code, course_title,
             degree, batch, semester, dept_name, active_sem
         } = req.body;
 
         // Validate fields
-        if (!staff_id || !staff_name || !category || !section || !course_id || !course_code ||
+        if (!staff_id || !staff_name || !category || !section || !dept_id || !course_code ||
             !course_title || !degree || !batch || !semester || !dept_name || !active_sem) {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
         // Add a new course mapping
         const newStaffCourse = await CourseMapping.create({
-            staff_id, staff_name, category, section, course_id, course_code, course_title,
+            staff_id, staff_name, category, section, dept_id, course_code, course_title,
             degree, batch, semester, dept_name, active_sem
         });
 
@@ -69,12 +69,12 @@ router.post('/addstaff', async (req, res) => {
 router.put('/editstaff', async (req, res) => {
     try {
         const {
-            staff_id, staff_name, category, section, course_id, course_code, course_title,
+            staff_id, staff_name, category, section, dept_id, course_code, course_title,
             degree, batch, semester, dept_name, active_sem
         } = req.body;
 
         // Validate fields
-        if (!staff_id || !staff_name || !category || !section || !course_id || !course_code ||
+        if (!staff_id || !staff_name || !category || !section || !dept_id || !course_code ||
             !course_title || !degree || !batch || !semester || !dept_name || !active_sem) {
             return res.status(400).json({ error: 'All fields are required' });
         }
@@ -82,7 +82,7 @@ router.put('/editstaff', async (req, res) => {
         // Update the course mapping
         const updatedStaffCourse = await CourseMapping.update(
             {
-                staff_name, category, section, course_id, course_code, course_title,
+                staff_name, category, section, dept_id, course_code, course_title,
                 degree, batch, semester, dept_name, active_sem
             },
             {
@@ -98,7 +98,7 @@ router.put('/editstaff', async (req, res) => {
         // Update the corresponding report entry
         const updatedReport = await Report.update(
             {
-                staff_name, category, section, course_id, course_code, course_title,
+                staff_name, category, section, dept_id, course_code, course_title,
                 degree, batch, semester, dept_name, active_sem
             },
             {
@@ -120,7 +120,7 @@ router.put('/editstaff', async (req, res) => {
 });
 
 router.delete('/deletestaff', async (req, res) => {
-    const { staff_id, course_code, category, section, course_id } = req.query;
+    const { staff_id, course_code, category, section, dept_id } = req.query;
 
     try {
         // Delete the specific staff-course entry from the CourseMapping table

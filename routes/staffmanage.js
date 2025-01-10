@@ -167,12 +167,12 @@ route.delete('/hod/:id', async (req, res) =>
 route.put('/hod/:id', async (req, res) => 
 {
     const { id } = req.params;
-    const { hod_name, graduate, course_id, category, dept_name } = req.body; 
+    const { hod_name, graduate, dept_id, category, dept_name } = req.body; 
 
     try 
     {
         const [updated] = await hod.update(
-            { hod_name, graduate, course_id, category, dept_name },
+            { hod_name, graduate, dept_id, category, dept_name },
             { where: { staff_id: id } }
         )
         if (updated) {
@@ -216,7 +216,7 @@ route.delete("/mentor/:id", async (req, res) =>
         const deleted = await mentor.destroy({
             where: { 
                 staff_id: id,
-                active_sem: activeAcademic.academic_year
+                academic_sem: activeAcademic.academic_sem
             }
         })
         if (deleted) {
@@ -275,7 +275,7 @@ route.post('/newhodadded', async (req, res) =>
                 staff_id: newstaffId,
                 hod_name: newhodName,
                 graduate: newgraduate,
-                course_id: newDeptId,
+                dept_id: newDeptId,
                 category: newcategory,
                 dept_name: newdeptName
 
@@ -289,7 +289,7 @@ route.post('/newhodadded', async (req, res) =>
                 staff_id: newstaffId,
                 graduate: newgraduate,
                 category: newcategory,
-                course_id: newDeptId,
+                dept_id: newDeptId,
                 dept_name: newdeptName,
                 hod_name: newhodName
             });

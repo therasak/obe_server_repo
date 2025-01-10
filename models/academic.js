@@ -9,11 +9,15 @@ const academic = sequelize_conn.define('academic',
 		primaryKey: true,
 		autoIncrement: true
 	},
-	academic_year: {
+	academic_sem: {
 		type: DataTypes.STRING,
 		allowNull: false,
 	},
-    sem: {
+    academic_year: {
+		type: DataTypes.STRING,
+		allowNull: false,
+	},
+	curr_year: {
 		type: DataTypes.STRING,
 		allowNull: false,
 	},

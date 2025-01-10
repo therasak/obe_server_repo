@@ -18,7 +18,7 @@ route.post('/statusDeptName', async (req, res) =>
     try 
     {
         const reportDeptMapping = await report.findAll({
-            where: { active_sem: academicYear },
+            where: { academic_sem: academicYear },
             attributes: ['dept_name']
         })
         const uniqueDeptNames = [...new Set(reportDeptMapping.map(item => item.dept_name))];
@@ -35,7 +35,7 @@ route.post('/statusDeptName', async (req, res) =>
 
 route.post('/deptstatusreport', async (req, res) => 
 {
-    const { academic_year, dept_name } = req.body;
+    const { academic_sem, dept_name } = req.body;
 
     try 
     {
@@ -44,7 +44,7 @@ route.post('/deptstatusreport', async (req, res) =>
         if (dept_name === "ALL") 
         {
             const reportData = await report.findAll({
-                where: { active_sem: academic_year }
+                where: { academic_sem: academic_sem }
             });
 
             const staff = await coursemapping.findAll();
@@ -69,7 +69,7 @@ route.post('/deptstatusreport', async (req, res) =>
                 return {
                     ...match.toJSON(),
                     staff_name: matchStaff ? matchStaff.staff_name : 'unknown',
-                    course_id: matchStaff ? matchStaff.course_id : 'unknown',
+                    dept_id: matchStaff ? matchStaff.dept_id : 'unknown',
                     dept_name: matchStaff ? matchStaff.dept_name : 'unknown'
                 }
             })
@@ -78,7 +78,7 @@ route.post('/deptstatusreport', async (req, res) =>
         {
             const reportData = await report.findAll({
                 where: {
-                    active_sem: academic_year,
+                    academic_sem: academic_sem,
                     dept_name: dept_name
                 }
             })
@@ -105,7 +105,7 @@ route.post('/deptstatusreport', async (req, res) =>
                 return {
                     ...match.toJSON(),
                     staff_name: matchStaff ? matchStaff.staff_name : 'unknown',
-                    course_id: matchStaff ? matchStaff.course_id : 'unknown',
+                    dept_id: matchStaff ? matchStaff.dept_id : 'unknown',
                     dept_name: matchStaff ? matchStaff.dept_name : 'unknown'
                 }
             })
@@ -125,13 +125,13 @@ route.post('/deptstatusreport', async (req, res) =>
 
 route.post('/allmatrixreport', async (req, res) => 
 {
-    const { academic_year } = req.body;
+    const { academic_sem } = req.body;
 
     try 
     {
         const matrixAllReport = await coursemapping.findAll({
             where: {
-                active_sem: academic_year,
+                academic_sem: academic_sem,
             }
         })
 
@@ -167,13 +167,13 @@ route.post('/allmatrixreport', async (req, res) =>
 
 route.post('/matrixcount', async (req, res) => 
 {
-    const { academic_year } = req.body;
+    const { academic_sem } = req.body;
 
     try 
     {
         const uniqueCourseCount = await coursemapping.count({
             where: {
-                active_sem: academic_year,
+                academic_sem: academic_sem,
             },
             distinct: true,
             col: 'course_code'
@@ -181,7 +181,7 @@ route.post('/matrixcount', async (req, res) =>
 
         const completeCount = await rsmatrix.count({
             where: {
-                academic_year: academic_year,
+                academic_sem: academic_sem,
             },
             distinct: true,
             col: 'course_code'
@@ -209,7 +209,7 @@ route.get('/esereport', async (req, res) =>
         const markentryData = await markentry.findAll(
         {
             where: {
-                active_sem: String(academicdata.academic_year),
+                academic_sem: String(academicdata.academic_sem),
             },
             attributes: ['course_code', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total'],
         })

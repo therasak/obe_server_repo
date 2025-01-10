@@ -22,7 +22,7 @@ route.post('/deptStatus', async (req, res) => {
 
         const user = await hod.findAll({
             where: { staff_id },
-            attributes: ['category', 'course_id', 'dept_name'],
+            attributes: ['category', 'dept_id', 'dept_name'],
             raw: true
         })
 
@@ -30,14 +30,14 @@ route.post('/deptStatus', async (req, res) => {
         {
             const reportDetails = [];
 
-            for (const { category, course_id, dept_name } of user) 
+            for (const { category, dept_id, dept_name } of user) 
             {
 
                 const reportInfo = await report.findAll({
                     where: {
                         category: category,
                         dept_name: dept_name,
-                        active_sem: academicdata.academic_year,
+                        academic_sem: academicdata.academic_sem,
                         [Op.or]: [
                             { cia_1: { [Op.in]: [0, 1] } },
                             { cia_2: { [Op.in]: [0, 1] } },
@@ -54,7 +54,7 @@ route.post('/deptStatus', async (req, res) => {
                     where: { 
                         category, 
                         dept_name,
-                        active_sem: academicdata.academic_year 
+                        academic_sem: academicdata.academic_sem 
                     },
                     raw: true
                 });
@@ -78,7 +78,7 @@ route.post('/deptStatus', async (req, res) => {
                         ass_1: userReport ? (userReport.ass_1 === 2 ? 'Completed' : userReport.ass_1 === 1 ? 'Processing' : 'Incomplete') : 'N/A',
                         ass_2: userReport ? (userReport.ass_2 === 2 ? 'Completed' : userReport.ass_2 === 1 ? 'Processing' : 'Incomplete') : 'N/A',
                         course_title: matchingStaff.course_title,
-                        course_id: matchingStaff.course_id,
+                        dept_id: matchingStaff.dept_id,
                         staff_name: matchingStaff.staff_name,
                         semester: matchingStaff ?
                             (matchingStaff.semester === 1 || matchingStaff.semester === 2) ? 1 :

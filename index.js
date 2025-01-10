@@ -174,7 +174,7 @@ const secretKey = process.env.SECRET_KEY;
 // const mappedCourseMappingData = coursemappingdata.slice(1).map((row) => ({
 //     category: row[0],          
 //     batch: row[1],  
-//     course_id: row[2],         
+//     dept_id: row[2],         
 //     degree: row[3],       
 //     branch: row[4],    
 //     semester: row[5],       
@@ -216,7 +216,7 @@ const secretKey = process.env.SECRET_KEY;
 // const mappedStudentData = studentdata.slice(1).map((row) => ({
 //     reg_no: row[0],          
 //     stu_name: row[1],           
-//     course_id: row[2],       
+//     dept_id: row[2],       
 //     category: row[3],    
 //     semester: row[4],       
 //     section: row[5],         
@@ -256,7 +256,7 @@ const secretKey = process.env.SECRET_KEY;
 // const mappedMarkEntryData = markentryData.slice(1).map((row) => ({
 //     batch: row[0],          
 //     category: row[1],       
-//     course_id: row[2],      
+//     dept_id: row[2],      
 //     reg_no: row[3],        
 //     course_code: row[4],    
 //     semester: row[5],       
@@ -450,7 +450,7 @@ app.put('/academic', async (req, res) =>
 
         const academicupdate = await academic.findOne({
             where: {
-                academic_year: academicsem,
+                academic_sem: academicsem,
             }
         })
 

@@ -21,14 +21,14 @@ route.post('/checkstaffId', async (req, res) =>
     const courseHandleStaffId = await coursemapping.findOne({
         where: {
             staff_id: staff_id,
-            active_sem: academicdata.academic_year
+            academic_sem: academicdata.academic_sem
         }
     })
 
     const tutorHandleStaffId = await mentor.findOne({
         where: {
             staff_id: staff_id,
-            active_sem: academicdata.academic_year
+            academic_sem: academicdata.academic_sem
         }
     })
 
@@ -49,25 +49,25 @@ const getUniqueValues = (data, key) => {
 
 route.get('/markentry', async (req, res) => 
 {
-    const { batch, active_sem, course_id, category } = req.query;
+    const { batch, active_sem, dept_id, category } = req.query;
 
     try 
     {
         const where = {};
         if (batch) where.batch = batch;
         if (active_sem) where.active_sem = active_sem;
-        if (course_id) where.course_id = course_id;
+        if (dept_id) where.dept_id = dept_id;
         if (category) where.category = category;
 
         const entries = await markentry.findAll({
-            attributes: ['batch', 'active_sem', 'course_id', 'category', 'course_code'],
+            attributes: ['batch', 'active_sem', 'dept_id', 'category', 'course_code'],
             where
         })
 
         const uniqueEntries = {
             batch: getUniqueValues(entries, 'batch'),
-            active_sem: getUniqueValues(entries, 'active_sem'),
-            course_id: getUniqueValues(entries, 'course_id'),
+            academic_sem: getUniqueValues(entries, 'active_sem'),
+            dept_id: getUniqueValues(entries, 'dept_id'),
             category: getUniqueValues(entries, 'category'),
             course_code: getUniqueValues(entries, 'course_code')
         }
@@ -99,13 +99,13 @@ route.get("/coursemapping", async (req, res) =>
 {
     try 
     {
-        const { academic_year, category, dept_name, course_id, section, semester } = req.query;
+        const { academic_sem, category, dept_name, dept_id, section, semester } = req.query;
 
         const filters = {};
-        if (academic_year) filters.active_sem = academic_year;
+        if (academic_sem) filters.active_sem = academic_sem;
         if (category) filters.category = category;
         if (dept_name) filters.dept_name = dept_name;
-        if (course_id) filters.course_id = course_id;
+        if (dept_id) filters.dept_id = dept_id;
         if (section) filters.section = section;
         if (semester) filters.semester = semester;
 
@@ -151,7 +151,7 @@ route.post('/tutordetails', async (req, res) =>
 
         const studentSection = await studentmaster.findOne({
             where: {
-                course_id : tutorDetails.course_id,
+                dept_id : tutorDetails.dept_id,
                 section : tutorDetails.section,
                 category : tutorDetails.category,
                 batch : tutorDetails.batch,
@@ -199,14 +199,14 @@ route.get("/stucoursemapping", async (req, res) =>
 {
     try 
     {
-        const { academic_year, category, dept_name, course_id, section, semester, staff_id } = req.query;
+        const { academic_sem, category, dept_name, dept_id, section, semester, staff_id } = req.query;
 
         const filters = {};
-        if (academic_year) filters.active_sem = academic_year;
+        if (academic_sem) filters.active_sem = academic_sem;
         if (staff_id) filters.staff_id = staff_id;
         if (category) filters.category = category;
         if (dept_name) filters.dept_name = dept_name;
-        if (course_id) filters.course_id = course_id;
+        if (dept_id) filters.dept_id = dept_id;
         if (section) filters.section = section;
         if (semester) filters.semester = semester;
 
@@ -254,7 +254,7 @@ route.get('/courseid', async (req, res) =>
         const classes = await coursemapping.findAll(
         {
             where: {
-                active_sem: academicYear,
+                academic_sem: academicYear,
                 category: categories,
                 dept_name: departments
             }
@@ -286,9 +286,9 @@ route.post('/adminstuoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                active_sem: academicYear,
+                academic_sem: academicYear,
                 semester: selectedSemester,
-                course_id: selectedClass,
+                dept_id: selectedClass,
                 category: selectedCategory,
                 section: selectedSection
             },
@@ -300,7 +300,7 @@ route.post('/adminstuoutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                active_sem: academicYear
+                academic_sem: academicYear
             }
         })
 
@@ -309,7 +309,7 @@ route.post('/adminstuoutcome', async (req, res) =>
         })
 
         const cal = await calculation.findOne({
-            where: { active_sem: academicdata.academic_year }
+            where: { academic_sem: academicdata.academic_sem }
 
         })
 
@@ -401,9 +401,9 @@ route.post('/tutorstuoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                active_sem: academicYear,
+                academic_sem: academicYear,
                 semester: semester,
-                course_id: deptId,
+                dept_id: deptId,
                 category: category,
                 section: section
             },
@@ -415,7 +415,7 @@ route.post('/tutorstuoutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                active_sem: academicYear
+                academic_sem: academicYear
             }
         })
 
@@ -424,7 +424,7 @@ route.post('/tutorstuoutcome', async (req, res) =>
         })
 
         const cal = await calculation.findOne({
-            where: { active_sem: academicdata.academic_year }
+            where: { academic_sem: academicdata.academic_sem }
 
         })
 
@@ -519,9 +519,9 @@ route.post('/hoduoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                active_sem: academicYear,
+                academic_sem: academicYear,
                 semester: semester,
-                course_id: deptId,
+                dept_id: deptId,
                 category: category,
                 section: section
             },
@@ -533,7 +533,7 @@ route.post('/hoduoutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                active_sem: academicYear
+                academic_sem: academicYear
             }
         })
 
@@ -542,7 +542,7 @@ route.post('/hoduoutcome', async (req, res) =>
         })
 
         const cal = await calculation.findOne({
-            where: { active_sem: academicdata.academic_year }
+            where: { academic_sem: academicdata.academic_sem }
 
         })
 
@@ -634,9 +634,9 @@ route.post('/staffstuoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                active_sem: academicYear,
+                academic_sem: academicYear,
                 semester: selectedSemester,
-                course_id: selectedClass,
+                dept_id: selectedClass,
                 category: selectedCategory,
                 section: selectedSection
             },
@@ -645,9 +645,9 @@ route.post('/staffstuoutcome', async (req, res) =>
 
         const course_mapping = await coursemapping.findAll({
             where: {
-                active_sem: academicYear,
+                academic_sem: academicYear,
                 semester: selectedSemester,
-                course_id: selectedClass,
+                dept_id: selectedClass,
                 category: selectedCategory,
                 section: selectedSection,
                 staff_id: staffId
@@ -666,7 +666,7 @@ route.post('/staffstuoutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                active_sem: academicYear,
+                academic_sem: academicYear,
                 course_code: course_codes
             }
         });
@@ -676,7 +676,7 @@ route.post('/staffstuoutcome', async (req, res) =>
         })
 
         const cal = await calculation.findOne({
-            where: { active_sem: academicdata.academic_year }
+            where: { academic_sem: academicdata.academic_sem }
 
         })
 
@@ -773,7 +773,7 @@ async function calculateCategory(percentage)
         }
 
         const data = await calculation.findOne({
-            where: { active_sem: academicdata.academic_year }
+            where: { academic_sem: academicdata.academic_sem }
         })
 
         if (!data) {

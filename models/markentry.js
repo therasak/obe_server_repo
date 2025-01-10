@@ -13,11 +13,15 @@ const markentry = sequelize_conn.define('markentry',
         type: DataTypes.STRING,
         allowNull: true
     },
+    graduate: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     category: {
         type: DataTypes.STRING,
         allowNull: true
     },
-    course_id: {
+    dept_id: {
         type: DataTypes.STRING,
         allowNull: true
     },
@@ -89,7 +93,11 @@ const markentry = sequelize_conn.define('markentry',
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    active_sem : {
+    academic_sem : {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    academic_year : {
         type: DataTypes.STRING,
         allowNull: true
     }
