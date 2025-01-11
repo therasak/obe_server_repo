@@ -9,8 +9,9 @@ route.post('/calculation', async (req, res) =>
 {
     try 
     {
-        const { cia1, cia2, ass1, ass2, maxCia, maxEse, academicYear, inputValue,level0, level1,level2,level3 } = req.body;
-        
+        const { cia1, cia2, ass1, ass2, maxCia, maxEse, academicSem, inputValue, level0, level1, level2, level3 } = req.body;
+        console.log( cia1, cia2, ass1, ass2, maxCia, maxEse, academicSem, inputValue, level0, level1, level2, level3 )
+
         if (!cia1 || !cia2 || !ass1 || !ass2 || !maxCia || !maxEse) {
             return res.status(400).json({ error: 'All fields are Required.' });
         }
@@ -29,7 +30,7 @@ route.post('/calculation', async (req, res) =>
             e_hot: maxEse.hot,
             ese_weightage: maxEse.weightage,
             cia_weightage: cia1.weightage,
-            active_sem: academicYear,
+            academic_sem: academicSem,
             co_thresh_value: inputValue,
             so_l0_ug: level0.ugEndRange,
             so_l1_ug: level1.ugEndRange,
@@ -39,17 +40,16 @@ route.post('/calculation', async (req, res) =>
             so_l1_pg: level1.pgEndRange,
             so_l2_pg: level2.pgEndRange,
             so_l3_pg: level3.pgEndRange,
-            
         }
 
         const decition = await calculation.findAll({
-            where: { active_sem: academicYear }
+            where: { academic_sem: academicSem }
         })
 
         if (decition.length > 0) 
         {
             await calculation.update(calculationData, {
-                where: { active_sem: academicYear }
+                where: { academic_sem: academicSem }
             })
         }
         else {
@@ -72,7 +72,7 @@ route.get('/fetchCalDatas', async (req, res) =>
     })
 
     const markData = await calculation.findOne({
-        where: { active_sem: activeAcademic.academic_sem},
+        where: { academic_sem: activeAcademic.academic_sem},
     })
 
     res.json(markData);

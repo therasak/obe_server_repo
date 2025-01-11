@@ -245,16 +245,16 @@ route.get('/courseid', async (req, res) =>
 {
     try 
     {
-        const { academicYear, categories, departments } = req.query;
+        const { academicSem, categories, departments } = req.query;
 
-        if (!academicYear || !categories || !departments) {
+        if (!academicSem || !categories || !departments) {
             return res.status(400).json({ error: "Missing required query parameters." });
         }
 
         const classes = await coursemapping.findAll(
         {
             where: {
-                academic_sem: academicYear,
+                academic_sem: academicSem,
                 category: categories,
                 dept_name: departments
             }
@@ -278,7 +278,7 @@ route.post('/adminstuoutcome', async (req, res) =>
 {
     const 
     { 
-        academicYear, selectedCategory, selectedDepartment, 
+        academicSem, selectedCategory, selectedDepartment, 
         selectedClass, selectedSection, selectedSemester } = req.body;
 
     try 
@@ -286,7 +286,7 @@ route.post('/adminstuoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                academic_sem: academicYear,
+                academic_sem: academicSem,
                 semester: selectedSemester,
                 dept_id: selectedClass,
                 category: selectedCategory,
@@ -300,7 +300,7 @@ route.post('/adminstuoutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                academic_sem: academicYear
+                academic_sem: academicSem
             }
         })
 
@@ -394,14 +394,14 @@ route.post('/adminstuoutcome', async (req, res) =>
 
 route.post('/tutorstuoutcome', async (req, res) => 
 {
-    const { category, department, deptId , semester, section, academicYear } = req.body;
+    const { category, department, deptId , semester, section, academicSem } = req.body;
 
     try 
     {
         const students = await studentmaster.findAll(
         {
             where: {
-                academic_sem: academicYear,
+                academic_sem: academicSem,
                 semester: semester,
                 dept_id: deptId,
                 category: category,
@@ -415,7 +415,7 @@ route.post('/tutorstuoutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                academic_sem: academicYear
+                academic_sem: academicSem
             }
         })
 
@@ -512,14 +512,14 @@ route.post('/tutorstuoutcome', async (req, res) =>
 
 route.post('/hoduoutcome', async (req, res) => 
 {
-    const { category, department, deptId , semester, section, academicYear } = req.body;
+    const { category, department, deptId , semester, section, academicSem } = req.body;
     
     try {
 
         const students = await studentmaster.findAll(
         {
             where: {
-                academic_sem: academicYear,
+                academic_sem: academicSem,
                 semester: semester,
                 dept_id: deptId,
                 category: category,
@@ -533,7 +533,7 @@ route.post('/hoduoutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                academic_sem: academicYear
+                academic_sem: academicSem
             }
         })
 
@@ -627,14 +627,14 @@ route.post('/hoduoutcome', async (req, res) =>
 
 route.post('/staffstuoutcome', async (req, res) => 
 {
-    const { academicYear, selectedCategory, selectedDepartment, selectedClass, selectedSection, selectedSemester, staffId } = req.body;
+    const { academicSem, selectedCategory, selectedDepartment, selectedClass, selectedSection, selectedSemester, staffId } = req.body;
     
     try {
 
         const students = await studentmaster.findAll(
         {
             where: {
-                academic_sem: academicYear,
+                academic_sem: academicSem,
                 semester: selectedSemester,
                 dept_id: selectedClass,
                 category: selectedCategory,
@@ -645,7 +645,7 @@ route.post('/staffstuoutcome', async (req, res) =>
 
         const course_mapping = await coursemapping.findAll({
             where: {
-                academic_sem: academicYear,
+                academic_sem: academicSem,
                 semester: selectedSemester,
                 dept_id: selectedClass,
                 category: selectedCategory,
@@ -666,7 +666,7 @@ route.post('/staffstuoutcome', async (req, res) =>
         const marks = await markentry.findAll({
             where: {
                 reg_no: stud_regs,
-                academic_sem: academicYear,
+                academic_sem: academicSem,
                 course_code: course_codes
             }
         });

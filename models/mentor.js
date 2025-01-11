@@ -48,6 +48,10 @@ const mentor = sequelize_conn.define('mentor',
     academic_sem: {
         type: DataTypes.STRING,
         allowNull: true 
+    },
+    academic_year: {
+        type: DataTypes.STRING,
+        allowNull: true 
     }
 }, 
 {

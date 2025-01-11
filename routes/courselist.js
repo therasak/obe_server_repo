@@ -173,7 +173,7 @@ route.post('/studentdetails', async (req, res) =>
 
 route.get('/getreport', async (req, res) => 
 {
-    const { courseCode, deptName, section, category, academicYear } = req.query;
+    const { courseCode, deptName, section, category, academicSem } = req.query;
     
     const checkActive = await report.findOne({
         where: {
@@ -181,7 +181,7 @@ route.get('/getreport', async (req, res) =>
             section: section,
             category: category,
             dept_name: deptName,
-            academic_sem: academicYear
+            academic_sem: academicSem
         }
     });
     res.json(checkActive);
@@ -193,7 +193,7 @@ route.get('/getreport', async (req, res) =>
 
 route.put('/updateMark', async (req, res) => 
 {
-    const { updates, activeSection, courseCode, academicYear } = req.body;
+    const { updates, activeSection, courseCode, academicSem } = req.body;
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
     
@@ -261,7 +261,7 @@ route.put('/updateMark', async (req, res) =>
                 where: {
                     reg_no: regNo,
                     course_code: courseCode,
-                    academic_sem: academicYear
+                    academic_sem: academicSem
                 }
             });
         }
@@ -280,7 +280,7 @@ route.put('/updateMark', async (req, res) =>
 
 route.put('/report', async (req, res) => 
 {
-    const { activeSection, courseCode, deptName, category, button_value, section, academicYear } = req.body;
+    const { activeSection, courseCode, deptName, category, button_value, section, academicSem } = req.body;
     try 
     {
         let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
@@ -293,7 +293,7 @@ route.put('/report', async (req, res) =>
                 section: section,
                 category: category,
                 dept_name: deptName,
-                academic_sem: academicYear
+                academic_sem: academicSem
             }
         });
 
@@ -332,7 +332,7 @@ route.put('/report', async (req, res) =>
                 section: section,
                 category: category,
                 dept_name: deptName,
-                academic_sem: academicYear,
+                academic_sem: academicSem,
                 cia_1: activeSection === "1" ? valueToSet : null,
                 cia_2: activeSection === "2" ? valueToSet : null,
                 ass_1: activeSection === "3" ? valueToSet : null,
@@ -347,7 +347,7 @@ route.put('/report', async (req, res) =>
                 section: section,
                 category: category,
                 dept_name: deptName,
-                academic_sem: academicYear
+                academic_sem: academicSem
             }
         });
 

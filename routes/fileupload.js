@@ -415,6 +415,7 @@ route.post('/mentor', upload.single('file'), async (req, res) =>
         }
 
         const academicSemester = activeAcademicSem.academic_sem;
+        const academicYear = activeAcademicSem.academic_year;
 
         for (const row of rows) 
         {
@@ -425,7 +426,6 @@ route.post('/mentor', upload.single('file'), async (req, res) =>
             if (existingScope && existingScope.mentor_report === 0) 
             {
                 await mentor.upsert({
-                    sno: row.sno,
                     graduate: row.graduate,
                     dept_id: row.dept_id,
                     category: row.category,
@@ -436,6 +436,7 @@ route.post('/mentor', upload.single('file'), async (req, res) =>
                     staff_id: row.staff_id,
                     staff_name: row.staff_name,
                     academic_sem: academicSemester,
+                    academic_year: academicYear,
                 })
 
                 // await scope.update(
