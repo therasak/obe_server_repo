@@ -67,60 +67,60 @@ const secretKey = process.env.SECRET_KEY;
 
 // Tables ( Model ) Synchronization Coding
 
-async function dbconncheck() 
-{
-    try 
-    {
-        // // Synchronize the Staff Master Model
-        // await staffmaster.sync();
-        // console.log('Staffmaster Table Synced');
+// async function dbconncheck() 
+// {
+//     try 
+//     {
+//         // // Synchronize the Staff Master Model
+//         // await staffmaster.sync();
+//         // console.log('Staffmaster Table Synced');
 
-        // // Synchronize the Student Master Model
-        // await studentmaster.sync();
-        // console.log('Studentmaster Table Synced');
+//         // // Synchronize the Student Master Model
+//         // await studentmaster.sync();
+//         // console.log('Studentmaster Table Synced');
 
-        // // Synchronize the Academic Model
-        // await academic.sync();
-        // console.log('Academic Table Synced');
+//         // // Synchronize the Academic Model
+//         // await academic.sync();
+//         // console.log('Academic Table Synced');
 
-        // // Synchronize the Coursemapping Model
-        // await coursemapping.sync();
-        // console.log('Course Mapping Table Synced');
+//         // // Synchronize the Coursemapping Model
+//         // await coursemapping.sync();
+//         // console.log('Course Mapping Table Synced');
 
-        // // Synchronize the Scope Model
-        // await scope.sync();
-        // console.log('Scope Table Synced');
+//         // // Synchronize the Scope Model
+//         // await scope.sync();
+//         // console.log('Scope Table Synced');
 
-        // // Synchronize the Mark Entry Model
-        // await markentry.sync();
-        // console.log('Markentry Table Synced');
+//         // // Synchronize the Mark Entry Model
+//         // await markentry.sync();
+//         // console.log('Markentry Table Synced');
 
-        // // Synchronize the Report Model
-        // await report.sync();
-        // console.log('Report Table Synced');
+//         // // Synchronize the Report Model
+//         // await report.sync();
+//         // console.log('Report Table Synced');
 
-        // // Synchronize the Rs Matrix Model
-        // await rsmatrix.sync();
-        // console.log('Rs Matrix Table Synced');
+//         // // Synchronize the Rs Matrix Model
+//         // await rsmatrix.sync();
+//         // console.log('Rs Matrix Table Synced');
 
-        // Synchronize the Mentor Model
-        await mentor.sync();
-        console.log('Mentor Table Synced');
+//         // // Synchronize the Mentor Model
+//         // await mentor.sync();
+//         // console.log('Mentor Table Synced');
 
-        // // Synchronize the Calculation Model
-        // await calculation.sync();
-        // console.log('Calculaton Table Synced');
+//         // // Synchronize the Calculation Model
+//         // await calculation.sync();
+//         // console.log('Calculaton Table Synced');
 
-        // // Synchronize the Hod Model
-        // await hod.sync();
-        // console.log('Hod Table Synced');
-    }
-    catch (error) {
-        console.log('Error Occurred:', error.message);
-    }
-}
+//         // // Synchronize the Hod Model
+//         // await hod.sync();
+//         // console.log('Hod Table Synced');
+//     }
+//     catch (error) {
+//         console.log('Error Occurred:', error.message);
+//     }
+// }
 
-dbconncheck();
+// dbconncheck();
 
 // ------------------------------------------------------------------------------------------------------- //
 

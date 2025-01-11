@@ -8,6 +8,10 @@ const staffmaster = sequelize_conn.define('staffmaster',
         allowNull: false,
         primaryKey: true
     },
+    staff_category: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     staff_name: {
         type: DataTypes.STRING,
         allowNull: true
@@ -20,7 +24,7 @@ const staffmaster = sequelize_conn.define('staffmaster',
         type: DataTypes.STRING,
         allowNull: true
     },
-    category:{
+    dept_category:{
         type: DataTypes.STRING,
         allowNull: true
     }

@@ -32,10 +32,11 @@ route.post('/staffmaster', upload.single('file'), async (req, res) =>
 
         const staffData = rows.map(row => ({
             staff_id: row.staff_id,
+            staff_category: row.staff_category,
             staff_name: row.staff_name,
             staff_pass: row.staff_pass,
             staff_dept: row.staff_dept,
-            category: row.category
+            dept_category: row.dept_category
         }))
 
         for (const staff of staffData) {
