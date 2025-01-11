@@ -40,6 +40,10 @@ const studentmaster = sequelize_conn.define('studentmaster',
     academic_sem : {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    academic_year: {
+        type: DataTypes.STRING,
+        allowNull: true 
     }
 }, 
 {

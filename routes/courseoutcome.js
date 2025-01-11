@@ -216,7 +216,7 @@ route.post('/checkTutorCOC', async (req, res) =>
         const mot = attainedScores.overall[course_code]?.mot;
         const hot = attainedScores.overall[course_code]?.hot;
 
-        console.log(lot, mot, hot);
+        // console.log(lot, mot, hot);
 
         for (const entry of cop) 
         {

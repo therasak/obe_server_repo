@@ -134,6 +134,7 @@ route.post('/studentmaster', upload.single('file'), async (req, res) =>
         }
 
         const academicSemester = activeAcademicSem.academic_sem;
+        const academicYear = activeAcademicSem.academic_year;
 
         const students = rows.map(row => ({
             reg_no: row.reg_no,
@@ -143,7 +144,8 @@ route.post('/studentmaster', upload.single('file'), async (req, res) =>
             semester: row.semester,
             section: row.section,
             batch: row.batch,
-            academic_sem: academicSemester
+            academic_sem: academicSemester,
+            academic_year: academicYear
         }))
 
         await studentmaster.bulkCreate(students, {});

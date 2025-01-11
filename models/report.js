@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize_conn = require('./dbconnection');
-const coursemapping = require('./coursemapping');
 
 const report = sequelize_conn.define('report', {
     s_no: {
@@ -57,8 +56,5 @@ const report = sequelize_conn.define('report', {
     timestamps: false,
     freezeTableName: true
 });
-
-report.belongsTo(coursemapping, { foreignKey: 'staff_id', targetKey: 'staff_id' });
-coursemapping.hasMany(report, { foreignKey: 'staff_id', sourceKey: 'staff_id' });
 
 module.exports = report;

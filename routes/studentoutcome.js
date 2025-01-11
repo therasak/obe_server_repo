@@ -140,13 +140,12 @@ route.get('/studentmaster', async (req, res) =>
 
 route.post('/tutordetails', async (req, res) => 
 {
-    const {staffId} = req.body;
+    const { staffId } = req.body;
+
     try 
     {
         const tutorDetails = await mentor.findOne({
-            where: {
-                staff_id : staffId
-            }
+            where: { staff_id : staffId }
         })
 
         const studentSection = await studentmaster.findOne({
@@ -155,7 +154,7 @@ route.post('/tutordetails', async (req, res) =>
                 section : tutorDetails.section,
                 category : tutorDetails.category,
                 batch : tutorDetails.batch,
-                active_sem : tutorDetails.active_sem
+                academic_sem : tutorDetails.academic_sem
             },
             attributes:['semester']
         })
@@ -180,9 +179,7 @@ route.get('/category/:staffId', async (req, res) =>
     try {
         const staffcategory = await coursemapping.findAll(
         {
-            where: {
-                staff_id: staffId
-            },
+            where: { staff_id: staffId },
         })
         res.json(staffcategory);
     } 
@@ -230,9 +227,7 @@ route.get('/hoddata', async (req, res) =>
 
     const hoddata = await hod.findOne(
     {
-        where: {
-            staff_id: staffId
-        }
+        where: { staff_id: staffId }
     })
     res.json(hoddata);
 })
@@ -276,10 +271,7 @@ route.get('/courseid', async (req, res) =>
 
 route.post('/adminstuoutcome', async (req, res) => 
 {
-    const 
-    { 
-        academicSem, selectedCategory, selectedDepartment, 
-        selectedClass, selectedSection, selectedSemester } = req.body;
+    const { academicSem, selectedCategory, selectedClass, selectedSection, selectedSemester } = req.body;
 
     try 
     {
@@ -294,6 +286,8 @@ route.post('/adminstuoutcome', async (req, res) =>
             },
             attributes: ['reg_no']
         })
+
+        // console.log(students)
 
         const stud_regs = students.map(student => student.reg_no);
 
@@ -312,6 +306,8 @@ route.post('/adminstuoutcome', async (req, res) =>
             where: { academic_sem: academicdata.academic_sem }
 
         })
+
+        // console.log(marks)
 
         const calculatedData = await Promise.all(marks.map(async entry => 
         {
@@ -394,7 +390,7 @@ route.post('/adminstuoutcome', async (req, res) =>
 
 route.post('/tutorstuoutcome', async (req, res) => 
 {
-    const { category, department, deptId , semester, section, academicSem } = req.body;
+    const { category, deptId , semester, section, academicSem } = req.body;
 
     try 
     {
@@ -504,9 +500,6 @@ route.post('/tutorstuoutcome', async (req, res) =>
         res.status(500).json({ message: 'Error Fetching Student Sections:' });
     }
 })
-
-// ------------------------------------------------------------------------------------------------------- //
-
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -629,7 +622,7 @@ route.post('/staffstuoutcome', async (req, res) =>
 {
     const { academicSem, selectedCategory, selectedDepartment, selectedClass, selectedSection, selectedSemester, staffId } = req.body;
     
-    try {
+    try { 
 
         const students = await studentmaster.findAll(
         {
@@ -637,7 +630,7 @@ route.post('/staffstuoutcome', async (req, res) =>
                 academic_sem: academicSem,
                 semester: selectedSemester,
                 dept_id: selectedClass,
-                category: selectedCategory,
+                category: selectedCategory, 
                 section: selectedSection
             },
             attributes: ['reg_no']
