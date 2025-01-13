@@ -19,7 +19,7 @@ route.post('/rsmcoursecode', async (req, res) =>
                 academic_sem: academic_sem,
                 staff_id: staff_id
             },
-            attributes: ['course_code', 'active_sem']
+            attributes: ['course_code', 'academic_sem']
         })
 
         if (courseMappings.length === 0) {
@@ -54,14 +54,9 @@ route.post('/rsmcoursecode', async (req, res) =>
 
 // RS Matrix Create and Update Coding
 
-route.post('/rsmatrix', async (req, res) => 
+route.post('/rsmatrixSave', async (req, res) => 
 {
     const { course_code, scores, meanOverallScore, correlation } = req.body;
-
-    if (!course_code || !scores || !meanOverallScore || !correlation) 
-    {
-        return res.status(400).json({ message: 'All Fields are Required.' });
-    }
 
     const cm = await coursemapping.findOne(
     {
@@ -221,7 +216,7 @@ route.post('/rsmatrix', async (req, res) =>
             res.status(201).json({ message: 'Saved Successful' });
         } 
         else {
-            res.status(500).json({ message: 'Error during save.' });
+            res.status(500).json({ message: 'Error during Save.' });
         }
     }
 })

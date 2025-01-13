@@ -123,9 +123,9 @@ route.get('/staffpiechart', async (req, res) =>
     {
         const totalStaff = await staffmaster.count();
 
-        const aidedCount = await staffmaster.count({ where: { category: 'AIDED' } });
-        const sfmCount = await staffmaster.count({ where: { category: 'SFM' } });
-        const sfwCount = await staffmaster.count({ where: { category: 'SFW' } });
+        const aidedCount = await staffmaster.count({ where: { staff_category: 'AIDED' } });
+        const sfmCount = await staffmaster.count({ where: { staff_category: 'SFM' } });
+        const sfwCount = await staffmaster.count({ where: { staff_category: 'SFW' } });
 
         const result = 
         {
@@ -136,7 +136,6 @@ route.get('/staffpiechart', async (req, res) =>
                 { label: 'SFW', count: sfwCount, percentage: ((sfwCount / totalStaff) * 100).toFixed(1) },
             ]
         }
-
         res.json(result);
     } 
     catch (error) {

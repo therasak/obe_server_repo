@@ -6,7 +6,6 @@ const scope = require('../models/scope');
 const hod = require('../models/hod');
 const mentor = require('../models/mentor');
 const coursemapping = require('../models/coursemapping');
-const tutor = require('../models/mentor');
 const academic = require('../models/academic');
 const { Op } = require('sequelize');
 
@@ -27,35 +26,37 @@ route.get('/staffdetails', async (req, res) =>
 
 route.post('/newstaff', async (req, res) => 
 {
-    const { staff_id, staff_name, staff_dept, category, password, permissions } = req.body;
+    const { staff_id, staff_name, staff_dept, staff_category, password, dept_category, permissions } = req.body;
 
-    try {
+    try 
+    {
         const newStaff = await staffmaster.create(
-            {
-                staff_id: staff_id,
-                staff_name: staff_name,
-                staff_dept: staff_dept,
-                category: category,
-                staff_pass: password
-            })
+        {
+            staff_id: staff_id,
+            staff_name: staff_name,
+            staff_dept: staff_dept,
+            dept_category: dept_category,
+            staff_category: staff_category,
+            staff_pass: password
+        })
 
         const newScope = await scope.create(
-            {
-                staff_id: staff_id,
-                dashboard: permissions.dashboard ? 1 : 0,
-                course_list: permissions.course ? 1 : 0,
-                course_outcome: permissions.co ? 1 : 0,
-                student_outcome: permissions.so ? 1 : 0,
-                program_outcome: permissions.po ? 1 : 0,
-                program_specific_outcome: permissions.pso ? 1 : 0,
-                mentor_report: permissions.tutor ? 1 : 0,
-                hod_report: permissions.hod ? 1 : 0,
-                report: permissions.report ? 1 : 0,
-                input_files: permissions.input ? 1 : 0,
-                manage: permissions.manage ? 1 : 0,
-                relationship_matrix: permissions.rsm ? 1 : 0,
-                settings: permissions.setting ? 1 : 0,
-            })
+        {
+            staff_id: staff_id,
+            dashboard: permissions.dashboard ? 1 : 0,
+            course_list: permissions.course ? 1 : 0,
+            course_outcome: permissions.co ? 1 : 0,
+            student_outcome: permissions.so ? 1 : 0,
+            program_outcome: permissions.po ? 1 : 0,
+            program_specific_outcome: permissions.pso ? 1 : 0,
+            mentor_report: permissions.tutor ? 1 : 0,
+            hod_report: permissions.hod ? 1 : 0,
+            report: permissions.report ? 1 : 0,
+            input_files: permissions.input ? 1 : 0,
+            manage: permissions.manage ? 1 : 0,
+            relationship_matrix: permissions.rsm ? 1 : 0,
+            settings: permissions.setting ? 1 : 0,
+        })
         return res.json({ message: 'New Staff and Permissions Added Successfully' });
     }
     catch (err) {
@@ -70,30 +71,23 @@ route.post('/newstaff', async (req, res) =>
 
 route.put('/staffupdate', async (req, res) => 
 {
-    const { newstaffid, newstaffname, newpassword, newdept, newcategory } = req.body;
+    const { newstaffid, newstaffname, newpassword, newdept, newStaffCategory, newDeptCategory, oldpassword } = req.body;
 
-    try {
-        const updated_staff = await staffmaster.update(
-            {
-                staff_name: newstaffname,
-                staff_pass: newpassword,
-                staff_dept: newdept,
-                category: newcategory
-            },
-            { where: { staff_id: newstaffid } }
-        )
-        const update_staff_mentor = await mentor.update({
+    try 
+    {
+        await staffmaster.update({
             staff_name: newstaffname,
-            staff_pass: newpassword,
-            dept_name: newdept,
-            category: newcategory
+            staff_pass: newpassword || oldpassword,
+            staff_dept: newdept,
+            staff_category: newStaffCategory,
+            dept_category: newDeptCategory
         },
-            { where: { staff_id: newstaffid } }
-        )
+            { where: { staff_id: newstaffid }
+        })
         res.json({ message: 'Staff Updated Successfully' })
     }
     catch (err) {
-        console.log("Error while Update")
+        console.log("Error while Update",err)
     }
 })
 
@@ -104,23 +98,24 @@ route.put('/staffupdate', async (req, res) =>
 route.post('/staffdelete', async (req, res) => 
 {
     const { deletestaffid } = req.body;
-    try {
-        const deleteresult = await staffmaster.destroy({
+    try 
+    {
+        await staffmaster.destroy({
             where: { staff_id: deletestaffid }
         })
-        const deletestaffcoursemap = await coursemapping.destroy({
+        await coursemapping.destroy({
             where: { staff_id: deletestaffid }
         })
-        const tuturedelete = await tutor.destroy({
+        await mentor.destroy({
             where: { staff_id: deletestaffid }
         })
-        const hoddelete = await hod.destroy({
+        await hod.destroy({
             where: { staff_id: deletestaffid }
         })
         res.json({ message: "Staff Successfully Deleted" })
     }
     catch (err) {
-        console.log(err, "Delete Error")
+        console.log("Error in Deleting Staff : ", err)
     }
 })
 
@@ -278,7 +273,6 @@ route.post('/newhodadded', async (req, res) =>
                 dept_id: newDeptId,
                 category: newcategory,
                 dept_name: newdeptName
-
             }
         })
         if (existhod.length > 0) {

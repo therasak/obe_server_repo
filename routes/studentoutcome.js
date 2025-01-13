@@ -110,6 +110,7 @@ route.get("/coursemapping", async (req, res) =>
         if (semester) filters.semester = semester;
 
         const data = await coursemapping.findAll({ where: filters });
+        console.log(data)
         res.json(data);
     } 
     catch (err) {
@@ -118,6 +119,27 @@ route.get("/coursemapping", async (req, res) =>
     }
 })
 
+// ------------------------------------------------------------------------------------------------------- //
+
+route.post("/hodDept", async (req, res) => 
+{
+    const { staff_id , category } = req.body
+    try 
+    {
+        const hodDept = await hod.findAll({
+            where: { staff_id: staff_id, category: category },
+            raw: true,
+            attributes: ['dept_name']
+        })
+        const uniqueDept = [...new Set(hodDept.map(hod => hod.dept_name))];
+        res.json(uniqueDept); 
+    } 
+    catch (err) {
+        console.error("Error Fetching Hod Dept Details :", err);
+        res.status(500).json({ error: "Error Fetching Hod Dept Details." });
+    }
+})
+    
 // ------------------------------------------------------------------------------------------------------- //
 
 route.get('/studentmaster', async (req, res) => 
@@ -225,11 +247,15 @@ route.get('/hoddata', async (req, res) =>
 {
     const { staffId } = req.query;
 
-    const hoddata = await hod.findOne(
+    const hoddata = await hod.findAll(
     {
-        where: { staff_id: staffId }
+        where: { staff_id: staffId },
+        raw: true,
+        attributes: ['category']
     })
-    res.json(hoddata);
+
+    const uniqueCategory = [...new Set(hoddata.map(hod => hod.category))];
+    res.json(uniqueCategory);
 })
 
 // ------------------------------------------------------------------------------------------------------- //
