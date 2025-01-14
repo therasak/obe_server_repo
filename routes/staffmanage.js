@@ -9,7 +9,6 @@ const coursemapping = require('../models/coursemapping');
 const academic = require('../models/academic');
 const { Op } = require('sequelize');
 
-
 // ------------------------------------------------------------------------------------------------------- //
 
 // Staff Details Fetching Coding
@@ -110,6 +109,9 @@ route.post('/staffdelete', async (req, res) =>
             where: { staff_id: deletestaffid }
         })
         await hod.destroy({
+            where: { staff_id: deletestaffid }
+        })
+        await scope.destroy({
             where: { staff_id: deletestaffid }
         })
         res.json({ message: "Staff Successfully Deleted" })

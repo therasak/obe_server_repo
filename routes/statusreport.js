@@ -13,12 +13,12 @@ const markentry = require('../models/markentry');
 
 route.post('/statusDeptName', async (req, res) => 
 {
-    const { academicYear } = req.body;
+    const { academicSem } = req.body;
 
     try 
     {
         const reportDeptMapping = await report.findAll({
-            where: { academic_sem: academicYear },
+            where: { academic_sem: academicSem },
             attributes: ['dept_name']
         })
         const uniqueDeptNames = [...new Set(reportDeptMapping.map(item => item.dept_name))];
