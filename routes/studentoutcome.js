@@ -109,7 +109,6 @@ route.get("/coursemapping", async (req, res) =>
         if (semester) filters.semester = semester;
 
         const data = await coursemapping.findAll({ where: filters });
-        console.log(data)
         res.json(data);
     } 
     catch (err) {

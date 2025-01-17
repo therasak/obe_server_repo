@@ -10,7 +10,6 @@ route.post('/calc', async (req, res) =>
     try 
     {
         const { cia1, cia2, ass1, ass2, maxCia, maxEse, academicSem, inputValue, level0, level1, level2, level3 } = req.body;
-        console.log( cia1, cia2, ass1, ass2, maxCia, maxEse, academicSem, inputValue, level0, level1, level2, level3 )
 
         if (!cia1 || !cia2 || !ass1 || !ass2 || !maxCia || !maxEse) {
             return res.status(400).json({ error: 'All fields are Required.' });

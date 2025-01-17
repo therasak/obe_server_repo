@@ -32,15 +32,11 @@ const scope = sequelize_conn.define('scope',
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    mentor_report: {
+    obe_report: {
         type: DataTypes.INTEGER,
         allowNull: true
     },
-    hod_report: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-    },
-    report: {
+    work_progress_report: {
         type: DataTypes.INTEGER,
         allowNull: true
     },

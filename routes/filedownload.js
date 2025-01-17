@@ -22,12 +22,13 @@ route.get('/download/coursemap', async (req, res) => {
         const courseData = await coursemapping.findAll();
 
         const formattedData = [
-            ['category', 'batch', 'course_id', 'degree', 'dept_name', 'semester',
-                'section', 'course_code', 'staff_id', 'staff_name', 'course_title', 'active_sem'],
+            ['s_no','category', 'batch', 'dept_id', 'degree', 'dept_name', 'semester',
+                'section', 'course_code', 'staff_id', 'staff_name', 'course_title', 'academic_sem'],
             ...courseData.map(course => [
+                course.s_no,
                 course.category,
                 course.batch,
-                course.course_id,
+                course.dept_id,
                 course.degree,
                 course.dept_name,
                 course.semester,
@@ -36,7 +37,7 @@ route.get('/download/coursemap', async (req, res) => {
                 course.staff_id,
                 course.staff_name,
                 course.course_title,
-                course.active_sem
+                course.academic_sem
             ])
         ];
 
@@ -63,15 +64,15 @@ route.get('/download/coursemapmodel', async (req, res) => {
         const courseData = await coursemapping.findAll();
 
         const formattedData = [
-            ['category', 'batch', 'course_id', 'degree', 'dept_name', 'semester',
-                'section', 'course_code', 'staff_id', 'staff_name', 'course_title', 'active_sem'],
+            ['category', 'batch', 'dept_id', 'degree', 'dept_name', 'semester',
+                'section', 'course_code', 'staff_id', 'staff_name', 'course_title'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Course Mapping Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Staff Course Mapping Data');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Course Mapping Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Staff Course Mapping Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -88,14 +89,15 @@ route.get('/download/staff', async (req, res) => {
     try {
         const staffData = await staffmaster.findAll();
         const formattedData = [
-            ['staff_id', 'staff_name', 'staff_pass', 'staff_dept', 'category'],
+            ['staff_id','staff_category', 'staff_name', 'staff_pass', 'staff_dept', 'dept_category'],
             ...staffData.map(staff =>
                 [
                     staff.staff_id,
+                    staff.staff_category,
                     staff.staff_name,
                     staff.staff_pass,
                     staff.staff_dept,
-                    staff.category
+                    staff.dept_category
                 ])
         ];
 
@@ -121,7 +123,7 @@ route.get('/download/staffmodel', async (req, res) => {
     try {
         const staffData = await staffmaster.findAll();
         const formattedData = [
-            ['staff_id', 'staff_name', 'staff_pass', 'staff_dept', 'category'],
+            ['staff_id','staff_category', 'staff_name', 'staff_pass', 'staff_dept', 'dept_category'],
 
         ]
 
@@ -148,19 +150,20 @@ route.get('/download/studentmaster', async (req, res) => {
         const studentData = await studentmaster.findAll();
 
         const formattedData = [
-            ['reg_no', 'stu_name', 'course_id', 'category', 'semester',
-                'section', 'batch', 'mentor', 'emis', 'active_sem'],
+            ['s_no','reg_no', 'stu_name', 'dept_id', 'category', 'semester',
+                'section',  'academic_sem'],
             ...studentData.map(student => [
+                student.s_no,
                 student.reg_no,
                 student.stu_name,
-                student.course_id,
+                student.dept_id,
                 student.category,
                 student.semester,
                 student.section,
                 student.batch,
                 student.mentor,
                 student.emis,
-                student.active_sem
+                student.academic_sem
             ])
         ];
 
@@ -187,8 +190,8 @@ route.get('/download/studentmastermodel', async (req, res) => {
         const studentData = await studentmaster.findAll();
 
         const formattedData = [
-            ['reg_no', 'stu_name', 'course_id', 'category', 'semester',
-                'section', 'batch', 'mentor', 'emis', 'active_sem'],
+            ['reg_no', 'stu_name', 'dept_id', 'category', 'semester',
+                'section',  'academic_sem'],
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
@@ -215,14 +218,13 @@ route.get('/download/scope', async (req, res) => {
 
         const formattedData =
             [
-                ['staff_id', 'role', 'dashboard', 'course_list', 'course_outcome',
+                ['staff_id','dashboard', 'course_list', 'course_outcome',
                     'student_outcome', 'program_outcome', 'program_specific_outcome',
                     'mentor_report', 'hod_report', 'report', 'input_files',
-                    'manage', 'relationship_matrix', 'settings', 'logout'],
+                    'manage', 'relationship_matrix', 'settings',],
 
                 ...scopeData.map(scope => [
                     scope.staff_id,
-                    scope.role,
                     scope.dashboard,
                     scope.course_list,
                     scope.course_outcome,
@@ -236,7 +238,6 @@ route.get('/download/scope', async (req, res) => {
                     scope.manage,
                     scope.relationship_matrix,
                     scope.settings,
-                    scope.logout
                 ])
             ];
 
@@ -263,11 +264,10 @@ route.get('/download/scopemodel', async (req, res) => {
         const scopeData = await scope.findAll();
 
         const formattedData = [
-            ['staff_id', 'role', 'dashboard', 'course_list', 'course_outcome',
-                'student_outcome', 'program_outcome', 'program_specific_outcome',
-                'mentor_report', 'hod_report', 'report', 'input_files',
-                'manage', 'relationship_matrix', 'settings', 'logout'
-            ],
+            ['staff_id','dashboard', 'course_list', 'course_outcome',
+                    'student_outcome', 'program_outcome', 'program_specific_outcome',
+                    'mentor_report', 'hod_report', 'report', 'input_files',
+                    'manage', 'relationship_matrix', 'settings'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
@@ -293,32 +293,35 @@ route.get('/download/mark', async (req, res) => {
         const markData = await markentry.findAll();
         const formattedData = [
 
-            ['s_no', 'batch', 'category', 'course_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_hot', 'c1_mot', 'c1_total',
-                'c2_lot', 'c2_hot', 'c2_mot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_hot', 'ese_mot', 'ese_total'],
+            ['s_no', 'batch', 'graduate', 'category','dept_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_mot', 'c1_hot', 'c1_total',
+                'c2_lot', 'c2_mot', 'c2_hot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total','academic_sem','academic_year'],
 
             ...markData.map(student =>
                 [
                     student.s_no,
                     student.batch,
+                    student.graduate,
                     student.category,
-                    student.course_id,
+                    student.dept_id,
                     student.reg_no,
                     student.course_code,
                     student.semester,
                     student.c1_lot,
-                    student.c1_hot,
                     student.c1_mot,
+                    student.c1_hot,
                     student.c1_total,
                     student.c2_lot,
-                    student.c2_hot,
                     student.c2_mot,
+                    student.c2_hot,
                     student.c2_total,
                     student.a1_lot,
                     student.a2_lot,
                     student.ese_lot,
-                    student.ese_hot,
                     student.ese_mot,
-                    student.ese_total
+                    student.ese_hot,
+                    student.ese_total,
+                    student.academic_sem.
+                    student.academic_year
                 ])
         ];
 
@@ -344,8 +347,8 @@ route.get('/download/markmodel', async (req, res) => {
     try {
         const markData = await markentry.findAll();
         const formattedData = [
-            ['s_no', 'batch', 'category', 'course_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_hot', 'c1_mot', 'c1_total',
-                'c2_lot', 'c2_hot', 'c2_mot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_hot', 'ese_mot', 'ese_total'],
+            ['batch', 'graduate', 'category','dept_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_mot', 'c1_hot', 'c1_total',
+                'c2_lot', 'c2_mot', 'c2_hot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total','academic_sem','academic_year'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
@@ -434,8 +437,7 @@ route.get('/download/report', async (req, res) => {
 
         const formattedData = [
             ['sno', 'staff_id', 'course_code', 'category', 'section', 'dept_name',
-                'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese',
-                'l_c1', 'l_c2', 'l_a1', 'l_a2', 'l_ese', 'active_sem'],
+                'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese', 'academic_sem'],
             ...reportData.map((reports, index) =>
                 [
                     index + 1,
@@ -449,12 +451,7 @@ route.get('/download/report', async (req, res) => {
                     reports.ass_1,
                     reports.ass_2,
                     reports.ese,
-                    reports.l_c1,
-                    reports.l_c2,
-                    reports.l_a1,
-                    reports.l_a2,
-                    reports.l_ese,
-                    reports.active_sem
+                    reports.academic_sem
                 ])
         ]
 
@@ -483,9 +480,8 @@ route.get('/download/reportmodel', async (req, res) => {
         const reportData = await report.findAll();
 
         const formattedData = [
-            ['sno', 'staff_id', 'course_code', 'category', 'section', 'dept_name',
-                'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese',
-                'l_c1', 'l_c2', 'l_a1', 'l_a2', 'l_ese', 'active_sem'],
+            ['staff_id', 'course_code', 'category', 'section', 'dept_name',
+                'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese', 'academic_sem'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
@@ -513,12 +509,11 @@ route.get('/download/mentor', async (req, res) => {
         const mentorData = await mentor.findAll();
 
         const formattedData = [
-            ['sno', 'graduate', 'course_code', 'category', 'degree', 'dept_name', 'section', 'batch', 'staff_id', 'staff_name', 'active_sem'],
+            ['sno', 'graduate', 'dept_id', 'category', 'degree', 'dept_name', 'section', 'batch', 'staff_id', 'staff_name', 'academic_sem','academic_year'],
             ...mentorData.map((mentor, index) =>
                 [
                     index + 1,
                     mentor.graduate,
-                    mentor.course_code,
                     mentor.category,
                     mentor.degree,
                     mentor.dept_name,
@@ -526,7 +521,8 @@ route.get('/download/mentor', async (req, res) => {
                     mentor.batch,
                     mentor.staff_id,
                     mentor.staff_name,
-                    mentor.active_sem
+                    mentor.academic_sem,
+                    mentor.academic_year
                 ])
         ]
 
@@ -555,7 +551,7 @@ route.get('/download/mentormodel', async (req, res) => {
         const mentorData = await mentor.findAll();
 
         const formattedData = [
-            ['sno', 'graduate', 'course_code', 'category', 'degree', 'dept_name', 'section', 'batch', 'staff_id', 'staff_name', 'active_sem'],
+            ['graduate', 'dept_id', 'category', 'degree', 'dept_name', 'section', 'batch', 'staff_id', 'staff_name', 'academic_sem','academic_year'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
@@ -583,12 +579,12 @@ route.get('/download/hod', async (req, res) => {
         const hodData = await hod.findAll();
 
         const formattedData = [
-            ['sno', 'graduate', 'course_id', 'category', 'dept_name', 'staff_id', 'hod_name'],
+            ['sno', 'graduate', 'dept_id', 'category', 'dept_name', 'staff_id', 'hod_name'],
             ...hodData.map((hod, index) =>
                 [
                     index + 1,
                     hod.graduate,
-                    hod.course_id,
+                    hod.dept_id,
                     hod.category,
                     hod.dept_name,
                     hod.staff_id,
@@ -621,7 +617,7 @@ route.get('/download/hodmodel', async (req, res) => {
         const mentorData = await hod.findAll();
 
         const formattedData = [
-            ['sno', 'graduate', 'course_id', 'category', 'dept_name', 'staff_id', 'hod_name'],
+            ['graduate', 'dept_id', 'category', 'dept_name', 'staff_id', 'hod_name'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
