@@ -12,7 +12,8 @@ const academic = require('./models/academic');
 const rsmatrix = require('./models/rsmatrix');
 const mentor = require('./models/mentor');
 const calculation = require('./models/calculation');
-const hod = require('./models/hod')
+const hod = require('./models/hod');
+const coursemaster = require('./models/coursemaster')
 
 const dashboard = require('./routes/dash');
 const courselist = require('./routes/courselist');
@@ -31,6 +32,8 @@ const courseoutcome = require('./routes/courseoutcome');
 const staffcoursemanage = require('./routes/staffcoursemanage');
 const hodreport = require('./routes/hodreport');
 const tutorreport = require('./routes/tutorreport');
+const prospecificoutcome = require('./routes/prospecificoutcome');
+const prooutcome = require('./routes/prooutcome');
 
 const app = express();
 app.use(cors());
@@ -54,6 +57,8 @@ app.use('/api', courseoutcome);
 app.use('/api', staffcoursemanage);
 app.use('/api', hodreport);
 app.use('/api', tutorreport);
+app.use('/api', prospecificoutcome);
+app.use('/api', prooutcome);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 
@@ -114,6 +119,10 @@ const secretKey = process.env.SECRET_KEY;
 //         // // Synchronize the Hod Model
 //         // await hod.sync();
 //         // console.log('Hod Table Synced');
+
+//         // // Synchronize the Hod Model
+//         // await coursemaster.sync();
+//         // console.log('Course Master Table Synced');
 //     }
 //     catch (error) {
 //         console.log('Error Occurred:', error.message);

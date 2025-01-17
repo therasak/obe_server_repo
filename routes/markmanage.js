@@ -5,7 +5,7 @@ const academic = require('../models/academic');
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.post('/calculation', async (req, res) => 
+route.post('/calc', async (req, res) => 
 {
     try 
     {

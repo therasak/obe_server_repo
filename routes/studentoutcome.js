@@ -37,7 +37,6 @@ route.post('/checkstaffId', async (req, res) =>
             staff_id: staff_id
         }
     })
-
     res.json({ courseHandleStaffId, tutorHandleStaffId, hodHandleStaffId });
 })
 
@@ -191,7 +190,6 @@ route.post('/tutordetails', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-
 // Category Fetching
 
 route.get('/category/:staffId', async (req, res) => 
@@ -237,7 +235,6 @@ route.get("/stucoursemapping", async (req, res) =>
         res.status(500).json({ error: "Error Fetching Course Mapping Data." });
     }
 })
-
 
 // ------------------------------------------------------------------------------------------------------- //
 

@@ -7,7 +7,7 @@ const hod = require('../models/hod');
 const mentor = require('../models/mentor');
 const coursemapping = require('../models/coursemapping');
 const academic = require('../models/academic');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -139,15 +139,26 @@ route.get('/hod', async (req, res) =>
 
 route.delete('/hod/:id', async (req, res) => 
 {
-    const { id } = req.params; 
+    const { id} = req.params; 
+    const { dept_id } = req.body;
+
     try 
     {
         const deleted = await hod.destroy({
-            where: { staff_id: id }, 
+            where: { staff_id: id , dept_id:dept_id}, 
         })
 
-        if (deleted) {
+        if (deleted) 
+        {
             res.status(200).json({ message: `HOD with staff ID ${id} deleted successfully.` });
+            const scopeFind= await hod.findAll({
+                where:{staff_id:id}
+            })
+            if(scopeFind.length > 0) { return null }
+            else
+            {
+                await scope.update({ hod_report: 0 } , { where: { staff_id: id } })
+            }
         } 
         else {
             res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
@@ -204,6 +215,7 @@ route.get('/mentor', async (req, res) =>
 route.delete("/mentor/:id", async (req, res) => 
 {
     const { id } = req.params;
+
     try 
     {
         const activeAcademic = await academic.findOne({
@@ -277,10 +289,11 @@ route.post('/newhodadded', async (req, res) =>
                 dept_name: newdeptName
             }
         })
-        if (existhod.length > 0) {
-            res.json({ message: "Hod Already exist" })
-        }
-        else {
+
+        if (existhod.length > 0) { res.json({ message: "Hod Already exist" })}
+
+        else 
+        {
             const newhod = await hod.create({
                 staff_id: newstaffId,
                 graduate: newgraduate,
@@ -331,7 +344,7 @@ route.get('/getstaff', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-//staff data from staffmaster
+// Staff Data from Staff Master
 
 route.get('/staffdata', async (req, res) => 
 {

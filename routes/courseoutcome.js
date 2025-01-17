@@ -84,7 +84,7 @@ route.post('/checkTutorCOC', async (req, res) =>
     })
 
     const marks = await markentry.findAll({
-        where: { course_code: stud_coursecodes }
+        where: { course_code: stud_coursecodes, academic_sem: academicdata.academic_sem }
     })
 
     let countAboveThreshold = {
@@ -191,9 +191,7 @@ route.post('/checkTutorCOC', async (req, res) =>
         attainedScores.grade = attainedScores.grade || {};
         attainedScores.grade[course_code] = calculateGrade(avgOverallScore);
     }
-
-    // Capso Calculation
-
+    
     // Capso & Pso Calculation
 
     let totalCapso1 = 0;
@@ -246,6 +244,7 @@ route.post('/checkTutorCOC', async (req, res) =>
             totalCapso3 += capso3;
             totalCapso4 += capso4;
             totalCapso5 += capso5;
+            
             attainedScores.capso[course_code] =
             {
                 capso1,
@@ -256,9 +255,10 @@ route.post('/checkTutorCOC', async (req, res) =>
                 capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
             }
         }
+
         const totalCourses = stud_coursecodes.length;
         const pso1 = totalCapso1 / totalCourses;
-        const pso2 = totalCapso2 / totalCourses;
+        const pso2 = totalCapso2 / totalCourses; 
         const pso3 = totalCapso3 / totalCourses;
         const pso4 = totalCapso4 / totalCourses;
         const pso5 = totalCapso5 / totalCourses;
@@ -296,7 +296,7 @@ route.post('/checkAdminCOC', async (req, res) =>
     })
 
     const marks = await markentry.findAll({
-        where: { course_code: stud_coursecodes }
+        where: { course_code: stud_coursecodes, academic_sem: academicdata.academic_sem }
     })
 
     let countAboveThreshold = {
@@ -480,7 +480,7 @@ route.post('/checkCourseCOC', async (req, res) =>
     })
 
     const marks = await markentry.findAll({
-        where: { course_code: stud_coursecodes }
+        where: { course_code: stud_coursecodes, academic_sem: academicdata.academic_sem }
     })
 
     let countAboveThreshold = {
@@ -674,7 +674,7 @@ route.post('/checkHodCOC', async (req, res) =>
     })
 
     const marks = await markentry.findAll({
-        where: { course_code: stud_coursecodes }
+        where: { course_code: stud_coursecodes, academic_sem: academicdata.academic_sem }
     })
 
     let countAboveThreshold = {
