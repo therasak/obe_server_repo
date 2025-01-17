@@ -160,50 +160,6 @@ route.post('/studentmaster', upload.single('file'), async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Scope File Upload
-
-route.post('/scope', upload.single('file'), async (req, res) => 
-{
-    try 
-    {
-        const file = req.file;
-
-        if (!file) {
-            return res.status(400).send('No File Uploaded.');
-        }
-
-        const workbook = XLSX.readFile(file.path);
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(worksheet);
-
-        const scopes = rows.map(row => ({
-            staff_id: row.staff_id,
-            dashboard: row.dashboard,
-            course_list: row.course_list,
-            course_outcome: row.course_outcome,
-            student_outcome: row.student_outcome,
-            program_outcome: row.program_outcome,
-            program_specific_outcome: row.program_specific_outcome,
-            obe_report: row.obe_report,
-            work_progress_report: row.work_progress_report,
-            input_files: row.input_files,
-            manage: row.manage,
-            relationship_matrix: row.relationship_matrix,
-            settings: row.settings
-        }))
-
-        await scope.bulkCreate(scopes, {});
-        res.status(200).send('Scope Table Imported Successfully');
-    }
-    catch (error) {
-        console.error("Error in Scope Upload:", error);
-        res.status(500).send('An error occurred');
-    }
-});
-
-// ------------------------------------------------------------------------------------------------------- //
-
 // Mark Entry File Upload
 
 route.post('/markentry', upload.single('file'), async (req, res) => 
@@ -258,6 +214,156 @@ route.post('/markentry', upload.single('file'), async (req, res) =>
     }
     catch (error) {
         console.error(error);
+        res.status(500).send('An error occurred');
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Hod File Upload
+
+route.post('/hod', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('File Upload Failed');
+        }
+
+        const workbook = XLSX.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        for (const row of rows) {
+            await hod.upsert({
+                graduate: row.graduate,
+                dept_id: row.dept_id,
+                category: row.category,
+                dept_name: row.dept_name,
+                staff_id: row.staff_id,
+                hod_name: row.hod_name,
+            });
+        }
+
+        const staffIds = rows.map(row => row.staff_id);
+        await scope.update(
+            { hod_report: 1 },
+            {
+                where: {
+                    staff_id: staffIds,
+                },
+            }
+        )
+        res.status(200).send('HOD Data Imported and Scope Table Updated Successfully');
+    } 
+    catch (error) {
+        console.error('Error Processing HOD Upload :', error);
+        res.status(500).send('An error occurred while processing the HOD file');
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Mentor File Upload
+
+route.post('/mentor', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('File Upload Failed');
+        }
+
+        const workbook = XLSX.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        const activeAcademicSem = await academic.findOne({
+            where: { active_sem: 1 }
+        });
+
+        if (!activeAcademicSem) {
+            return res.status(400).send('No Active Academic Year Found');
+        }
+
+        const academicSemester = activeAcademicSem.academic_sem;
+        const academicYear = activeAcademicSem.academic_year;
+
+        for (const row of rows) 
+        {
+            await mentor.upsert({
+                graduate: row.graduate,
+                dept_id: row.dept_id,
+                category: row.category,
+                degree: row.degree,
+                dept_name: row.dept_name,
+                section: row.section,
+                batch: row.batch,
+                staff_id: row.staff_id,
+                staff_name: row.staff_name,
+                academic_sem: academicSemester,
+                academic_year: academicYear,
+            })
+
+            // await scope.update(
+            //     { mentor_report: 1 },
+            //     { where: { staff_id: row.staff_id } }
+            // );
+        }
+        res.status(200).send('Mentor Data and Scope Updated Successfully');
+    } 
+    catch (error) {
+        console.error('Error Processing Mentor Upload:', error);
+        res.status(500).send('An error occurred while processing the mentor upload');
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Scope File Upload
+
+route.post('/scope', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('No File Uploaded.');
+        }
+
+        const workbook = XLSX.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        const scopes = rows.map(row => ({
+            staff_id: row.staff_id,
+            dashboard: row.dashboard,
+            course_list: row.course_list,
+            course_outcome: row.course_outcome,
+            student_outcome: row.student_outcome,
+            program_outcome: row.program_outcome,
+            program_specific_outcome: row.program_specific_outcome,
+            obe_report: row.obe_report,
+            work_progress_report: row.work_progress_report,
+            input_files: row.input_files,
+            manage: row.manage,
+            relationship_matrix: row.relationship_matrix,
+            settings: row.settings
+        }))
+
+        await scope.bulkCreate(scopes, {});
+        res.status(200).send('Scope Table Imported Successfully');
+    }
+    catch (error) {
+        console.error("Error in Scope Upload:", error);
         res.status(500).send('An error occurred');
     }
 });
@@ -391,119 +497,6 @@ route.post('/report', upload.single('file'), async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Mentor File Upload
-
-route.post('/mentor', upload.single('file'), async (req, res) => 
-{
-    try 
-    {
-        const file = req.file;
-
-        if (!file) {
-            return res.status(400).send('File Upload Failed');
-        }
-
-        const workbook = XLSX.readFile(file.path);
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(worksheet);
-
-        const activeAcademicSem = await academic.findOne({
-            where: { active_sem: 1 }
-        });
-
-        if (!activeAcademicSem) {
-            return res.status(400).send('No Active Academic Year Found');
-        }
-
-        const academicSemester = activeAcademicSem.academic_sem;
-        const academicYear = activeAcademicSem.academic_year;
-
-        for (const row of rows) 
-        {
-            const existingScope = await scope.findOne({
-                where: { staff_id: row.staff_id },
-            })
-
-            if (existingScope && existingScope.mentor_report === 0) 
-            {
-                await mentor.upsert({
-                    graduate: row.graduate,
-                    dept_id: row.dept_id,
-                    category: row.category,
-                    degree: row.degree,
-                    dept_name: row.dept_name,
-                    section: row.section,
-                    batch: row.batch,
-                    staff_id: row.staff_id,
-                    staff_name: row.staff_name,
-                    academic_sem: academicSemester,
-                    academic_year: academicYear,
-                })
-
-                // await scope.update(
-                //     { mentor_report: 1 },
-                //     { where: { staff_id: row.staff_id } }
-                // );
-            }
-        }
-        res.status(200).send('Mentor Data and Scope Updated Successfully');
-    } 
-    catch (error) {
-        console.error('Error Processing Mentor Upload:', error);
-        res.status(500).send('An error occurred while processing the mentor upload');
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-// Hod File Upload
-
-route.post('/hod', upload.single('file'), async (req, res) => 
-{
-    try 
-    {
-        const file = req.file;
-
-        if (!file) {
-            return res.status(400).send('File Upload Failed');
-        }
-
-        const workbook = XLSX.readFile(file.path);
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const rows = XLSX.utils.sheet_to_json(worksheet);
-
-        for (const row of rows) {
-            await hod.upsert({
-                graduate: row.graduate,
-                dept_id: row.dept_id,
-                category: row.category,
-                dept_name: row.dept_name,
-                staff_id: row.staff_id,
-                hod_name: row.hod_name,
-            });
-        }
-
-        const staffIds = rows.map(row => row.staff_id);
-        await scope.update(
-            { hod_report: 1 },
-            {
-                where: {
-                    staff_id: staffIds,
-                },
-            }
-        )
-        res.status(200).send('HOD Data Imported and Scope Table Updated Successfully');
-    } 
-    catch (error) {
-        console.error('Error Processing HOD Upload :', error);
-        res.status(500).send('An error occurred while processing the HOD file');
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
 // Calculation File Upload
 
 route.post('/calculation', upload.single('file'), async (req, res) => 
@@ -601,8 +594,7 @@ route.post('/academic', upload.single('file'), async (req, res) =>
         console.error("Error in upload:", error);
         res.status(500).send('An error occurred');
     }
-});
-
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -696,7 +688,6 @@ route.post('/rsmatrix', upload.single('file'), async (req, res) =>
         console.error("Error in upload:", error);
         res.status(500).send('An error occurred');
     }
-});
-
+})
 
 module.exports = route;
