@@ -48,9 +48,8 @@ route.post('/newstaff', async (req, res) =>
             student_outcome: permissions.so ? 1 : 0,
             program_outcome: permissions.po ? 1 : 0,
             program_specific_outcome: permissions.pso ? 1 : 0,
-            mentor_report: permissions.tutor ? 1 : 0,
-            hod_report: permissions.hod ? 1 : 0,
-            report: permissions.report ? 1 : 0,
+            work_progress_report: permissions.wpr ? 1 : 0,
+            // obe_report: permissions.obereport ? 1 : 0,
             input_files: permissions.input ? 1 : 0,
             manage: permissions.manage ? 1 : 0,
             relationship_matrix: permissions.rsm ? 1 : 0,
@@ -148,21 +147,21 @@ route.delete('/hod/:id', async (req, res) =>
             where: { staff_id: id , dept_id:dept_id}, 
         })
 
-        if (deleted) 
-        {
-            res.status(200).json({ message: `HOD with staff ID ${id} deleted successfully.` });
-            const scopeFind= await hod.findAll({
-                where:{staff_id:id}
-            })
-            if(scopeFind.length > 0) { return null }
-            else
-            {
-                await scope.update({ hod_report: 0 } , { where: { staff_id: id } })
-            }
-        } 
-        else {
-            res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
-        }
+        // if (deleted) 
+        // {
+        //     res.status(200).json({ message: `HOD with staff ID ${id} Deleted Successfully.` });
+        //     const scopeFind= await hod.findAll({
+        //         where:{staff_id:id}
+        //     })
+        //     if(scopeFind.length > 0) { return null }
+        //     else
+        //     {
+        //         await scope.update({ hod_report: 0 } , { where: { staff_id: id } })
+        //     }
+        // } 
+        // else {
+        //     res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
+        // }
     } 
     catch (err) {
         console.error(err);
@@ -184,7 +183,7 @@ route.put('/hod/:id', async (req, res) =>
             { where: { staff_id: id } }
         )
         if (updated) {
-            res.status(200).json({ message: `HOD with staff ID ${id} updated Successfully.` });
+            res.status(200).json({ message: `HOD with staff ID ${id} Updated Successfully.` });
         } 
         else {
             res.status(404).json({ error: `HOD with staff ID ${id} not found.` });

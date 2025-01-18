@@ -60,7 +60,7 @@ route.get('/category', async (req, res) =>
 
 // Get Course Id based on the Selected Category
 
-route.post('/courseid', async (req, res) => 
+route.post('/deptId', async (req, res) => 
 {
 	try 
 	{
@@ -76,7 +76,7 @@ route.post('/courseid', async (req, res) =>
 
 		const activeSemester = activeAcademic.academic_sem;
 
-		const courseid = await studentmaster.findAll(
+		const deptId = await studentmaster.findAll(
 		{
 			where: { 
 				academic_sem: activeSemester, 
@@ -85,8 +85,8 @@ route.post('/courseid', async (req, res) =>
 			attributes: ['dept_id'],
 		})
 
-		const uniqueCourseId = [...new Set(courseid.map((course) => course.dept_id))]
-		res.status(200).json(uniqueCourseId);
+		const uniqueDeptId = [...new Set(deptId.map((course) => course.dept_id))]
+		res.status(200).json(uniqueDeptId);
 	} 
 	catch (error) {
 		console.error("Error in Course Id Route:", error);
@@ -102,7 +102,7 @@ route.post('/semester', async (req, res) =>
 {
 	try 
 	{
-		const { category, courseId } = req.body;
+		const { category, deptId } = req.body;
 
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
@@ -118,7 +118,7 @@ route.post('/semester', async (req, res) =>
 			where: {
 				academic_sem: activeSemester,
 				category: category,
-				dept_id: courseId,
+				dept_id: deptId,
 			},
 			attributes: ['semester'], 
 		});
@@ -141,7 +141,7 @@ route.post('/section', async (req, res) =>
 {
 	try 
 	{
-		const { category, courseId, semester } = req.body; 
+		const { category, deptId, semester } = req.body; 
 
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
@@ -157,7 +157,7 @@ route.post('/section', async (req, res) =>
 			where: {
 				academic_sem: activeSemester,
 				category: category,
-				dept_id: courseId,
+				dept_id: deptId,
 				semester: semester,
 			},
 			attributes: ['section'], 
@@ -180,7 +180,7 @@ route.post('/coursecode', async (req, res) =>
 {
 	try 
 	{
-		const { category, courseId, semester, section } = req.body;
+		const { category, deptId, semester, section } = req.body;
 
 		const activeAcademic = await academic.findOne({
 			where: { active_sem: 1 },
@@ -196,7 +196,7 @@ route.post('/coursecode', async (req, res) =>
 			where: {
 				academic_sem: activeSemester,
 				category: category,
-				dept_id: courseId,
+				dept_id: deptId,
 				semester: semester
 			},
 			attributes: ['course_code'],
