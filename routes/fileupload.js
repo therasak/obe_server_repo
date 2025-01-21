@@ -15,6 +15,7 @@ const studentmaster = require('../models/studentmaster');
 const staffmaster = require('../models/staffmaster');
 const calculation = require('../models/calculation');
 const rsmatrix = require('../models/rsmatrix');
+const coursemaster = require('../models/coursemaster');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -690,4 +691,59 @@ route.post('/rsmatrix', upload.single('file'), async (req, res) =>
     }
 })
 
+// ------------------------------------------------------------------------------------------------------- //
+
+// Coursemaster File Upload
+
+route.post('/coursemaster', upload.single('file'), async (req, res) => 
+{
+    try 
+    {
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('File Upload Failed');
+        }
+
+        const workbook = XLSX.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet);
+
+        const activeAcademic = await academic.findOne({
+            where: { active_sem: 1 }
+        });
+
+        if (!activeAcademic) {
+            return res.status(400).send('No Active Academic Year Found');
+        }
+        
+        const academicSemester = activeAcademic.academic_sem;
+        const academicYear = activeAcademic.academic_year;
+
+        await coursemaster.destroy({ where: {}, truncate: true });
+
+        const reports = rows.map(row => (
+        {
+            s_no:row.s_no,
+            graduate:row.graduate,
+            course_code: row.course_code,
+            course_title: row.course_title,
+            dept_id:row.dept_id,
+            dept_name: row.dept_name,
+            degree:row.degree,
+            semester:row.semester,
+            academic_sem: academicSemester,
+            academic_year: academicYear
+        }));
+
+        await coursemaster.bulkCreate(reports);
+        res.status(200).send('Coursemaster Data Imported Successfully');
+    }
+    catch (error) {
+        console.error('Error processing report upload:', error);
+        res.status(500).send('An error occurred while processing the report');
+    }
+})
+    
 module.exports = route;

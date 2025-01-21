@@ -1,6 +1,7 @@
 const express = require('express');
 const route = express.Router();
 const XLSX = require('xlsx');
+
 const coursemapping = require('../models/coursemapping');
 const report = require('../models/report');
 const studentmaster = require('../models/studentmaster');
@@ -12,17 +13,20 @@ const hod = require('../models/hod');
 const calculation = require('../models/calculation');
 const academic = require('../models/academic');
 const rsmatrix = require('../models/rsmatrix');
+const coursemaster = require('../models/coursemaster');
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Course Mapping Downlaod Excel 
 
 route.get('/download/coursemap', async (req, res) => {
-    try {
+
+    try 
+    {
         const courseData = await coursemapping.findAll();
 
         const formattedData = [
-            ['s_no','category', 'batch', 'dept_id', 'degree', 'dept_name', 'semester',
+            ['s_no', 'category', 'batch', 'dept_id', 'degree', 'dept_name', 'semester',
                 'section', 'course_code', 'staff_id', 'staff_name', 'course_title', 'academic_sem'],
             ...courseData.map(course => [
                 course.s_no,
@@ -43,9 +47,9 @@ route.get('/download/coursemap', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Course Mapping Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Staff Course Mapping');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Course Mapping Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Staff Course Mapping Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -60,17 +64,19 @@ route.get('/download/coursemap', async (req, res) => {
 // Sample Model File Download
 
 route.get('/download/coursemapmodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const courseData = await coursemapping.findAll();
 
         const formattedData = [
             ['category', 'batch', 'dept_id', 'degree', 'dept_name', 'semester',
-                'section', 'course_code', 'staff_id', 'staff_name', 'course_title'],
+                'section', 'course_code', 'staff_id', 'staff_name', 'course_title',],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Staff Course Mapping Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Staff Course Mapping');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
         res.setHeader('Content-Disposition', 'attachment; filename = Staff Course Mapping Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -86,10 +92,12 @@ route.get('/download/coursemapmodel', async (req, res) => {
 // Staff Master Download Excel
 
 route.get('/download/staff', async (req, res) => {
-    try {
+
+    try 
+    {
         const staffData = await staffmaster.findAll();
         const formattedData = [
-            ['staff_id','staff_category', 'staff_name', 'staff_pass', 'staff_dept', 'dept_category'],
+            ['staff_id', 'staff_category', 'staff_name', 'staff_pass', 'staff_dept', 'dept_category'],
             ...staffData.map(staff =>
                 [
                     staff.staff_id,
@@ -103,7 +111,7 @@ route.get('/download/staff', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Staff Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Staff Master');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
         res.setHeader('Content-Disposition', 'attachment; filename = Staff Master Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -120,18 +128,20 @@ route.get('/download/staff', async (req, res) => {
 // Sample Model File Download
 
 route.get('/download/staffmodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const staffData = await staffmaster.findAll();
         const formattedData = [
-            ['staff_id','staff_category', 'staff_name', 'staff_pass', 'staff_dept', 'dept_category'],
+            ['staff_id', 'staff_category', 'staff_name', 'staff_pass', 'staff_dept', 'dept_category'],
 
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Staff Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Staff Master');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Staff Master Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Staff Master Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -146,12 +156,14 @@ route.get('/download/staffmodel', async (req, res) => {
 // Student Master Excel Download
 
 route.get('/download/studentmaster', async (req, res) => {
-    try {
+
+    try 
+    {
         const studentData = await studentmaster.findAll();
 
         const formattedData = [
-            ['s_no','reg_no', 'stu_name', 'dept_id', 'category', 'semester',
-                'section',  'academic_sem'],
+            ['s_no', 'reg_no', 'stu_name', 'dept_id', 'category', 'semester',
+                'section', 'batch', 'academic_sem'],
             ...studentData.map(student => [
                 student.s_no,
                 student.reg_no,
@@ -161,15 +173,13 @@ route.get('/download/studentmaster', async (req, res) => {
                 student.semester,
                 student.section,
                 student.batch,
-                student.mentor,
-                student.emis,
                 student.academic_sem
             ])
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Student Master Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Student Master');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
         res.setHeader('Content-Disposition', 'attachment; filename = Student Master Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -186,19 +196,21 @@ route.get('/download/studentmaster', async (req, res) => {
 // Sample Model File Download
 
 route.get('/download/studentmastermodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const studentData = await studentmaster.findAll();
 
         const formattedData = [
             ['reg_no', 'stu_name', 'dept_id', 'category', 'semester',
-                'section',  'academic_sem'],
+                'section', 'batch',],
         ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Student Master Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Student Master');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Student Master Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Student Master Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -213,39 +225,41 @@ route.get('/download/studentmastermodel', async (req, res) => {
 // Scope Excel Download
 
 route.get('/download/scope', async (req, res) => {
-    try {
+
+    try 
+    {
         const scopeData = await scope.findAll();
 
         const formattedData =
-            [
-                ['staff_id','dashboard', 'course_list', 'course_outcome',
-                    'student_outcome', 'program_outcome', 'program_specific_outcome',
-                    'mentor_report', 'hod_report', 'report', 'input_files',
-                    'manage', 'relationship_matrix', 'settings',],
+        [
+            ['staff_id', 'dashboard', 'course_list', 'course_outcome',
+                'student_outcome', 'program_outcome', 'program_specific_outcome',
+                'mentor_report', 'hod_report', 'report', 'input_files',
+                'manage', 'relationship_matrix', 'settings',],
 
-                ...scopeData.map(scope => [
-                    scope.staff_id,
-                    scope.dashboard,
-                    scope.course_list,
-                    scope.course_outcome,
-                    scope.student_outcome,
-                    scope.program_outcome,
-                    scope.program_specific_outcome,
-                    scope.mentor_report,
-                    scope.hod_report,
-                    scope.report,
-                    scope.input_files,
-                    scope.manage,
-                    scope.relationship_matrix,
-                    scope.settings,
-                ])
-            ];
+            ...scopeData.map(scope => [
+                scope.staff_id,
+                scope.dashboard,
+                scope.course_list,
+                scope.course_outcome,
+                scope.student_outcome,
+                scope.program_outcome,
+                scope.program_specific_outcome,
+                scope.mentor_report,
+                scope.hod_report,
+                scope.report,
+                scope.input_files,
+                scope.manage,
+                scope.relationship_matrix,
+                scope.settings,
+            ])
+        ];
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Scope Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Scope');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Scope Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Scope.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -253,28 +267,30 @@ route.get('/download/scope', async (req, res) => {
         console.error('Error generating Excel file:', error);
         res.status(500).send('Server error');
     }
-});
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Sample Model File Download
 
 route.get('/download/scopemodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const scopeData = await scope.findAll();
 
         const formattedData = [
-            ['staff_id','dashboard', 'course_list', 'course_outcome',
-                    'student_outcome', 'program_outcome', 'program_specific_outcome',
-                    'mentor_report', 'hod_report', 'report', 'input_files',
-                    'manage', 'relationship_matrix', 'settings'],
+            ['staff_id', 'dashboard', 'course_list', 'course_outcome',
+                'student_outcome', 'program_outcome', 'program_specific_outcome',
+                'mentor_report', 'hod_report', 'report', 'input_files',
+                'manage', 'relationship_matrix', 'settings'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Scope Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Scope');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Scope Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Scope Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -289,47 +305,48 @@ route.get('/download/scopemodel', async (req, res) => {
 // Student Mark Entry Excel Download
 
 route.get('/download/mark', async (req, res) => {
-    try {
+
+    try 
+    {
         const markData = await markentry.findAll();
         const formattedData = [
-
-            ['s_no', 'batch', 'graduate', 'category','dept_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_mot', 'c1_hot', 'c1_total',
-                'c2_lot', 'c2_mot', 'c2_hot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total','academic_sem','academic_year'],
+            ['s_no', 'batch', 'graduate', 'category', 'dept_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_mot', 'c1_hot', 'c1_total',
+                'c2_lot', 'c2_mot', 'c2_hot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total', 'academic_sem', 'academic_year',],
 
             ...markData.map(student =>
-                [
-                    student.s_no,
-                    student.batch,
-                    student.graduate,
-                    student.category,
-                    student.dept_id,
-                    student.reg_no,
-                    student.course_code,
-                    student.semester,
-                    student.c1_lot,
-                    student.c1_mot,
-                    student.c1_hot,
-                    student.c1_total,
-                    student.c2_lot,
-                    student.c2_mot,
-                    student.c2_hot,
-                    student.c2_total,
-                    student.a1_lot,
-                    student.a2_lot,
-                    student.ese_lot,
-                    student.ese_mot,
-                    student.ese_hot,
-                    student.ese_total,
-                    student.academic_sem.
-                    student.academic_year
-                ])
-        ];
+            [
+                student.s_no,
+                student.batch,
+                student.graduate,
+                student.category,
+                student.dept_id,
+                student.reg_no,
+                student.course_code,
+                student.semester,
+                student.c1_lot,
+                student.c1_mot,
+                student.c1_hot,
+                student.c1_total,
+                student.c2_lot,
+                student.c2_mot,
+                student.c2_hot,
+                student.c2_total,
+                student.a1_lot,
+                student.a2_lot,
+                student.ese_lot,
+                student.ese_mot,
+                student.ese_hot,
+                student.ese_total,
+                student.academic_sem,
+                student.academic_year
+            ])
+        ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Mark Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Student Course Mapping');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Mark Entry Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Student Course Mapping Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -344,18 +361,20 @@ route.get('/download/mark', async (req, res) => {
 // Sample Model File Download
 
 route.get('/download/markmodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const markData = await markentry.findAll();
         const formattedData = [
-            ['batch', 'graduate', 'category','dept_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_mot', 'c1_hot', 'c1_total',
-                'c2_lot', 'c2_mot', 'c2_hot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total','academic_sem','academic_year'],
+            ['batch', 'graduate', 'category', 'dept_id', 'reg_no', 'course_code', 'semester', 'c1_lot', 'c1_mot', 'c1_hot', 'c1_total',
+                'c2_lot', 'c2_mot', 'c2_hot', 'c2_total', 'a1_lot', 'a2_lot', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total'],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Mark Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Student Course Mapping');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Mark Entry Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Student Course Mapping Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -370,7 +389,9 @@ route.get('/download/markmodel', async (req, res) => {
 // Dept Mark Entry Excel Download
 
 route.get('/download/ese', async (req, res) => {
-    try {
+
+    try 
+    {
         const markData = await markentry.findAll();
 
         const formattedData = [
@@ -388,9 +409,9 @@ route.get('/download/ese', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'ESE Mark Entry Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'ESE Mark Entry');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Dept Mark Entry.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = ESE Mark Entry Data.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -405,7 +426,9 @@ route.get('/download/ese', async (req, res) => {
 // Sample Model File Download
 
 route.get('/download/esemodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const markData = await markentry.findAll();
 
         const formattedData = [
@@ -415,9 +438,9 @@ route.get('/download/esemodel', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'ESE Mark Entry Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'ESE Mark Entry');
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
-        res.setHeader('Content-Disposition', 'attachment; filename = Dept Mark Entry.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = ESE Mark Entry Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -432,7 +455,9 @@ route.get('/download/esemodel', async (req, res) => {
 // Report Excel Download
 
 route.get('/download/report', async (req, res) => {
-    try {
+
+    try 
+    {
         const reportData = await report.findAll();
 
         const formattedData = [
@@ -457,7 +482,7 @@ route.get('/download/report', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Report Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Report');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
 
@@ -476,7 +501,9 @@ route.get('/download/report', async (req, res) => {
 // Sample Model File Download
 
 route.get('/download/reportmodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const reportData = await report.findAll();
 
         const formattedData = [
@@ -486,11 +513,11 @@ route.get('/download/reportmodel', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Report Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Report');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
 
-        res.setHeader('Content-Disposition', 'attachment; filename = Report Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Report Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -505,15 +532,18 @@ route.get('/download/reportmodel', async (req, res) => {
 // Mentor Excel Download
 
 route.get('/download/mentor', async (req, res) => {
-    try {
+
+    try 
+    {
         const mentorData = await mentor.findAll();
 
         const formattedData = [
-            ['sno', 'graduate', 'dept_id', 'category', 'degree', 'dept_name', 'section', 'batch', 'staff_id', 'staff_name', 'academic_sem','academic_year'],
+            ['sno', 'graduate', 'dept_id', 'category', 'degree', 'dept_name', 'section', 'batch', 'staff_id', 'staff_name', 'academic_sem', 'academic_year'],
             ...mentorData.map((mentor, index) =>
                 [
                     index + 1,
                     mentor.graduate,
+                    mentor.dept_id,
                     mentor.category,
                     mentor.degree,
                     mentor.dept_name,
@@ -528,7 +558,7 @@ route.get('/download/mentor', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Mentor Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Mentor');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
 
@@ -547,20 +577,22 @@ route.get('/download/mentor', async (req, res) => {
 // Sample Model File Download
 
 route.get('/download/mentormodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const mentorData = await mentor.findAll();
 
         const formattedData = [
-            ['graduate', 'dept_id', 'category', 'degree', 'dept_name', 'section', 'batch', 'staff_id', 'staff_name', 'academic_sem','academic_year'],
+            ['graduate', 'dept_id', 'category', 'degree', 'dept_name', 'section', 'batch', 'staff_id', 'staff_name',],
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Mentor Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Mentor');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
 
-        res.setHeader('Content-Disposition', 'attachment; filename = Mentor Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Mentor Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -575,7 +607,9 @@ route.get('/download/mentormodel', async (req, res) => {
 // Mentor Excel Download
 
 route.get('/download/hod', async (req, res) => {
-    try {
+
+    try 
+    {
         const hodData = await hod.findAll();
 
         const formattedData = [
@@ -594,7 +628,7 @@ route.get('/download/hod', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Hod Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Hod');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
 
@@ -613,7 +647,9 @@ route.get('/download/hod', async (req, res) => {
 // Sample Model File Download
 
 route.get('/download/hodmodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const mentorData = await hod.findAll();
 
         const formattedData = [
@@ -622,11 +658,11 @@ route.get('/download/hodmodel', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Hod Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Hod');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
 
-        res.setHeader('Content-Disposition', 'attachment; filename = Hod Data.xlsx');
+        res.setHeader('Content-Disposition', 'attachment; filename = Hod Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }
@@ -642,13 +678,15 @@ route.get('/download/hodmodel', async (req, res) => {
 
 
 route.get('/download/calculation', async (req, res) => {
-    try {
+
+    try 
+    {
         const calculationData = await calculation.findAll();
 
         const formattedData = [
-            ['sno','active_sem','c1_lot','c1_mot','c1_hot','c2_lot','c2_mot','c2_hot','a1_lot','a1_mot','a1_hot',
-                'a2_lot','a2_mot','a2_hot','c_lot','c_mot','c_hot','e_lot','e_mot','e_hot','so_l0_ug','so_l1_ug','so_l2_ug','so_l3_ug','so_l0_pg',
-                'so_l1_pg','so_l2_pg','so_l3_pg','cia_weightage','ese_weightage','co_thresh_value'],
+            ['sno', 'active_sem', 'c1_lot', 'c1_mot', 'c1_hot', 'c2_lot', 'c2_mot', 'c2_hot', 'a1_lot', 'a1_mot', 'a1_hot',
+                'a2_lot', 'a2_mot', 'a2_hot', 'c_lot', 'c_mot', 'c_hot', 'e_lot', 'e_mot', 'e_hot', 'so_l0_ug', 'so_l1_ug', 'so_l2_ug', 'so_l3_ug', 'so_l0_pg',
+                'so_l1_pg', 'so_l2_pg', 'so_l3_pg', 'cia_weightage', 'ese_weightage', 'co_thresh_value'],
 
             ...calculationData.map((calculation) =>
                 [
@@ -688,7 +726,7 @@ route.get('/download/calculation', async (req, res) => {
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Calculation Data');
+        XLSX.utils.book_append_sheet(wb, ws, 'Calculation');
 
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
 
@@ -707,13 +745,15 @@ route.get('/download/calculation', async (req, res) => {
 // Sample Model File Download
 
 route.get('/download/calculationmodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const calculationData = await calculation.findAll();
 
         const formattedData = [
-            ['sno','active_sem','c1_lot','c1_mot','c1_hot','c2_lot','c2_mot','c2_hot','a1_lot','a1_mot','a1_hot',
-                'a2_lot','a2_mot','a2_hot','c_lot','c_mot','c_hot','e_lot','e_mot','e_hot','so_l0_ug','so_l1_ug','so_l2_ug','so_l3_ug','so_l0_pg',
-                'so_l1_pg','so_l2_pg','so_l3_pg','cia_weightage','ese_weightage','co_thresh_value']]
+            ['sno', 'active_sem', 'c1_lot', 'c1_mot', 'c1_hot', 'c2_lot', 'c2_mot', 'c2_hot', 'a1_lot', 'a1_mot', 'a1_hot',
+                'a2_lot', 'a2_mot', 'a2_hot', 'c_lot', 'c_mot', 'c_hot', 'e_lot', 'e_mot', 'e_hot', 'so_l0_ug', 'so_l1_ug', 'so_l2_ug', 'so_l3_ug', 'so_l0_pg',
+                'so_l1_pg', 'so_l2_pg', 'so_l3_pg', 'cia_weightage', 'ese_weightage', 'co_thresh_value']]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
@@ -736,11 +776,13 @@ route.get('/download/calculationmodel', async (req, res) => {
 // Academic File Download
 
 route.get('/download/academic', async (req, res) => {
-    try {
+
+    try 
+    {
         const academicData = await academic.findAll();
 
         const formattedData = [
-            ['sno','academic_year','sem','active_sem'],
+            ['sno', 'academic_year', 'sem', 'active_sem'],
 
             ...academicData.map((academic) =>
                 [
@@ -772,11 +814,13 @@ route.get('/download/academic', async (req, res) => {
 // Sample File Download
 
 route.get('/download/academicmodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const academicData = await academic.findAll();
 
         const formattedData = [
-            ['sno','academic_year','sem','active_sem']]
+            ['sno', 'academic_year', 'sem', 'active_sem']]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
@@ -794,89 +838,89 @@ route.get('/download/academicmodel', async (req, res) => {
     }
 })
 
-
-
 // ------------------------------------------------------------------------------------------------------- //
 
 // RS Matrix File Download
 
 route.get('/download/rsmatrix', async (req, res) => {
-    try {
+
+    try 
+    {
         const rsmatrixData = await rsmatrix.findAll();
 
         const formattedData = [
             ['s_no', 'academic_year', 'course_id', 'course_code', 'co1_po1', 'co1_po2', 'co1_po3', 'co1_po4', 'co1_po5',
-                'co1_pso1', 'co1_pso2', 'co1_pso3', 'co1_pso4', 'co1_pso5', 'co1_mean', 'co2_po1', 'co2_po2', 'co2_po3', 
+                'co1_pso1', 'co1_pso2', 'co1_pso3', 'co1_pso4', 'co1_pso5', 'co1_mean', 'co2_po1', 'co2_po2', 'co2_po3',
                 'co2_po4', 'co2_po5', 'co2_pso1', 'co2_pso2', 'co2_pso3', 'co2_pso4', 'co2_pso5', 'co2_mean', 'co3_po1',
-                 'co3_po2', 'co3_po3', 'co3_po4', 'co3_po5', 'co3_pso1', 'co3_pso2', 'co3_pso3', 'co3_pso4', 'co3_pso5', 
-                 'co3_mean', 'co4_po1', 'co4_po2', 'co4_po3', 'co4_po4', 'co4_po5', 'co4_pso1', 'co4_pso2', 'co4_pso3', 
-                 'co4_pso4', 'co4_pso5', 'co4_mean', 'co5_po1', 'co5_po2', 'co5_po3', 'co5_po4', 'co5_po5', 'co5_pso1', 
-                 'co5_pso2', 'co5_pso3', 'co5_pso4', 'co5_pso5', 'co5_mean', 'mean', 'olrel'],
+                'co3_po2', 'co3_po3', 'co3_po4', 'co3_po5', 'co3_pso1', 'co3_pso2', 'co3_pso3', 'co3_pso4', 'co3_pso5',
+                'co3_mean', 'co4_po1', 'co4_po2', 'co4_po3', 'co4_po4', 'co4_po5', 'co4_pso1', 'co4_pso2', 'co4_pso3',
+                'co4_pso4', 'co4_pso5', 'co4_mean', 'co5_po1', 'co5_po2', 'co5_po3', 'co5_po4', 'co5_po5', 'co5_pso1',
+                'co5_pso2', 'co5_pso3', 'co5_pso4', 'co5_pso5', 'co5_mean', 'mean', 'olrel'],
 
             ...rsmatrixData.map((rsmatrix) =>
-                [
-                    rsmatrix.s_no, 
-                    rsmatrix.academic_year,
-                    rsmatrix.course_id, 
-                    rsmatrix.course_code,
-                    rsmatrix.co1_po1, 
-                    rsmatrix.co1_po2, 
-                    rsmatrix.co1_po3, 
-                    rsmatrix.co1_po4, 
-                    rsmatrix.co1_po5, 
-                    rsmatrix.co1_pso1, 
-                    rsmatrix.co1_pso2, 
-                    rsmatrix.co1_pso3, 
-                    rsmatrix.co1_pso4, 
-                    rsmatrix.co1_pso5, 
-                    rsmatrix.co1_mean, 
-                    rsmatrix.co2_po1, 
-                    rsmatrix.co2_po2, 
-                    rsmatrix.co2_po3, 
-                    rsmatrix.co2_po4, 
-                    rsmatrix.co2_po5, 
-                    rsmatrix.co2_pso1, 
-                    rsmatrix.co2_pso2, 
-                    rsmatrix.co2_pso3, 
-                    rsmatrix.co2_pso4, 
-                    rsmatrix.co2_pso5, 
-                    rsmatrix.co2_mean, 
-                    rsmatrix.co3_po1, 
-                    rsmatrix.co3_po2, 
-                    rsmatrix.co3_po3, 
-                    rsmatrix.co3_po4, 
-                    rsmatrix.co3_po5, 
-                    rsmatrix.co3_pso1, 
-                    rsmatrix.co3_pso2, 
-                    rsmatrix.co3_pso3, 
-                    rsmatrix.co3_pso4, 
-                    rsmatrix.co3_pso5, 
-                    rsmatrix.co3_mean, 
-                    rsmatrix.co4_po1, 
-                    rsmatrix.co4_po2, 
-                    rsmatrix.co4_po3, 
-                    rsmatrix.co4_po4, 
-                    rsmatrix.co4_po5, 
-                    rsmatrix.co4_pso1, 
-                    rsmatrix.co4_pso2, 
-                    rsmatrix.co4_pso3, 
-                    rsmatrix.co4_pso4, 
-                    rsmatrix.co4_pso5, 
-                    rsmatrix.co4_mean, 
-                    rsmatrix.co5_po1, 
-                    rsmatrix.co5_po2, 
-                    rsmatrix.co5_po3, 
-                    rsmatrix.co5_po4, 
-                    rsmatrix.co5_po5, 
-                    rsmatrix.co5_pso1, 
-                    rsmatrix.co5_pso2, 
-                    rsmatrix.co5_pso3, 
-                    rsmatrix.co5_pso4, 
-                    rsmatrix.co5_pso5, 
-                    rsmatrix.co5_mean, 
-                    rsmatrix.mean, 
-                    rsmatrix.olrel
-                ])
+            [
+                rsmatrix.s_no,
+                rsmatrix.academic_year,
+                rsmatrix.course_id,
+                rsmatrix.course_code,
+                rsmatrix.co1_po1,
+                rsmatrix.co1_po2,
+                rsmatrix.co1_po3,
+                rsmatrix.co1_po4,
+                rsmatrix.co1_po5,
+                rsmatrix.co1_pso1,
+                rsmatrix.co1_pso2,
+                rsmatrix.co1_pso3,
+                rsmatrix.co1_pso4,
+                rsmatrix.co1_pso5,
+                rsmatrix.co1_mean,
+                rsmatrix.co2_po1,
+                rsmatrix.co2_po2,
+                rsmatrix.co2_po3,
+                rsmatrix.co2_po4,
+                rsmatrix.co2_po5,
+                rsmatrix.co2_pso1,
+                rsmatrix.co2_pso2,
+                rsmatrix.co2_pso3,
+                rsmatrix.co2_pso4,
+                rsmatrix.co2_pso5,
+                rsmatrix.co2_mean,
+                rsmatrix.co3_po1,
+                rsmatrix.co3_po2,
+                rsmatrix.co3_po3,
+                rsmatrix.co3_po4,
+                rsmatrix.co3_po5,
+                rsmatrix.co3_pso1,
+                rsmatrix.co3_pso2,
+                rsmatrix.co3_pso3,
+                rsmatrix.co3_pso4,
+                rsmatrix.co3_pso5,
+                rsmatrix.co3_mean,
+                rsmatrix.co4_po1,
+                rsmatrix.co4_po2,
+                rsmatrix.co4_po3,
+                rsmatrix.co4_po4,
+                rsmatrix.co4_po5,
+                rsmatrix.co4_pso1,
+                rsmatrix.co4_pso2,
+                rsmatrix.co4_pso3,
+                rsmatrix.co4_pso4,
+                rsmatrix.co4_pso5,
+                rsmatrix.co4_mean,
+                rsmatrix.co5_po1,
+                rsmatrix.co5_po2,
+                rsmatrix.co5_po3,
+                rsmatrix.co5_po4,
+                rsmatrix.co5_po5,
+                rsmatrix.co5_pso1,
+                rsmatrix.co5_pso2,
+                rsmatrix.co5_pso3,
+                rsmatrix.co5_pso4,
+                rsmatrix.co5_pso5,
+                rsmatrix.co5_mean,
+                rsmatrix.mean,
+                rsmatrix.olrel
+            ])
         ]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
@@ -900,17 +944,19 @@ route.get('/download/rsmatrix', async (req, res) => {
 // Sample File Download
 
 route.get('/download/rsmatrixmodel', async (req, res) => {
-    try {
+
+    try 
+    {
         const rsmatrixData = await rsmatrix.findAll();
 
         const formattedData = [
             ['s_no', 'academic_year', 'course_id', 'course_code', 'co1_po1', 'co1_po2', 'co1_po3', 'co1_po4', 'co1_po5',
-                'co1_pso1', 'co1_pso2', 'co1_pso3', 'co1_pso4', 'co1_pso5', 'co1_mean', 'co2_po1', 'co2_po2', 'co2_po3', 
+                'co1_pso1', 'co1_pso2', 'co1_pso3', 'co1_pso4', 'co1_pso5', 'co1_mean', 'co2_po1', 'co2_po2', 'co2_po3',
                 'co2_po4', 'co2_po5', 'co2_pso1', 'co2_pso2', 'co2_pso3', 'co2_pso4', 'co2_pso5', 'co2_mean', 'co3_po1',
-                 'co3_po2', 'co3_po3', 'co3_po4', 'co3_po5', 'co3_pso1', 'co3_pso2', 'co3_pso3', 'co3_pso4', 'co3_pso5', 
-                 'co3_mean', 'co4_po1', 'co4_po2', 'co4_po3', 'co4_po4', 'co4_po5', 'co4_pso1', 'co4_pso2', 'co4_pso3', 
-                 'co4_pso4', 'co4_pso5', 'co4_mean', 'co5_po1', 'co5_po2', 'co5_po3', 'co5_po4', 'co5_po5', 'co5_pso1', 
-                 'co5_pso2', 'co5_pso3', 'co5_pso4', 'co5_pso5', 'co5_mean', 'mean', 'olrel']]
+                'co3_po2', 'co3_po3', 'co3_po4', 'co3_po5', 'co3_pso1', 'co3_pso2', 'co3_pso3', 'co3_pso4', 'co3_pso5',
+                'co3_mean', 'co4_po1', 'co4_po2', 'co4_po3', 'co4_po4', 'co4_po5', 'co4_pso1', 'co4_pso2', 'co4_pso3',
+                'co4_pso4', 'co4_pso5', 'co4_mean', 'co5_po1', 'co5_po2', 'co5_po3', 'co5_po4', 'co5_po5', 'co5_pso1',
+                'co5_pso2', 'co5_pso3', 'co5_pso4', 'co5_pso5', 'co5_mean', 'mean', 'olrel']]
 
         const ws = XLSX.utils.aoa_to_sheet(formattedData);
         const wb = XLSX.utils.book_new();
@@ -919,6 +965,78 @@ route.get('/download/rsmatrixmodel', async (req, res) => {
         const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
 
         res.setHeader('Content-Disposition', 'attachment; filename = RS Matrix Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    }
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Coursemaster Excel Download
+
+route.get('/download/coursemaster', async (req, res) => {
+
+    try 
+    {
+        const coursemasterData = await coursemaster.findAll();
+
+        const formattedData =
+            [
+                ['s_no', 'graduate', 'course_code', 'course_title', 'dept_id', 'dept_name', 'degree', 'semester',
+                    'academic_sem', 'academic_year'],
+
+                ...coursemasterData.map(coursemaster => [
+                    coursemaster.s_no,
+                    coursemaster.graduate,
+                    coursemaster.course_code,
+                    coursemaster.course_title,
+                    coursemaster.dept_id,
+                    coursemaster.dept_name,
+                    coursemaster.degree,
+                    coursemaster.semester,
+                    coursemaster.academic_sem,
+                    coursemaster.academic_year,
+                ])
+            ]
+
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Course Master');
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+        res.setHeader('Content-Disposition', 'attachment; filename = Course Master Data.xlsx');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(excelBuffer);
+    }
+    catch (error) {
+        console.error('Error generating Excel file:', error);
+        res.status(500).send('Server error');
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Sample File Download
+
+route.get('/download/coursemastermodel', async (req, res) => {
+
+    try 
+    {
+        const coursemasterData = await coursemaster.findAll();
+
+        const formattedData = [
+            ['graduate', 'course_code', 'course_title', 'dept_id', 'dept_name', 'degree', 'semester']]
+
+        const ws = XLSX.utils.aoa_to_sheet(formattedData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Course Master');
+
+        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
+
+        res.setHeader('Content-Disposition', 'attachment; filename = Course Master Model.xlsx');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.send(excelBuffer);
     }

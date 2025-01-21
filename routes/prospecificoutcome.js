@@ -59,8 +59,7 @@ route.post('/proSpecOutcome', async (req, res) =>
 
     // console.log( academicYear, selectedDept, selectedDeptId)
 
-    try 
-    {
+    try {
         const course_codes = await coursemaster.findAll({
             where: {
                 academic_year: academicYear,
