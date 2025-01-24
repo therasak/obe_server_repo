@@ -721,8 +721,6 @@ route.post('/coursemaster', upload.single('file'), async (req, res) =>
         const academicSemester = activeAcademic.academic_sem;
         const academicYear = activeAcademic.academic_year;
 
-        await coursemaster.destroy({ where: {}, truncate: true });
-
         const reports = rows.map(row => (
         {
             s_no:row.s_no,
@@ -737,7 +735,9 @@ route.post('/coursemaster', upload.single('file'), async (req, res) =>
             academic_year: academicYear
         }));
 
-        await coursemaster.bulkCreate(reports);
+        for (const data of reports) {
+            await coursemaster.upsert(data);
+        }
         res.status(200).send('Coursemaster Data Imported Successfully');
     }
     catch (error) {
