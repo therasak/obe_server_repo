@@ -66,14 +66,7 @@ route.post('/calc', async (req, res) =>
 
 route.get('/fetchCalDatas', async (req, res) => 
 {
-    const activeAcademic = await academic.findOne({
-        where: { active_sem: 1 },
-    })
-
-    const markData = await calculation.findOne({
-        where: { academic_sem: activeAcademic.academic_sem},
-    })
-
+    const markData = await calculation.findOne({ order: [['s_no', 'DESC']] })
     res.json(markData);
 })
     

@@ -136,16 +136,88 @@ router.post('/departmentname', async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Fetch Semester
+// Fetch section
 
 router.post('/scmsection', async (req, res) => {
 
     try {
+        const { semester, dept_id, category } = req.body;
+        const activeAcademic = await academic.findOne({ where: { active_sem: 1 } })
 
-        const { semester } = req.body;
+        const section = await coursemapping.findAll({
+            where: { academic_sem: activeAcademic.academic_sem, semester: semester, dept_id: dept_id, category: category },
+            attributes: ['section', 'course_code']
+        })
+        const uniqueSection = [...new Set(section.map(entry => entry.section))];
+        const uniqueCourse = [...new Set(section.map(entry => entry.course_code))]; 
 
+        res.json({ section: uniqueSection, courseCode: uniqueCourse })
     }
     catch (error) { console.log(error) }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+router.post('/scmcoursetitle', async (req, res) => {
+
+    try {
+
+        const { courseCode } = req.body;
+        const activeAcademic = await academic.findOne({ where: { active_sem: 1 } })
+
+        const courseTitle = await coursemapping.findAll({
+            where: { course_code: courseCode },
+            attributes: ['course_title']
+        })
+        const batch = await coursemapping.findAll({
+            where: { academic_sem: activeAcademic.academic_sem, course_code: courseCode },
+            attributes: ['batch']
+        })
+        const uniqueBatch = [...new Set(batch.map(entry => entry.batch))];
+
+        const uniqueCourseTitle = [...new Set(courseTitle.map(entry => entry.course_title))];
+
+        res.json({ courseTitle: uniqueCourseTitle, batch: uniqueBatch  })
+    }
+    catch (error) {
+        console.error('Error fetching Department Data :', error);
+        res.status(500).json({ error: 'Error fetching Department Data' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+router.post('/scmNewStaff', async (req, res) => {
+
+    try {
+
+        const { staff_id, staff_name, category, dept_id, dept_name, degree, 
+        semester, section, course_code, course_title, batch } = req.body;
+
+        const activeAcademic = await academic.findOne({ where: { active_sem: 1 } })
+
+        if (!activeAcademic) { return res.status(404).json({ error: "Active academic year not found" }) }
+
+        const activeSemester = activeAcademic.academic_sem;
+
+        const newStaffCourse = await coursemapping.create({
+            staff_id, staff_name, category, dept_id, dept_name, 
+            degree, semester, section, course_code, course_title, 
+            batch, academic_sem: activeSemester,
+        })
+
+        const newReport = await report.create({
+            staff_id, course_code, category, section,
+            dept_name, cia_1: 0, cia_2: 0, ass_1: 0,
+            ass_2: 0, ese: 0, academic_sem: activeSemester,
+        })
+
+        res.status(201).json({ message: "Staff course mapping saved Successfully", data: newStaffCourse })
+    } 
+    catch (error) {
+        console.error('Error saving staff course mapping:', error);
+        res.status(500).json({ error: 'Error saving staff course mapping' });
+    }
 })
 
 // ------------------------------------------------------------------------------------------------------- //

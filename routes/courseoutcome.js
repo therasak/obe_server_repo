@@ -31,7 +31,7 @@ route.post('/chkstaffId', async (req, res) =>
     const tutorHandleStaffId = await mentor.findOne({
         where: {
             staff_id: staff_id,
-            academic_sem: academicdata.academic_sem
+            academic_year: academicdata.academic_year
         }
     })
 
