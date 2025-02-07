@@ -34,7 +34,7 @@ route.post('/rsmcoursecode', async (req, res) =>
             seenCourseCodes.add(item.course_code);
 
             const courseExists = await rsmatrix.findOne({
-                where: { course_code: item.course_code },
+                where: { course_code: item.course_code, academic_sem: academic_sem, },
             })
             return {
                 course_code: item.course_code,

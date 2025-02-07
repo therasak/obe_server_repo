@@ -130,16 +130,14 @@ route.post('/allmatrixreport', async (req, res) =>
     try 
     {
         const matrixAllReport = await coursemapping.findAll({
-            where: {
-                academic_sem: academic_sem,
-            }
+            where: { academic_sem: academic_sem }
         })
 
         if (!matrixAllReport) {
             throw new Error('No matrix report found.');
         }
 
-        const rsMatrix = await rsmatrix.findAll();
+        const rsMatrix = await rsmatrix.findAll({ where: { academic_sem: academic_sem }});
 
         if (!rsMatrix) {
             throw new Error('No rsmatrix data found.');
