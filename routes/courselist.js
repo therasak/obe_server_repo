@@ -104,6 +104,7 @@ route.post('/studentdetails', async (req, res) =>
                 dept_id: dept_id,
                 section: stu_section,
                 category: stu_category,
+                academic_sem: academic_sem
             }
         });
 
