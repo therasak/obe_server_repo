@@ -6,6 +6,7 @@ const report = require('../models/report');
 const academic = require('../models/academic')
 const coursemapping = require('../models/coursemapping');
 const markentry = require('../models/markentry');
+const coursemaster = require('../models/coursemaster');
 const { Sequelize } = require('sequelize');
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -26,7 +27,7 @@ route.get('/counts', async (req, res) =>
 
         const staffCount = await staffmaster.count();
 
-        const uniqueCourseCount = await coursemapping.count({
+        const uniqueCourseCount = await coursemaster.count({
             where: {academic_sem: String(academicdata.academic_sem)},
             distinct: true,
             col: 'course_code'

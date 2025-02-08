@@ -28,7 +28,7 @@ route.post('/checkstaffId', async (req, res) =>
     const tutorHandleStaffId = await mentor.findOne({
         where: {
             staff_id: staff_id,
-            academic_sem: academicdata.academic_sem
+            academic_year: academicdata.academic_year
         }
     })
 
@@ -60,7 +60,6 @@ route.get('/markentry', async (req, res) =>
 
         const entries = await markentry.findAll({
             attributes: ['batch', 'active_sem', 'dept_id', 'category', 'course_code'],
-            where
         })
 
         const uniqueEntries = {
@@ -100,13 +99,15 @@ route.get("/coursemapping", async (req, res) =>
     {
         const { academic_sem, category, dept_name, dept_id, section, semester } = req.query;
 
+        const ac = await academic.findOne({ where: { active_sem: 1 } })
+
         const filters = {};
-        if (academic_sem) filters.active_sem = academic_sem;
+        if (academic_sem) filters.academic_sem = academic_sem;
         if (category) filters.category = category;
         if (dept_name) filters.dept_name = dept_name;
         if (dept_id) filters.dept_id = dept_id;
-        if (section) filters.section = section;
         if (semester) filters.semester = semester;
+        if (section) filters.section = section;
 
         const data = await coursemapping.findAll({ where: filters });
         res.json(data);
@@ -164,22 +165,25 @@ route.post('/tutordetails', async (req, res) =>
 
     try 
     {
+        
+        const ac = await academic.findOne({ where: { active_sem: 1 } })
+
         const tutorDetails = await mentor.findOne({
-            where: { staff_id : staffId }
+            where: { staff_id : staffId, academic_year: ac.academic_year }
         })
 
-        const studentSection = await studentmaster.findOne({
+        const studentSem = await studentmaster.findOne({
             where: {
                 dept_id : tutorDetails.dept_id,
                 section : tutorDetails.section,
                 category : tutorDetails.category,
                 batch : tutorDetails.batch,
-                academic_sem : tutorDetails.academic_sem
+                academic_sem : ac.academic_sem
             },
             attributes:['semester']
         })
     
-        res.json({tutorDetails, studentSection});
+        res.json({tutorDetails, studentSem});
     }
     catch (error) {
         console.error('Error Fetching Student Sections :', error);
@@ -218,7 +222,7 @@ route.get("/stucoursemapping", async (req, res) =>
         const { academic_sem, category, dept_name, dept_id, section, semester, staff_id } = req.query;
 
         const filters = {};
-        if (academic_sem) filters.active_sem = academic_sem;
+        if (academic_sem) filters.academic_sem = academic_sem;
         if (staff_id) filters.staff_id = staff_id;
         if (category) filters.category = category;
         if (dept_name) filters.dept_name = dept_name;

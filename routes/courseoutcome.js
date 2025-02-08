@@ -17,29 +17,20 @@ route.post('/chkstaffId', async (req, res) =>
 {
     const { staff_id } = req.body;
 
-    const academicdata = await academic.findOne({
-        where: { active_sem: 1 }
-    })
+    const academicdata = await academic.findOne({ where: { active_sem: 1 } })
 
     const courseHandleStaffId = await coursemapping.findOne({
-        where: {
-            staff_id: staff_id,
-            academic_sem: academicdata.academic_sem
-        }
+        where: { staff_id: staff_id, academic_sem: academicdata.academic_sem }
     })
 
     const tutorHandleStaffId = await mentor.findOne({
-        where: {
-            staff_id: staff_id,
-            academic_year: academicdata.academic_year
-        }
+        where: { staff_id: staff_id, academic_year: academicdata.academic_year }
     })
 
     const hodHandleStaffId = await hod.findOne({
-        where: {
-            staff_id: staff_id
-        }
+        where: { staff_id: staff_id }
     })
+
     res.json({ courseHandleStaffId, tutorHandleStaffId, hodHandleStaffId });
 })
 
@@ -51,9 +42,9 @@ route.post('/checkTutorCOC', async (req, res) =>
 {
     const { staff_id } = req.body;
 
-    const tutorHandleStaffId = await mentor.findOne({
-        where: { staff_id: staff_id }
-    })
+    const academicdata = await academic.findOne({ where: { active_sem: 1 } })
+
+    const tutorHandleStaffId = await mentor.findOne({ where: { staff_id: staff_id } })
 
     const stuRegNo = await studentmaster.findAll(
     {
@@ -69,16 +60,12 @@ route.post('/checkTutorCOC', async (req, res) =>
     const stud_regs = stuRegNo.map(student => student.reg_no);
 
     const course_codes = await markentry.findAll({
-        where: { reg_no: stud_regs },
+        where: { reg_no: stud_regs, academic_sem: academicdata.academic_sem },
         attributes: ['course_code']
     })
 
     const stud_coursecodes = [...new Set(course_codes.map(entry => entry.course_code))];
-
-    const academicdata = await academic.findOne({
-        where: { active_sem: 1 }
-    })
-
+    
     const cal = await calculation.findOne({
         where: { academic_sem: academicdata.academic_sem }
     })
@@ -87,14 +74,7 @@ route.post('/checkTutorCOC', async (req, res) =>
         where: { course_code: stud_coursecodes, academic_sem: academicdata.academic_sem }
     })
 
-    let countAboveThreshold = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {}
-    }
+    let countAboveThreshold = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {} }
 
     const studentCountsByCourse = {};
 
@@ -130,14 +110,7 @@ route.post('/checkTutorCOC', async (req, res) =>
         if (ehot_percentage >= cal.co_thresh_value) countAboveThreshold.ehot[course_code]++;
     }))
 
-    let percentageAboveThreshold = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {}
-    };
+    let percentageAboveThreshold = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {} }
 
     for (const course_code of stud_coursecodes) 
     {
@@ -151,15 +124,7 @@ route.post('/checkTutorCOC', async (req, res) =>
         percentageAboveThreshold.ehot[course_code] = (countAboveThreshold.ehot[course_code] / totalStudents) * 100;
     }
 
-    let attainedScores = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {},
-        overall: {}
-    };
+    let attainedScores = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {}, overall: {} }
 
     for (const course_code of stud_coursecodes) 
     {
@@ -202,13 +167,9 @@ route.post('/checkTutorCOC', async (req, res) =>
 
     for (const course_code of stud_coursecodes) 
     {
-        if (!attainedScores.capso) {
-            attainedScores.capso = {};
-        }
+        if (!attainedScores.capso) { attainedScores.capso = {} }
 
-        const cop = await rsmatrix.findAll({
-            where: { course_code: course_code }
-        });
+        const cop = await rsmatrix.findAll({ where: { course_code: course_code } })
 
         const lot = attainedScores.overall[course_code]?.lot;
         const mot = attainedScores.overall[course_code]?.mot;
@@ -247,11 +208,7 @@ route.post('/checkTutorCOC', async (req, res) =>
             
             attainedScores.capso[course_code] =
             {
-                capso1,
-                capso2,
-                capso3,
-                capso4,
-                capso5,
+                capso1, capso2, capso3, capso4, capso5,
                 capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
             }
         }
@@ -264,13 +221,9 @@ route.post('/checkTutorCOC', async (req, res) =>
         const pso5 = totalCapso5 / totalCourses;
 
         attainedScores.meanScores = {
-            pso1,
-            pso2,
-            pso3,
-            pso4,
-            pso5,
+            pso1, pso2, pso3, pso4, pso5,
             pso: (pso1 + pso2 + pso3 + pso4 + pso5) / 5,
-        };
+        }
     }
     res.json({ attainedScores });
 })
@@ -281,32 +234,22 @@ route.post('/checkTutorCOC', async (req, res) =>
 
 route.post('/checkAdminCOC', async (req, res) => 
 {
-    const course_codes = await markentry.findAll({
-        attributes: ['course_code']
+    const academicdata = await academic.findOne({ where: { active_sem: 1 } })
+
+    const course_codes = await markentry.findAll({ 
+        where: { academic_sem: academicdata.academic_sem },
+        attributes: ['course_code'] 
     })
 
     const stud_coursecodes = [...new Set(course_codes.map(entry => entry.course_code))];
 
-    const academicdata = await academic.findOne({
-        where: { active_sem: 1 }
-    })
-
-    const cal = await calculation.findOne({
-        where: { academic_sem: academicdata.academic_sem }
-    })
+    const cal = await calculation.findOne({ where: { academic_sem: academicdata.academic_sem } })
 
     const marks = await markentry.findAll({
         where: { course_code: stud_coursecodes, academic_sem: academicdata.academic_sem }
     })
 
-    let countAboveThreshold = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {}
-    }
+    let countAboveThreshold = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {} }
 
     const studentCountsByCourse = {};
 
@@ -341,14 +284,7 @@ route.post('/checkAdminCOC', async (req, res) =>
         if (ehot_percentage >= cal.co_thresh_value) countAboveThreshold.ehot[course_code]++;
     }))
 
-    let percentageAboveThreshold = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {}
-    };
+    let percentageAboveThreshold = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {} }
 
     for (const course_code of stud_coursecodes) 
     {
@@ -362,15 +298,7 @@ route.post('/checkAdminCOC', async (req, res) =>
         percentageAboveThreshold.ehot[course_code] = (countAboveThreshold.ehot[course_code] / totalStudents) * 100;
     }
 
-    let attainedScores = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {},
-        overall: {}
-    };
+    let attainedScores = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {}, overall: {} };
 
     for (const course_code of stud_coursecodes) 
     {
@@ -405,13 +333,9 @@ route.post('/checkAdminCOC', async (req, res) =>
 
     for (const course_code of stud_coursecodes) 
     {
-        if (!attainedScores.capso) {
-            attainedScores.capso = {};
-        }
+        if (!attainedScores.capso) {  attainedScores.capso = {} }
 
-        const cop = await rsmatrix.findAll({
-            where: { course_code: course_code }
-        });
+        const cop = await rsmatrix.findAll({ where: { course_code: course_code } })
 
         const lot = attainedScores.overall[course_code]?.lot;
         const mot = attainedScores.overall[course_code]?.mot;
@@ -440,15 +364,11 @@ route.post('/checkAdminCOC', async (req, res) =>
                 (hot * entry.co5_pso5)) /
                 (entry.co1_pso5 + entry.co2_pso5 + entry.co3_pso5 + entry.co4_pso5 + entry.co5_pso5)
 
-            attainedScores.capso[course_code] =
-            {
-                capso1,
-                capso2,
-                capso3,
-                capso4,
-                capso5,
-                capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
-            };
+                attainedScores.capso[course_code] = 
+                { 
+                    capso1, capso2, capso3, capso4, capso5, 
+                    capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5 
+                }
         }
     }
     res.json({ attainedScores });
@@ -462,35 +382,20 @@ route.post('/checkCourseCOC', async (req, res) =>
 {
     const { staff_id } = req.body;
 
-    const courseHandleStaffId = await coursemapping.findAll({
-        where: {
-            staff_id: staff_id
-        },
+    const academicdata = await academic.findOne({ where: { active_sem: 1 } })
+
+    const courseHandleStaffId = await coursemapping.findAll({ 
+        where: { staff_id: staff_id, academic_sem: academicdata.academic_sem }, 
         attributes: ['course_code']
     })
 
     const stud_coursecodes = [...new Set(courseHandleStaffId.map(entry => entry.course_code))];
 
-    const academicdata = await academic.findOne({
-        where: { active_sem: 1 }
-    })
+    const cal = await calculation.findOne({ where: { academic_sem: academicdata.academic_sem } })
 
-    const cal = await calculation.findOne({
-        where: { academic_sem: academicdata.academic_sem }
-    })
+    const marks = await markentry.findAll({  where: { course_code: stud_coursecodes, academic_sem: academicdata.academic_sem }})
 
-    const marks = await markentry.findAll({
-        where: { course_code: stud_coursecodes, academic_sem: academicdata.academic_sem }
-    })
-
-    let countAboveThreshold = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {}
-    }
+    let countAboveThreshold = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {} };
 
     const studentCountsByCourse = {};
 
@@ -525,14 +430,7 @@ route.post('/checkCourseCOC', async (req, res) =>
         if (ehot_percentage >= cal.co_thresh_value) countAboveThreshold.ehot[course_code]++;
     }))
 
-    let percentageAboveThreshold = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {}
-    };
+    let percentageAboveThreshold = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {} };
 
     for (const course_code of stud_coursecodes) 
     {
@@ -546,15 +444,7 @@ route.post('/checkCourseCOC', async (req, res) =>
         percentageAboveThreshold.ehot[course_code] = (countAboveThreshold.ehot[course_code] / totalStudents) * 100;
     }
 
-    let attainedScores = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {},
-        overall: {}
-    };
+    let attainedScores = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {}, overall: {} };
 
     for (const course_code of stud_coursecodes) 
     {
@@ -589,9 +479,7 @@ route.post('/checkCourseCOC', async (req, res) =>
 
     for (const course_code of stud_coursecodes) 
     {
-        if (!attainedScores.capso) {
-            attainedScores.capso = {};
-        }
+        if (!attainedScores.capso) { attainedScores.capso = {} }
 
         const cop = await rsmatrix.findAll({
             where: { course_code: course_code }
@@ -626,13 +514,9 @@ route.post('/checkCourseCOC', async (req, res) =>
 
             attainedScores.capso[course_code] =
             {
-                capso1,
-                capso2,
-                capso3,
-                capso4,
-                capso5,
+                capso1, capso2, capso3, capso4, capso5,
                 capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
-            };
+            }
         }
     }
     res.json({ attainedScores });
@@ -646,57 +530,37 @@ route.post('/checkHodCOC', async (req, res) =>
 {
     const { staff_id } = req.body;
 
-    const hodDeptHandle = await hod.findAll(
-        {
-            where: {
-                staff_id: staff_id
-            },
-            attributes: ['dept_id']
-        })
+    const academicdata = await academic.findOne({ where: { active_sem: 1 } })
+
+    const hodDeptHandle = await hod.findAll({ where: { staff_id }, attributes: ['dept_id'] });
 
     const hod_dept_id = [...new Set(hodDeptHandle.map(entry => entry.dept_id))];
 
-    const courseHandleStaffId = await markentry.findAll({
-        where: {
-            dept_id: hod_dept_id
-        },
-        attributes: ['course_code']
+    const courseHandleStaffId = await markentry.findAll({ 
+        where: { dept_id: hod_dept_id, academic_sem: academicdata.academic_sem }, attributes: ['course_code']
     })
 
     const stud_coursecodes = [...new Set(courseHandleStaffId.map(entry => entry.course_code))];
 
-    const academicdata = await academic.findOne({
-        where: { active_sem: 1 }
-    })
-
-    const cal = await calculation.findOne({
-        where: { academic_sem: academicdata.academic_sem }
-    })
+    const cal = await calculation.findOne({ where: { academic_sem: academicdata.academic_sem }})
 
     const marks = await markentry.findAll({
         where: { course_code: stud_coursecodes, academic_sem: academicdata.academic_sem }
     })
 
-    let countAboveThreshold = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {}
-    }
+    let countAboveThreshold = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {} };
 
     const studentCountsByCourse = {};
 
     await Promise.all(marks.map(async entry => {
         const
-            {
-                course_code,
-                c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
-                c1_mot = 0, c2_mot = 0,
-                c1_hot = 0, c2_hot = 0,
-                ese_lot = 0, ese_mot = 0, ese_hot = 0
-            } = entry.dataValues;
+        {
+            course_code,
+            c1_lot = 0, c2_lot = 0, a1_lot = 0, a2_lot = 0,
+            c1_mot = 0, c2_mot = 0,
+            c1_hot = 0, c2_hot = 0,
+            ese_lot = 0, ese_mot = 0, ese_hot = 0
+        } = entry.dataValues;
 
         const lot_percentage = ((c1_lot || 0) + (c2_lot || 0) + (a1_lot || 0) + (a2_lot || 0)) / (cal.c_lot || 1) * 100;
         const mot_percentage = ((c1_mot || 0) + (c2_mot || 0)) / (cal.c_mot || 1) * 100;
@@ -719,14 +583,7 @@ route.post('/checkHodCOC', async (req, res) =>
         if (ehot_percentage >= cal.co_thresh_value) countAboveThreshold.ehot[course_code]++;
     }))
 
-    let percentageAboveThreshold = {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {}
-    };
+    let percentageAboveThreshold = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {} };
 
     for (const course_code of stud_coursecodes) 
     {
@@ -740,16 +597,7 @@ route.post('/checkHodCOC', async (req, res) =>
         percentageAboveThreshold.ehot[course_code] = (countAboveThreshold.ehot[course_code] / totalStudents) * 100;
     }
 
-    let attainedScores = 
-    {
-        lot: {},
-        mot: {},
-        hot: {},
-        elot: {},
-        emot: {},
-        ehot: {},
-        overall: {}
-    }
+    let attainedScores = { lot: {}, mot: {}, hot: {}, elot: {}, emot: {}, ehot: {}, overall: {} };
 
     for (const course_code of stud_coursecodes) 
     {
@@ -784,13 +632,9 @@ route.post('/checkHodCOC', async (req, res) =>
 
     for (const course_code of stud_coursecodes) 
     {
-        if (!attainedScores.capso) {
-            attainedScores.capso = {};
-        }
+        if (!attainedScores.capso) { attainedScores.capso = {} }
 
-        const cop = await rsmatrix.findAll({
-            where: { course_code: course_code }
-        });
+        const cop = await rsmatrix.findAll({ where: { course_code: course_code }})
 
         const lot = attainedScores.overall[course_code]?.lot;
         const mot = attainedScores.overall[course_code]?.mot;
@@ -821,13 +665,9 @@ route.post('/checkHodCOC', async (req, res) =>
 
             attainedScores.capso[course_code] =
             {
-                capso1,
-                capso2,
-                capso3,
-                capso4,
-                capso5,
+                capso1, capso2, capso3, capso4, capso5,
                 capso: (capso1 + capso2 + capso3 + capso4 + capso5) / 5,
-            };
+            }
         }
     }
     res.json({ attainedScores });
@@ -841,30 +681,16 @@ async function calculateCategory(percentage)
     {
         const academicdata = await academic.findOne({ where: { active_sem: 1 } });
 
-        if (!academicdata) {
-            console.error("Academic data not found");
-            return null;
-        }
+        if (!academicdata) { console.error("Academic data not found"); return null }
 
         const data = await calculation.findOne({ where: { academic_sem: academicdata.academic_sem } });
 
-        if (!data) {
-            console.error("Calculation data not found for the specified academic year");
-            return null;
-        }
+        if (!data) { console.error("Calculation data not found for the specified academic year"); return null }
 
-        if (percentage >= data.so_l3_ug) {
-            return 3;
-        }
-        else if (percentage >= data.so_l2_ug) {
-            return 2;
-        }
-        else if (percentage >= data.so_l1_ug) {
-            return 1;
-        }
-        else if (percentage > data.so_l0_ug) {
-            return 0;
-        }
+        if (percentage >= data.so_l3_ug) { return 3 }
+        else if (percentage >= data.so_l2_ug) { return 2 }
+        else if (percentage >= data.so_l1_ug) { return 1 }
+        else if (percentage > data.so_l0_ug) { return 0 }
         return 0;
     }
     catch (error) {
@@ -876,18 +702,10 @@ async function calculateCategory(percentage)
 
 function calculateGrade(overallAverage) 
 {
-    if (overallAverage >= 2.5) {
-        return 'High';
-    }
-    else if (overallAverage >= 1.5 && overallAverage < 2.5) {
-        return 'Medium';
-    }
-    else if (overallAverage >= 0) {
-        return 'Low';
-    }
-    else {
-        return 'N/A';
-    }
+    if (overallAverage >= 2.5) { return 'High' }
+    else if (overallAverage >= 1.5 && overallAverage < 2.5) { return 'Medium' }
+    else if (overallAverage >= 0) { return 'Low' }
+    else { return 'N/A' }
 }
 
 module.exports = route;
