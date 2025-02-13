@@ -85,20 +85,6 @@ route.put('/reportrelease', async (req, res)=>
 
 // Mark Release Report Data
 
-route.put('/overallrelease', async (req, res) => 
-{
-    const {l_cia1,l_cia2 , l_a1, l_a2, l_ese} = req.body;
-    try
-    {
-        const update = await report.update({l_c1 : l_cia1, l_c2 : l_cia2, l_a1 : l_a1, l_a2 : l_a2, l_ese : l_ese }, {where: {}})
-        if (update) {
-            res.status(200)
-        }
-    }
-    catch(err) {
-        console.error('Error for Updating')
-        res.status(500)
-    }
-})
+
 
 module.exports = route;

@@ -9,6 +9,22 @@ const academic = sequelize_conn.define('academic',
 		primaryKey: true,
 		autoIncrement: true
 	},
+	cia_1: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+	},
+	cia_2: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+	},
+	ass_1: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+	},
+	ass_2: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+	},
 	academic_sem: {
 		type: DataTypes.STRING,
 		allowNull: false,
