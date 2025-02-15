@@ -34,6 +34,7 @@ const hodreport = require('./routes/hodreport');
 const tutorreport = require('./routes/tutorreport');
 const prospecificoutcome = require('./routes/prospecificoutcome');
 const prooutcome = require('./routes/prooutcome');
+const showblock =  require('./routes/showblock');
 
 const app = express();
 app.use(cors());
@@ -59,6 +60,7 @@ app.use('/api', hodreport);
 app.use('/api', tutorreport);
 app.use('/api', prospecificoutcome);
 app.use('/api', prooutcome);
+app.use('/api', showblock);
 
 app.use(bodyParser.json({ limit: '10mb' }));
 

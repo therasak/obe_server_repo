@@ -25,11 +25,13 @@ route.post('/tutorStatusReport', async (req, res) =>
         const user = await mentor.findOne({
             where: {
                 staff_id: staff_id,
-                academic_sem: academicdata.academic_sem
+                academic_year: academicdata.academic_year
             },
             attributes: ['dept_id', 'category', 'section', 'batch'],
             raw: true
         })
+
+        // console.log(user);
 
         const courseInfo = await coursemapping.findAll({
             where: {
