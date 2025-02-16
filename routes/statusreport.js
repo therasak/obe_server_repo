@@ -118,7 +118,6 @@ route.post('/deptstatusreport', async (req, res) =>
     }
 })
 
-
 // ------------------------------------------------------------------------------------------------------- //
 
 // Matrix Status Report Fetching Coding
