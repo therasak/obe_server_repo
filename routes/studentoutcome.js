@@ -178,7 +178,6 @@ route.post('/tutordetails', async (req, res) =>
                 section : tutorDetails.section,
                 category : tutorDetails.category,
                 batch : tutorDetails.batch,
-                academic_sem : ac.academic_sem
             },
             attributes:['semester']
         })
@@ -304,7 +303,6 @@ route.post('/adminstuoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                academic_sem: academicSem,
                 semester: selectedSemester,
                 dept_id: selectedClass,
                 category: selectedCategory,
@@ -423,7 +421,6 @@ route.post('/tutorstuoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                academic_sem: academicSem,
                 semester: semester,
                 dept_id: deptId,
                 category: category,
@@ -538,7 +535,6 @@ route.post('/hoduoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                academic_sem: academicSem,
                 semester: semester,
                 dept_id: deptId,
                 category: category,
@@ -653,7 +649,6 @@ route.post('/staffstuoutcome', async (req, res) =>
         const students = await studentmaster.findAll(
         {
             where: {
-                academic_sem: academicSem,
                 semester: selectedSemester,
                 dept_id: selectedClass,
                 category: selectedCategory, 

@@ -135,9 +135,6 @@ route.post('/studentmaster', upload.single('file'), async (req, res) =>
             return res.status(400).send('No Active Academic Year Found');
         }
 
-        const academicSemester = activeAcademicSem.academic_sem;
-        const academicYear = activeAcademicSem.academic_year;
-
         const students = rows.map(row => ({
             reg_no: row.reg_no,
             stu_name: row.stu_name,
@@ -146,8 +143,6 @@ route.post('/studentmaster', upload.single('file'), async (req, res) =>
             semester: row.semester,
             section: row.section,
             batch: row.batch,
-            academic_sem: academicSemester,
-            academic_year: academicYear
         }))
 
         await studentmaster.bulkCreate(students, {});

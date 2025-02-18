@@ -21,9 +21,7 @@ route.get('/counts', async (req, res) =>
             where: { active_sem: 1 }
         })
 
-        const studentCount = await studentmaster.count({
-            where: {academic_sem: String(academicdata.academic_sem)}
-        });
+        const studentCount = await studentmaster.count();
 
         const staffCount = await staffmaster.count();
 
@@ -65,36 +63,13 @@ route.get('/studentpiechart', async (req, res) =>
             where: { active_sem: 1 }
         });
 
-        const totalStudents = await studentmaster.count(
-        {
-            where: { 
-                academic_sem: academicdata.academic_sem 
-            }
-        });
+        const totalStudents = await studentmaster.count();
 
-        const aidedCount = await studentmaster.count(
-        {
-            where: { 
-                category: 'AIDED', 
-                academic_sem: academicdata.academic_sem 
-            }
-        });
+        const aidedCount = await studentmaster.count();
 
-        const sfmCount = await studentmaster.count(
-        {
-            where: { 
-                category: 'SFM', 
-                academic_sem: academicdata.academic_sem 
-            }
-        });
+        const sfmCount = await studentmaster.count();
 
-        const sfwCount = await studentmaster.count(
-        {
-            where: { 
-                category: 'SFW', 
-                academic_sem: academicdata.academic_sem 
-            }
-        });
+        const sfwCount = await studentmaster.count();
 
         const result = 
         {

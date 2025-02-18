@@ -57,7 +57,7 @@ route.post('/proSpecOutcome', async (req, res) =>
 {
     const { academicYear, selectedDept, selectedDeptId } = req.body;
 
-    console.log( academicYear, selectedDept, selectedDeptId)
+    // console.log( academicYear, selectedDept, selectedDeptId)
 
     try {
         const course_codes = await markentry.findAll({
@@ -72,7 +72,7 @@ route.post('/proSpecOutcome', async (req, res) =>
 
         const uniqueCourseCode = [...new Set(course_codes.map(code => code.course_code))];
 
-        console.log(uniqueCourseCode)
+        // console.log(uniqueCourseCode)
 
         const academicdata = await academic.findOne({ where: { active_sem: 1 } })
 

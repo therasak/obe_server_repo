@@ -103,8 +103,7 @@ route.post('/studentdetails', async (req, res) =>
             where: {
                 dept_id: dept_id,
                 section: stu_section,
-                category: stu_category,
-                academic_sem: academic_sem
+                category: stu_category
             }
         });
 
@@ -144,7 +143,6 @@ route.post('/studentdetails', async (req, res) =>
         const stud_name = await studentmaster.findAll({
             where: {
                 reg_no: stud_reg.map(entry => entry.reg_no),
-                academic_sem: academic_sem
             },
             attributes: ['reg_no', 'stu_name']
         })

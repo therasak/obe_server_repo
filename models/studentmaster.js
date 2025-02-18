@@ -36,10 +36,6 @@ const studentmaster = sequelize_conn.define('studentmaster',
     batch : {
         type: DataTypes.STRING,
         allowNull: true
-    },
-    academic_sem : {
-        type: DataTypes.STRING,
-        allowNull: true
     }
 }, 
 {
