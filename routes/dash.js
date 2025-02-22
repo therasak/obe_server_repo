@@ -65,11 +65,11 @@ route.get('/studentpiechart', async (req, res) =>
 
         const totalStudents = await studentmaster.count();
 
-        const aidedCount = await studentmaster.count();
+        const aidedCount = await studentmaster.count({where:{category:"AIDED"}});
 
-        const sfmCount = await studentmaster.count();
+        const sfmCount = await studentmaster.count( {where:{category:"SFM"}});
 
-        const sfwCount = await studentmaster.count();
+        const sfwCount = await studentmaster.count({where:{category:"SFW"}});
 
         const result = 
         {
@@ -80,7 +80,7 @@ route.get('/studentpiechart', async (req, res) =>
                 { label: 'SFW', count: sfwCount, percentage: ((sfwCount / totalStudents) * 100).toFixed(1) },
             ]
         }
-
+ 
         res.json(result);
     } 
     catch (error) {
