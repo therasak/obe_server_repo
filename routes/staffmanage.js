@@ -7,7 +7,7 @@ const hod = require('../models/hod');
 const mentor = require('../models/mentor');
 const coursemapping = require('../models/coursemapping');
 const academic = require('../models/academic');
-const { Op, where } = require('sequelize');
+const { Op, where , col,fn } = require('sequelize');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -373,5 +373,27 @@ route.post('/newtutoradded', async (req, res) => {
         res.status(500).json({ error: "Failed to add new Tutor", details: err.message });
     }
 })
+
+//-------------------------------------
+
+
+route.get('/staffdepartments', async (req, res) => {
+    try {
+        const dept_category = await staffmaster.findAll({
+            attributes: [[fn('DISTINCT', col('staff_dept')), 'staff_dept']]
+        });
+
+        if (dept_category.length > 0) {
+            res.json(dept_category);
+        } else {
+            console.log("No Staff Department Data Found");
+            res.status(404).json({ message: "No Staff Department Data Found" });
+        }
+    } catch (err) {
+        console.error("Server Error in staffdepartments route:", err.message);
+        res.status(500).json({ message: "Server Error", error: err.message });
+    }
+});
+
 
 module.exports = route;
