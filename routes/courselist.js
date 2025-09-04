@@ -11,8 +11,7 @@ const calculation = require('../models/calculation');
 
 // Course Mapping Details Getting Coding
 
-route.post('/coursemap', async (req, res) => 
-{
+route.post('/coursemap', async (req, res) => {
     const { staff_id, academic_sem } = req.body;
 
     try {
@@ -33,10 +32,8 @@ route.post('/coursemap', async (req, res) =>
 
 // Course Mapping Details Getting Coding
 
-route.post('/maxmark', async (req, res) => 
-{
-    try 
-    {
+route.post('/maxmark', async (req, res) => {
+    try {
         const academicdata = await academic.findOne({
             where: { active_sem: 1 }
         })
@@ -56,14 +53,13 @@ route.post('/maxmark', async (req, res) =>
 
 // Course Mapping Status Details Getting Coding
 
-route.post('/report/status', async (req, res) => 
-{
+route.post('/report/status', async (req, res) => {
     const { category, dept_name, section, course_code } = req.body;
 
     try {
 
         const courseMappingStatus = await report.findAll({
-            where: 
+            where:
             {
                 category: category,
                 dept_name: dept_name,
@@ -73,16 +69,16 @@ route.post('/report/status', async (req, res) =>
         });
 
         const isCompleted = courseMappingStatus.length > 0 &&
-        courseMappingStatus.every
-        (
-            (record) =>
-                record.cia_1 === 2 &&
-                record.cia_2 === 2 &&
-                record.ass_1 === 2 &&
-                record.ass_2 === 2
-        )
-        
-        res.status(200).json({status: isCompleted ? 'Completed' : 'Pending',courseMappingStatus});
+            courseMappingStatus.every
+                (
+                    (record) =>
+                        record.cia_1 === 2 &&
+                        record.cia_2 === 2 &&
+                        record.ass_1 === 2 &&
+                        record.ass_2 === 2
+                )
+
+        res.status(200).json({ status: isCompleted ? 'Completed' : 'Pending', courseMappingStatus });
     }
     catch (err) {
         res.status(500).json({ error: 'An error occurred while fetching data.' });
@@ -93,12 +89,10 @@ route.post('/report/status', async (req, res) =>
 
 // Students Data Fetching Coding
 
-route.post('/studentdetails', async (req, res) => 
-{
+route.post('/studentdetails', async (req, res) => {
     const { dept_id, stu_section, stu_category, stu_course_code, activeSection, academic_sem } = req.body;
 
-    try 
-    {
+    try {
         const studentDetails = await studentmaster.findAll({
             where: {
                 dept_id: dept_id,
@@ -107,6 +101,7 @@ route.post('/studentdetails', async (req, res) =>
             }
         });
 
+        console.log('First : ', studentDetails.length)
         const registerNumbers = studentDetails.map(student => student.reg_no);
 
         let markFields = {};
@@ -140,15 +135,19 @@ route.post('/studentdetails', async (req, res) =>
             attributes: ['reg_no', ...markFields]
         })
 
+        console.log('Second : ', stud_reg.length)
         const stud_name = await studentmaster.findAll({
             where: {
                 reg_no: stud_reg.map(entry => entry.reg_no),
             },
-            attributes: ['reg_no', 'stu_name']
-        })
+            attributes: ['reg_no', 'stu_name'],
+            group: ['reg_no', 'stu_name']  // ensures uniqueness
+        });
 
-        const studentData = stud_name.map(student => 
-        {
+        console.log(stud_name.length);
+
+
+        const studentData = stud_name.map(student => {
             const marks = stud_reg.find(mark => mark.reg_no === student.reg_no) || {};
             return {
                 reg_no: student.reg_no,
@@ -159,6 +158,7 @@ route.post('/studentdetails', async (req, res) =>
                 total: marks[`${activeSection === '1' ? 'c1_total' : activeSection === '2' ? 'c2_total' : 'ese_total'}`] ?? (0 || '')
             }
         })
+        console.log(studentData.length)
         res.json(studentData);
     }
     catch (err) {
@@ -171,10 +171,9 @@ route.post('/studentdetails', async (req, res) =>
 
 // Getting Report Coding
 
-route.get('/getreport', async (req, res) => 
-{
+route.get('/getreport', async (req, res) => {
     const { courseCode, deptName, section, category, academicSem } = req.query;
-    
+
     const checkActive = await report.findOne({
         where: {
             course_code: courseCode,
@@ -191,16 +190,13 @@ route.get('/getreport', async (req, res) =>
 
 // Mark Updation Coding
 
-route.put('/updateMark', async (req, res) => 
-{
+route.put('/updateMark', async (req, res) => {
     const { updates, activeSection, courseCode, academicSem } = req.body;
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
-    
-    try
-    {
-        for (const regNo of regNumbers) 
-        {
+
+    try {
+        for (const regNo of regNumbers) {
             const updateData = updates[regNo];
             let updateFields = {};
 
@@ -267,8 +263,7 @@ route.put('/updateMark', async (req, res) =>
         }
         res.status(200).send({ success: true, message: 'Marks updated successfully' });
     }
-    catch (error) 
-    {
+    catch (error) {
         console.error("Error updating marks:", error);
         res.status(500).send({ success: false, error: "Failed to update marks" });
     }
@@ -278,11 +273,9 @@ route.put('/updateMark', async (req, res) =>
 
 // Report Creating Code
 
-route.put('/report', async (req, res) => 
-{
+route.put('/report', async (req, res) => {
     const { activeSection, courseCode, deptName, category, button_value, section, academicSem } = req.body;
-    try 
-    {
+    try {
         let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
 
         const valueToSet = button_value === "0" ? 1 : 2;
@@ -297,12 +290,9 @@ route.put('/report', async (req, res) =>
             }
         });
 
-        if (existingReports.length > 0) 
-        {
-            for (const existingReport of existingReports) 
-            {
-                switch (activeSection) 
-                {
+        if (existingReports.length > 0) {
+            for (const existingReport of existingReports) {
+                switch (activeSection) {
                     case "1":
                         existingReport.cia_1 = valueToSet;
                         break;
@@ -324,9 +314,8 @@ route.put('/report', async (req, res) =>
                 }
                 await existingReport.save();
             }
-        } 
-        else 
-        {
+        }
+        else {
             await report.create({
                 course_code: courseCode,
                 section: section,
@@ -360,12 +349,11 @@ route.put('/report', async (req, res) =>
         });
 
         res.status(200).json({ cia_1, cia_2, ass_1, ass_2, ese });
-    } 
-    catch (err) 
-    {
+    }
+    catch (err) {
         console.error(err);
         res.status(500).send('Internal Server Error');
     }
 })
-    
+
 module.exports = route;
