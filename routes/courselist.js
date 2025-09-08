@@ -101,7 +101,8 @@ route.post('/studentdetails', async (req, res) => {
             }
         });
 
-        console.log('First : ', studentDetails.length)
+        // console.log('First : ', studentDetails.length)
+
         const registerNumbers = studentDetails.map(student => student.reg_no);
 
         let markFields = {};
@@ -135,17 +136,17 @@ route.post('/studentdetails', async (req, res) => {
             attributes: ['reg_no', ...markFields]
         })
 
-        console.log('Second : ', stud_reg.length)
+        // console.log('Second : ', stud_reg.length)
+
         const stud_name = await studentmaster.findAll({
             where: {
                 reg_no: stud_reg.map(entry => entry.reg_no),
             },
             attributes: ['reg_no', 'stu_name'],
-            group: ['reg_no', 'stu_name']  // ensures uniqueness
+            group: ['reg_no', 'stu_name']  
         });
 
-        console.log(stud_name.length);
-
+        // console.log(stud_name.length);
 
         const studentData = stud_name.map(student => {
             const marks = stud_reg.find(mark => mark.reg_no === student.reg_no) || {};
@@ -158,7 +159,8 @@ route.post('/studentdetails', async (req, res) => {
                 total: marks[`${activeSection === '1' ? 'c1_total' : activeSection === '2' ? 'c2_total' : 'ese_total'}`] ?? (0 || '')
             }
         })
-        console.log(studentData.length)
+        // console.log(studentData.length)
+        
         res.json(studentData);
     }
     catch (err) {
