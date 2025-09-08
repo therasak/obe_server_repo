@@ -6,12 +6,14 @@ const markentry = require('../models/markentry');
 const report = require('../models/report');
 const academic = require('../models/academic');
 const calculation = require('../models/calculation');
+const { Op, Sequelize } = require("sequelize");
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Course Mapping Details Getting Coding
 
 route.post('/coursemap', async (req, res) => {
+
     const { staff_id, academic_sem } = req.body;
 
     try {
@@ -33,6 +35,7 @@ route.post('/coursemap', async (req, res) => {
 // Course Mapping Details Getting Coding
 
 route.post('/maxmark', async (req, res) => {
+
     try {
         const academicdata = await academic.findOne({
             where: { active_sem: 1 }
@@ -44,9 +47,7 @@ route.post('/maxmark', async (req, res) => {
 
         res.json(maxMark);
     }
-    catch (err) {
-        res.status(500).json({ error: 'An error occurred while fetching data.' });
-    }
+    catch (err) { res.status(500).json({ error: 'An error occurred while fetching data.' }) }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -54,35 +55,34 @@ route.post('/maxmark', async (req, res) => {
 // Course Mapping Status Details Getting Coding
 
 route.post('/report/status', async (req, res) => {
-    const { category, dept_name, section, course_code } = req.body;
+
+    const { category, dept_name, section, course_code, academic_sem } = req.body;
 
     try {
 
         const courseMappingStatus = await report.findAll({
-            where:
-            {
+            where: {
                 category: category,
                 dept_name: dept_name,
-                section: section,
+                section: section, academic_sem,
                 course_code: course_code,
             }
-        });
+        })
+
+        // console.log(courseMappingStatus)
 
         const isCompleted = courseMappingStatus.length > 0 &&
-            courseMappingStatus.every
-                (
-                    (record) =>
-                        record.cia_1 === 2 &&
-                        record.cia_2 === 2 &&
-                        record.ass_1 === 2 &&
-                        record.ass_2 === 2
-                )
+            courseMappingStatus.every(
+                (record) =>
+                    record.cia_1 === 2 &&
+                    record.cia_2 === 2 &&
+                    record.ass_1 === 2 &&
+                    record.ass_2 === 2
+            )
 
         res.status(200).json({ status: isCompleted ? 'Completed' : 'Pending', courseMappingStatus });
     }
-    catch (err) {
-        res.status(500).json({ error: 'An error occurred while fetching data.' });
-    }
+    catch (err) { res.status(500).json({ error: 'An error occurred while fetching data.' })}
 })
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -90,9 +90,14 @@ route.post('/report/status', async (req, res) => {
 // Students Data Fetching Coding
 
 route.post('/studentdetails', async (req, res) => {
-    const { dept_id, stu_section, stu_category, stu_course_code, activeSection, academic_sem } = req.body;
+
+    const { dept_id, stu_section, stu_category, stu_course_code, 
+        activeSection, academic_sem, semester } = req.body;
+
+    // console.log(req.body)
 
     try {
+
         const studentDetails = await studentmaster.findAll({
             where: {
                 dept_id: dept_id,
@@ -127,6 +132,8 @@ route.post('/studentdetails', async (req, res) => {
                 return res.status(400).json({ error: 'Invalid section' });
         }
 
+        // console.log(registerNumbers)
+
         const stud_reg = await markentry.findAll({
             where: {
                 course_code: stu_course_code,
@@ -141,9 +148,10 @@ route.post('/studentdetails', async (req, res) => {
         const stud_name = await studentmaster.findAll({
             where: {
                 reg_no: stud_reg.map(entry => entry.reg_no),
+                semester
             },
             attributes: ['reg_no', 'stu_name'],
-            group: ['reg_no', 'stu_name']  
+            group: ['reg_no', 'stu_name']
         });
 
         // console.log(stud_name.length);
@@ -159,8 +167,9 @@ route.post('/studentdetails', async (req, res) => {
                 total: marks[`${activeSection === '1' ? 'c1_total' : activeSection === '2' ? 'c2_total' : 'ese_total'}`] ?? (0 || '')
             }
         })
-        // console.log(studentData.length)
         
+        // console.log(studentData.length)
+
         res.json(studentData);
     }
     catch (err) {
@@ -174,14 +183,13 @@ route.post('/studentdetails', async (req, res) => {
 // Getting Report Coding
 
 route.get('/getreport', async (req, res) => {
+
     const { courseCode, deptName, section, category, academicSem } = req.query;
 
     const checkActive = await report.findOne({
         where: {
-            course_code: courseCode,
-            section: section,
-            category: category,
-            dept_name: deptName,
+            course_code: courseCode, section: section,
+            category: category, dept_name: deptName,
             academic_sem: academicSem
         }
     });
@@ -193,11 +201,13 @@ route.get('/getreport', async (req, res) => {
 // Mark Updation Coding
 
 route.put('/updateMark', async (req, res) => {
+
     const { updates, activeSection, courseCode, academicSem } = req.body;
     const examType = activeSection;
     const regNumbers = Object.keys(updates);
 
     try {
+
         for (const regNo of regNumbers) {
             const updateData = updates[regNo];
             let updateFields = {};
@@ -276,10 +286,12 @@ route.put('/updateMark', async (req, res) => {
 // Report Creating Code
 
 route.put('/report', async (req, res) => {
-    const { activeSection, courseCode, deptName, category, button_value, section, academicSem } = req.body;
-    try {
-        let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
 
+    const { activeSection, courseCode, deptName, category, button_value, section, academicSem } = req.body;
+
+    try {
+
+        let cia_1 = 0, cia_2 = 0, ass_1 = 0, ass_2 = 0, ese = 0;
         const valueToSet = button_value === "0" ? 1 : 2;
 
         const existingReports = await report.findAll({
@@ -293,7 +305,9 @@ route.put('/report', async (req, res) => {
         });
 
         if (existingReports.length > 0) {
+
             for (const existingReport of existingReports) {
+
                 switch (activeSection) {
                     case "1":
                         existingReport.cia_1 = valueToSet;
