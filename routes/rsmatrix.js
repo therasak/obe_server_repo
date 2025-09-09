@@ -8,14 +8,13 @@ const coursemapping = require('../models/coursemapping');
 
 // RS Matrix Course Code Finding Coding
 
-route.post('/rsmcoursecode', async (req, res) => 
-{
+route.post('/rsmcoursecode', async (req, res) => {
+
     const { academic_sem, staff_id } = req.body;
 
-    try 
-    {
+    try {
         const courseMappings = await coursemapping.findAll({
-            where: { 
+            where: {
                 academic_sem: academic_sem,
                 staff_id: staff_id
             },
@@ -23,61 +22,42 @@ route.post('/rsmcoursecode', async (req, res) =>
         })
 
         if (courseMappings.length === 0) {
-            return res.status(404).json({ error: 'No Course Codes found for the giveN Staff ID.' });
+            return res.status(404).json(
+                { error: 'No Course Codes found for the giveN Staff ID.' }
+            )
         }
+
         const seenCourseCodes = new Set();
 
-        const courseStatusPromises = courseMappings.map(async (item) => 
-        {
+        const courseStatusPromises = courseMappings.map(async (item) => {
             if (seenCourseCodes.has(item.course_code)) return null;
-
             seenCourseCodes.add(item.course_code);
-
-            const courseExists = await rsmatrix.findOne({
-                where: { course_code: item.course_code, academic_sem: academic_sem, },
-            })
+            const courseExists = await rsmatrix.findOne({ where: { course_code: item.course_code } })
             return {
                 course_code: item.course_code,
-                academic_sem: item.active_sem,
-                completed: !!courseExists, 
+                // academic_sem: item.active_sem,
+                completed: !!courseExists,
             }
         })
         const uniqueCourseDetails = (await Promise.all(courseStatusPromises)).filter(Boolean);
         res.json(uniqueCourseDetails);
-    } 
-    catch (err) {
-        res.status(500).json({ error: 'An error occurred while fetching course codes with status.' });
     }
+    catch (err) { res.status(500).json({ error: 'An error occurred while fetching course codes with status.' }) }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // RS Matrix Create and Update Coding
 
-route.post('/rsmatrixSave', async (req, res) => 
-{
+route.post('/rsmatrixSave', async (req, res) => {
+
     const { course_code, scores, meanOverallScore, correlation } = req.body;
+    const cm = await coursemapping.findOne({ where: { course_code: course_code } })
+    const ac = await academic.findOne({ where: { active_sem: 1 } })
+    const rsm = await rsmatrix.findOne({ where: { course_code: course_code } })
 
-    const cm = await coursemapping.findOne(
-    {
-        where: { course_code: course_code }
-    })
-
-    const ac = await academic.findOne(
-    {
-        where: { active_sem: 1 }
-    });
-
-    const rsm = await rsmatrix.findOne(
-    {
-        where: { course_code: course_code }
-    });
-
-    if (rsm) 
-    {
-        const data = await rsmatrix.update(
-        {
-            academic_sem: ac.academic_sem,
+    if (rsm) {
+        const data = await rsmatrix.update({
             dept_id: cm.dept_id,
             co1_po1: scores.CO1_0,
             co1_po2: scores.CO1_1,
@@ -138,21 +118,13 @@ route.post('/rsmatrixSave', async (req, res) =>
             olrel: correlation
         }, {
             where: { course_code: course_code }
-        });
-
-        if (data) {
-            res.status(200).json({ message: 'Update Successful' });
-        } 
-        else {
-            res.status(500).json({ message: 'Error during update.' });
-        }
-    } 
-    else 
-    {
-        const data = await rsmatrix.create(
-        {
+        })
+        if (data) { res.status(200).json({ message: 'Update Successful' }) }
+        else { res.status(500).json({ message: 'Error during update.' }) }
+    }
+    else {
+        const data = await rsmatrix.create({
             course_code: course_code,
-            academic_sem: ac.academic_sem,
             dept_id: cm.dept_id,
             co1_po1: scores.CO1_0,
             co1_po2: scores.CO1_1,
@@ -212,37 +184,23 @@ route.post('/rsmatrixSave', async (req, res) =>
             mean: meanOverallScore,
             olrel: correlation
         })
-        if (data) {
-            res.status(201).json({ message: 'Saved Successful' });
-        } 
-        else {
-            res.status(500).json({ message: 'Error during Save.' });
-        }
+        if (data) { res.status(201).json({ message: 'Saved Successful' }) }
+        else { res.status(500).json({ message: 'Error during Save.' }) }
     }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// RS Matrix Create and Update Coding
+// RS Matrix 
 
-route.get('/rsmatrix/:course_code', async (req, res) => 
-{
-    try 
-    {
+route.get('/rsmatrix/:course_code', async (req, res) => {
+
+    try {
         const { course_code } = req.params;
-
-        const ac = await academic.findOne({
-            where: { active_sem: 1 }
-        })
-
-        const matrixData = await rsmatrix.findOne({
-            where: {
-                course_code,
-                academic_sem: ac.academic_sem,
-            }
-        })
+        const ac = await academic.findOne({ where: { active_sem: 1 } })
+        const matrixData = await rsmatrix.findOne({ where: { course_code } })
         res.status(200).json(matrixData);
-    } 
+    }
     catch (error) {
         console.error('Error Fetching Matrix Data:', error);
         res.status(500).json({ message: 'Error Fetching Matrix Data' });

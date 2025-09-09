@@ -13,33 +13,32 @@ const { Sequelize } = require('sequelize');
 
 // Student Staff Programme Course Count
 
-route.get('/counts', async (req, res) => 
-{
-    try 
-    {
-        const academicdata = await academic.findOne({
-            where: { active_sem: 1 }
-        })
+route.get('/counts', async (req, res) => {
 
-        const studentCount = await studentmaster.count();
+    try {
 
+        const academicdata = await academic.findOne({ where: { active_sem: 1 } })
+        const studentCount = await markentry.count({
+            where: { academic_sem: String(academicdata.academic_sem) },
+            distinct: true,
+            col: 'reg_no'
+        });
         const staffCount = await staffmaster.count();
 
         const uniqueCourseCount = await coursemaster.count({
-            where: {academic_sem: String(academicdata.academic_sem)},
+            where: { academic_sem: String(academicdata.academic_sem) },
             distinct: true,
             col: 'course_code'
         });
 
         const uniqueProgramCount = await coursemapping.count({
-            where: {academic_sem: String(academicdata.academic_sem)},
+            where: { academic_sem: String(academicdata.academic_sem) },
             distinct: true,
             col: 'dept_id'
         });
 
         res.json({
-            studentCount,
-            staffCount,
+            studentCount, staffCount,
             courseCount: uniqueCourseCount,
             programCount: uniqueProgramCount
         });
@@ -54,24 +53,17 @@ route.get('/counts', async (req, res) =>
 
 // Student Piechart
 
-route.get('/studentpiechart', async (req, res) => 
-{
-    try 
-    {
-        const academicdata = await academic.findOne(
-        {
-            where: { active_sem: 1 }
-        });
+route.get('/studentpiechart', async (req, res) => {
 
+    try {
+
+        const academicdata = await academic.findOne({ where: { active_sem: 1 } })
         const totalStudents = await studentmaster.count();
+        const aidedCount = await studentmaster.count({ where: { category: "AIDED" } });
+        const sfmCount = await studentmaster.count({ where: { category: "SFM" } });
+        const sfwCount = await studentmaster.count({ where: { category: "SFW" } });
 
-        const aidedCount = await studentmaster.count({where:{category:"AIDED"}});
-
-        const sfmCount = await studentmaster.count( {where:{category:"SFM"}});
-
-        const sfwCount = await studentmaster.count({where:{category:"SFW"}});
-
-        const result = 
+        const result =
         {
             total: totalStudents,
             categories: [
@@ -80,9 +72,9 @@ route.get('/studentpiechart', async (req, res) =>
                 { label: 'SFW', count: sfwCount, percentage: ((sfwCount / totalStudents) * 100).toFixed(1) },
             ]
         }
- 
+
         res.json(result);
-    } 
+    }
     catch (error) {
         console.error('Error Fetching Student Pie Data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -93,17 +85,16 @@ route.get('/studentpiechart', async (req, res) =>
 
 // Staff Piechart
 
-route.get('/staffpiechart', async (req, res) => 
-{
-    try 
-    {
-        const totalStaff = await staffmaster.count();
+route.get('/staffpiechart', async (req, res) => {
 
+    try {
+
+        const totalStaff = await staffmaster.count();
         const aidedCount = await staffmaster.count({ where: { staff_category: 'AIDED' } });
         const sfmCount = await staffmaster.count({ where: { staff_category: 'SFM' } });
         const sfwCount = await staffmaster.count({ where: { staff_category: 'SFW' } });
 
-        const result = 
+        const result =
         {
             total: totalStaff,
             categories: [
@@ -113,7 +104,7 @@ route.get('/staffpiechart', async (req, res) =>
             ]
         }
         res.json(result);
-    } 
+    }
     catch (error) {
         console.error('Error fetching staff pie data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -124,18 +115,14 @@ route.get('/staffpiechart', async (req, res) =>
 
 // Course Mapping Completion Status
 
-route.post('/componentreport', async (req, res) => 
-{
-    try 
-    {
-        const academicdata = await academic.findOne({
-            where: { active_sem: 1 }
-        })
+route.post('/componentreport', async (req, res) => {
+
+    try {
+
+        const academicdata = await academic.findOne({ where: { active_sem: 1 } })
 
         const totalCount = await report.count({
-            where: {
-                academic_sem: String(academicdata.academic_sem)
-            }
+            where: { academic_sem: String(academicdata.academic_sem) }
         });
 
         const cia_1 = await report.count({
@@ -173,30 +160,23 @@ route.post('/componentreport', async (req, res) =>
             },
         });
 
-        res.json({cia_1, cia_2, ass_1, ass_2, ese, totalCount});
+        res.json({ cia_1, cia_2, ass_1, ass_2, ese, totalCount });
     }
     catch (error) {
         console.error('Error fetching counts:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-});
-
-module.exports = route;
+})
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.post('/processedChartData', async (req, res) => 
-{
-    try 
-    {
-        const academicdata = await academic.findOne({
-            where: { active_sem: 1 },
-        });
+route.post('/processedChartData', async (req, res) => {
 
+    try {
+
+        const academicdata = await academic.findOne({ where: { active_sem: 1 } });
         const courseCode = await report.findAll({
-            where: {
-                academic_sem: String(academicdata.academic_sem),
-            },
+            where: { academic_sem: String(academicdata.academic_sem) },
             attributes: ['course_code'],
         });
 
@@ -205,12 +185,10 @@ route.post('/processedChartData', async (req, res) =>
         const countUniqueCourseCodes = unique_coursecodes.length;
 
         const course_codes = await report.findAll(
-        {
-            where: {
-                academic_sem: String(academicdata.academic_sem),
-            },
-            attributes: ['course_code', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'],
-        });
+            {
+                where: { academic_sem: String(academicdata.academic_sem) },
+                attributes: ['course_code', 'cia_1', 'cia_2', 'ass_1', 'ass_2', 'ese'],
+            });
 
         const markentryData = await markentry.findAll({
             where: {
@@ -219,7 +197,7 @@ route.post('/processedChartData', async (req, res) =>
             attributes: ['course_code', 'ese_lot', 'ese_mot', 'ese_hot', 'ese_total'],
         });
 
-        const counts = 
+        const counts =
         {
             cia_1: 0,
             cia_2: 0,
@@ -230,8 +208,7 @@ route.post('/processedChartData', async (req, res) =>
 
         const stud_coursecodes = [...new Set(course_codes.map((entry) => entry.course_code))];
 
-        for (let course_code of stud_coursecodes) 
-        {
+        for (let course_code of stud_coursecodes) {
             const courseRows = course_codes.filter((entry) => entry.course_code === course_code);
             const allCia1Equal2 = courseRows.every((row) => row.cia_1 === 2);
             const allCia2Equal2 = courseRows.every((row) => row.cia_2 === 2);
@@ -246,8 +223,7 @@ route.post('/processedChartData', async (req, res) =>
 
         const markentry_coursecodes = [...new Set(markentryData.map((entry) => entry.course_code))];
 
-        for (let course_code of markentry_coursecodes) 
-        {
+        for (let course_code of markentry_coursecodes) {
             const courseRows = markentryData.filter((entry) => entry.course_code === course_code);
 
             const allEseValuesNotNull = courseRows.some(
@@ -262,11 +238,11 @@ route.post('/processedChartData', async (req, res) =>
         }
 
         res.status(200).json({ countUniqueCourseCodes, counts });
-    } 
+    }
     catch (error) {
         console.error('Error processing chart data:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
-});
+})
 
 module.exports = route;
