@@ -7,14 +7,13 @@ const hod = require('../models/hod');
 const mentor = require('../models/mentor');
 const coursemapping = require('../models/coursemapping');
 const academic = require('../models/academic');
-const { Op, where , col,fn } = require('sequelize');
+const { Op, where, col, fn } = require('sequelize');
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Staff Details Fetching Coding
 
-route.get('/staffdetails', async (req, res) =>
-{
+route.get('/staffdetails', async (req, res) => {
     const staffDetails = await staffmaster.findAll();
     res.json(staffDetails);
 })
@@ -23,39 +22,38 @@ route.get('/staffdetails', async (req, res) =>
 
 // Staff Add
 
-route.post('/newstaff', async (req, res) => 
-{
+route.post('/newstaff', async (req, res) => {
+
     const { staff_id, staff_name, staff_dept, staff_category, password, dept_category, permissions } = req.body;
 
-    try 
-    {
+    try {
         const newStaff = await staffmaster.create(
-        {
-            staff_id: staff_id,
-            staff_name: staff_name,
-            staff_dept: staff_dept,
-            dept_category: dept_category,
-            staff_category: staff_category,
-            staff_pass: password
-        })
+            {
+                staff_id: staff_id,
+                staff_name: staff_name,
+                staff_dept: staff_dept,
+                dept_category: dept_category,
+                staff_category: staff_category,
+                staff_pass: password
+            })
 
         const newScope = await scope.create(
-        {
-            staff_id: staff_id,
-            dashboard: permissions.dashboard ? 1 : 0,
-            course_list: permissions.course ? 1 : 0,
-            course_outcome: permissions.co ? 1 : 0,
-            student_outcome: permissions.so ? 1 : 0,
-            program_outcome: permissions.po ? 1 : 0,
-            program_specific_outcome: permissions.pso ? 1 : 0,
-            mentor_report: permissions.tutor ? 1 : 0,
-            hod_report: permissions.hod ? 1 : 0,
-            report: permissions.report ? 1 : 0,
-            input_files: permissions.input ? 1 : 0,
-            manage: permissions.manage ? 1 : 0,
-            relationship_matrix: permissions.rsm ? 1 : 0,
-            settings: permissions.setting ? 1 : 0,
-        })
+            {
+                staff_id: staff_id,
+                dashboard: permissions.dashboard ? 1 : 0,
+                course_list: permissions.course ? 1 : 0,
+                course_outcome: permissions.co ? 1 : 0,
+                student_outcome: permissions.so ? 1 : 0,
+                program_outcome: permissions.po ? 1 : 0,
+                program_specific_outcome: permissions.pso ? 1 : 0,
+                mentor_report: permissions.tutor ? 1 : 0,
+                hod_report: permissions.hod ? 1 : 0,
+                report: permissions.report ? 1 : 0,
+                input_files: permissions.input ? 1 : 0,
+                manage: permissions.manage ? 1 : 0,
+                relationship_matrix: permissions.rsm ? 1 : 0,
+                settings: permissions.setting ? 1 : 0,
+            })
         return res.json({ message: 'New Staff and Permissions Added Successfully' });
     }
     catch (err) {
@@ -68,42 +66,61 @@ route.post('/newstaff', async (req, res) =>
 
 // Staff Updation 
 
-route.put('/staffupdate', async (req, res) => 
-{
-    const { newstaffid, newstaffname, newpassword, newdept, newStaffCategory, newDeptCategory, oldpassword } = req.body;
+route.put('/staffupdate', async (req, res) => {
 
-    try 
-    {
+    const { newstaffid, newstaffname, newpassword, newdept,
+        newStaffCategory, newDeptCategory, oldpassword } = req.body;
+
+    try {
+
         await staffmaster.update({
             staff_name: newstaffname,
             staff_pass: newpassword || oldpassword,
             staff_dept: newdept,
             staff_category: newStaffCategory,
             dept_category: newDeptCategory
-        },
-            { where: { staff_id: newstaffid }
-        })
+        }, { where: { staff_id: newstaffid } })
+
+        await coursemapping.update({
+            category: newStaffCategory,
+            staff_name: newstaffname
+        }, { where: { staff_id: newstaffid } })
+
+        await report.update({
+            category: newStaffCategory,
+            staff_name: newstaffname
+        }, { where: { staff_id: newstaffid } })
+
+        await hod.update({
+            category: newStaffCategory,
+            hod_name: newstaffname
+        }, { where: { staff_id: newstaffid } })
+
+        await mentor.update({
+            category: newStaffCategory,
+            staff_name: newstaffname
+        }, { where: { staff_id: newstaffid } })
+
         res.json({ message: 'Staff Updated Successfully' })
     }
-    catch (err) {
-        console.log("Error while Update",err)
-    }
+    catch (err) { console.log("Error while Update", err) }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
 
 // Staff Deletion
 
-route.post('/staffdelete', async (req, res) => 
-{
+route.post('/staffdelete', async (req, res) => {
+
     const { deletestaffid } = req.body;
-    try 
-    {
+
+    try {
         await staffmaster.destroy({ where: { staff_id: deletestaffid } })
         await coursemapping.destroy({ where: { staff_id: deletestaffid } })
         await mentor.destroy({ where: { staff_id: deletestaffid } })
         await hod.destroy({ where: { staff_id: deletestaffid } })
         await scope.destroy({ where: { staff_id: deletestaffid } })
+        await report.destroy({ where: { staff_id: deletestaffid } })
         res.json({ message: "Staff Successfully Deleted" })
     }
     catch (err) { console.log("Error in Deleting Staff : ", err) }
@@ -111,8 +128,8 @@ route.post('/staffdelete', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.get('/hod', async (req, res) => 
-{
+route.get('/hod', async (req, res) => {
+
     try {
         const hodData = await hod.findAll();
         res.json(hodData);
@@ -125,33 +142,30 @@ route.get('/hod', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.delete('/hod/:id', async (req, res) => 
-{
-    const { id} = req.params; 
+route.delete('/hod/:id', async (req, res) => {
+
+    const { id } = req.params;
     const { dept_id } = req.body;
 
-    try 
-    {
+    try {
         const deleted = await hod.destroy({
-            where: { staff_id: id , dept_id:dept_id}, 
+            where: { staff_id: id, dept_id: dept_id },
         })
 
-        if (deleted) 
-        {
+        if (deleted) {
             res.status(200).json({ message: `HOD with staff ID ${id} deleted successfully.` });
-            const scopeFind= await hod.findAll({
-                where:{staff_id:id}
+            const scopeFind = await hod.findAll({
+                where: { staff_id: id }
             })
-            if(scopeFind.length > 0) { return null }
-            else
-            {
-                await scope.update({ hod_report: 0 } , { where: { staff_id: id } })
+            if (scopeFind.length > 0) { return null }
+            else {
+                await scope.update({ hod_report: 0 }, { where: { staff_id: id } })
             }
-        } 
+        }
         else {
             res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
         }
-    } 
+    }
     catch (err) {
         console.error(err);
         res.status(500).json({ error: 'An error occurred while deleting the record.' });
@@ -160,20 +174,19 @@ route.delete('/hod/:id', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.put('/hod/:id', async (req, res) => 
-{
-    const { id } = req.params;
-    const { hod_name, graduate, dept_id, category, dept_name } = req.body; 
+route.put('/hod/:id', async (req, res) => {
 
-    try 
-    {
+    const { id } = req.params;
+    const { hod_name, graduate, dept_id, category, dept_name } = req.body;
+
+    try {
         const [updated] = await hod.update(
             { hod_name, graduate, dept_id, category, dept_name },
             { where: { staff_id: id } }
         )
         if (updated) {
             res.status(200).json({ message: `HOD with staff ID ${id} updated Successfully.` });
-        } 
+        }
         else {
             res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
         }
@@ -186,8 +199,8 @@ route.put('/hod/:id', async (req, res) =>
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.get('/mentor', async (req, res) => 
-{
+route.get('/mentor', async (req, res) => {
+
     try {
         const mentorData = await mentor.findAll();
         res.json(mentorData);
@@ -202,27 +215,21 @@ route.get('/mentor', async (req, res) =>
 
 route.delete('/mentor/:id', async (req, res) => {
 
-    const { id } = req.params; 
+    const { id } = req.params;
 
     try {
-        const activeAcademic = await academic.findOne({
-            where: { active_sem: 1 },
-        })
+        const activeAcademic = await academic.findOne({where: { active_sem: 1 }})
 
         const deleted = await mentor.destroy({
-            where: { 
+            where: {
                 staff_id: id,
                 academic_sem: activeAcademic.academic_sem
             }
         })
 
-        if (deleted) {
-            res.status(200).json({ message: `Mentor with Staff Id ${id} deleted Successfully.` });
-        } 
-        else {
-            res.status(404).json({ error: `Mentor with Staff Id ${id} not found.` });
-        }
-    } 
+        if (deleted) { res.status(200).json({ message: `Mentor with Staff Id ${id} deleted Successfully.` })}
+        else { res.status(404).json({ error: `Mentor with Staff Id ${id} not found.` })}
+    }
     catch (err) {
         console.error(err);
         res.status(500).json({ error: "An error occurred while deleting the record." });
@@ -233,24 +240,23 @@ route.delete('/mentor/:id', async (req, res) => {
 
 // PUT route to update a mentor by staff ID
 
-route.put("/mentor/:id", async (req, res) => 
-{
+route.put("/mentor/:id", async (req, res) => {
+
     const { id } = req.params;
     const { batch, staff_name, category, degree, dept_name, section } = req.body;
 
-    try 
-    {
+    try {
         const [updated] = await mentor.update(
             { batch, staff_name, category, degree, dept_name, section },
             { where: { staff_id: id } }
         )
         if (updated) {
             res.status(200).json({ message: `Mentor with staff ID ${id} updated successfully.` });
-        } 
+        }
         else {
             res.status(404).json({ error: `Mentor with staff ID ${id} not found.` });
         }
-    } 
+    }
     catch (err) {
         console.error(err);
         res.status(500).json({ error: "An error occurred while updating the record." });
@@ -261,10 +267,9 @@ route.put("/mentor/:id", async (req, res) =>
 
 // New Hod Add
 
-route.post('/newhodadded', async (req, res) => 
-{
-    try 
-    {
+route.post('/newhodadded', async (req, res) => {
+
+    try {
         const { newstaffId, newhodName, newcategory, newDeptId, newdeptName, newgraduate } = req.body;
 
         const existhod = await hod.findAll({
@@ -275,10 +280,9 @@ route.post('/newhodadded', async (req, res) =>
             }
         })
 
-        if (existhod.length > 0) { res.json({ message: "Hod Already exist" })}
+        if (existhod.length > 0) { res.json({ message: "Hod Already exist" }) }
 
-        else 
-        {
+        else {
             const newhod = await hod.create({
                 staff_id: newstaffId, graduate: newgraduate,
                 category: newcategory, dept_id: newDeptId,
@@ -286,16 +290,15 @@ route.post('/newhodadded', async (req, res) =>
             })
             res.json({ message: "New Hod Added" })
         }
-    } 
+    }
     catch (err) { console.error("Error adding HOD:", err) }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.get('/getstaff', async (req, res) => 
-{
-    try 
-    {
+route.get('/getstaff', async (req, res) => {
+
+    try {
         const { newTuturId } = req.query;
 
         if (!newTuturId || newTuturId.trim() === "") {
@@ -303,7 +306,7 @@ route.get('/getstaff', async (req, res) =>
         }
 
         const staff_get = await staffmaster.findAll({
-            where: { staff_id: { [Op.like]: `%${newTuturId.trim()}%`} },
+            where: { staff_id: { [Op.like]: `%${newTuturId.trim()}%` } },
             attributes: ['staff_id']
         })
 
@@ -311,7 +314,7 @@ route.get('/getstaff', async (req, res) =>
             return res.status(404).json({ message: "No staff found" });
         }
         res.status(200).json(staff_get);
-    } 
+    }
     catch (error) {
         console.error("Error fetching staff:", error);
         res.status(500).json({ message: "An error occurred", error: error.message });
@@ -322,25 +325,19 @@ route.get('/getstaff', async (req, res) =>
 
 // Staff Data from Staff Master
 
-route.get('/staffdata', async (req, res) => 
-{
-    try 
-    {
+route.get('/staffdata', async (req, res) => {
+
+    try {
         const { newTuturId } = req.query;
 
-        if (!newTuturId || newTuturId.trim() === "") {
-            return res.status(400).json({ message: "Invalid or missing newTuturId" });
-        }
+        if (!newTuturId || newTuturId.trim() === "") { return res.status(400).json({ message: "Invalid or missing newTuturId" }) }
 
-        const staff_get = await staffmaster.findAll({
-            where: { staff_id: newTuturId }
-        })
+        const staff_get = await staffmaster.findAll({ where: { staff_id: newTuturId } })
 
-        if (staff_get.length > 0) { res.json(staff_get) } 
-        else { res.status(404).json({ message: "Staff not found" })}
-    } 
-    catch (err) { console.log('Error in Tutor : ', err)
+        if (staff_get.length > 0) { res.json(staff_get) }
+        else { res.status(404).json({ message: "Staff not found" }) }
     }
+    catch (err) { console.log('Error in Tutor : ', err) }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -349,12 +346,12 @@ route.post('/newtutoradded', async (req, res) => {
 
     try {
 
-        const { newMentor } = req.body;  
+        const { newMentor } = req.body;
 
         const { staff_id, staff_name, graduate, category, dept_name, dept_id, batch, degree, section } = newMentor;
 
         const existTutor = await mentor.findAll({
-            where: { 
+            where: {
                 staff_id, staff_name, graduate, category,
                 dept_id, dept_name, batch, degree, section
             }
@@ -367,17 +364,17 @@ route.post('/newtutoradded', async (req, res) => {
             dept_id, dept_name, batch, degree, section
         })
         res.status(201).json({ message: "New Tutor Added", mentor: newMentorCreated });
-    } 
+    }
     catch (err) {
         console.error("Error adding Tutor:", err);
         res.status(500).json({ error: "Failed to add new Tutor", details: err.message });
     }
 })
 
-//-------------------------------------
-
+// ------------------------------------------------------------------------------------------------------- //
 
 route.get('/staffdepartments', async (req, res) => {
+
     try {
         const dept_category = await staffmaster.findAll({
             attributes: [[fn('DISTINCT', col('staff_dept')), 'staff_dept']]
@@ -393,7 +390,8 @@ route.get('/staffdepartments', async (req, res) => {
         console.error("Server Error in staffdepartments route:", err.message);
         res.status(500).json({ message: "Server Error", error: err.message });
     }
-});
+})
 
+// ------------------------------------------------------------------------------------------------------- //
 
 module.exports = route;
