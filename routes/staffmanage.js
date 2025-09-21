@@ -7,6 +7,7 @@ const hod = require('../models/hod');
 const mentor = require('../models/mentor');
 const coursemapping = require('../models/coursemapping');
 const academic = require('../models/academic');
+const report = require('../models/report');
 const { Op, where, col, fn } = require('sequelize');
 
 // ------------------------------------------------------------------------------------------------------- //
