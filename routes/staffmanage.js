@@ -11,7 +11,7 @@ const { Op, where, col, fn, Sequelize } = require('sequelize');
 
 // ------------------------------------------------------------------------------------------------------- //
 
-// Staff Details Fetching Coding
+// Staff Master Display
 
 route.get('/staffdetails', async (req, res) => {
     const staffDetails = await staffmaster.findAll();
@@ -79,7 +79,7 @@ route.put('/staffupdate', async (req, res) => {
             staff_dept: newdept,
             staff_category: newStaffCategory,
             dept_category: newDeptCategory
-        }, { where: { staff_id: newstaffid },returning: true  })
+        }, { where: { staff_id: newstaffid }, returning: true })
 
         const updatedStaff = await staffmaster.findOne({ where: { staff_id: newstaffid } });
 
@@ -126,118 +126,6 @@ route.post('/staffdelete', async (req, res) => {
         res.json({ message: "Staff Successfully Deleted" })
     }
     catch (err) { console.log("Error in Deleting Staff : ", err) }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-route.get('/hod', async (req, res) => {
-
-    try {
-        const hodData = await hod.findAll();
-        res.json(hodData);
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'An error occurred while fetching data from the HOD Table.' });
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-route.delete('/hod/:id', async (req, res) => {
-
-    const { dept_id, staff_id, category, graduate } = req.body;
-    // console.log(req.body)
-
-    try {
-
-        const deleted = await hod.destroy({ where: { staff_id, dept_id, category, graduate } })
-        // console.log(deleted)
-
-        if (deleted) {
-            res.status(200).json({ message: `HOD with staff ID ${staff_id} deleted successfully.` });
-            const scopeFind = await hod.findAll({ where: { staff_id } })
-            if (scopeFind.length > 0) { return null }
-            else { await scope.update({ hod_report: 0 }, { where: { staff_id } }) }
-        }
-        else { res.status(404).json({ error: `HOD with staff ID ${staff_id} not found.` }) }
-    }
-    catch (err) {
-        console.error('Error in deleting Hod : ', err);
-        res.status(500).json({ error: 'An error occurred while deleting the record.' });
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-route.put('/hod/:id', async (req, res) => {
-
-    const { id } = req.params;
-    const { hod_name, graduate, dept_id, category, dept_name } = req.body;
-
-    try {
-        const [updated] = await hod.update(
-            { hod_name, graduate, dept_id, category, dept_name },
-            { where: { staff_id: id } }
-        )
-        if (updated) {
-            res.status(200).json({ message: `HOD with staff ID ${id} updated Successfully.` });
-        }
-        else {
-            res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
-        }
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'An error occurred while updating the record.' });
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-route.get('/getstaff', async (req, res) => {
-
-    const { newTuturId } = req.query;
-
-    try {
-
-        if (!newTuturId || newTuturId.trim() === "") {
-            return res.status(400).json({ message: "Invalid or missing newTuturId" });
-        }
-
-        const staff_get = await staffmaster.findAll({
-            where: { staff_id: { [Op.like]: `%${newTuturId.trim()}%` } },
-            attributes: ['staff_id']
-        })
-
-        if (staff_get.length === 0) {
-            return res.status(404).json({ message: "No staff found" });
-        }
-        res.status(200).json(staff_get);
-    }
-    catch (error) {
-        console.error("Error fetching staff : ", error);
-        res.status(500).json({ message: "An error occurred", error: error.message });
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-// Staff Data from Staff Master
-
-route.get('/staffdata', async (req, res) => {
-
-    try {
-        const { newTuturId } = req.query;
-
-        if (!newTuturId || newTuturId.trim() === "") { return res.status(400).json({ message: "Invalid or missing newTuturId" }) }
-
-        const staff_get = await staffmaster.findAll({ where: { staff_id: newTuturId } })
-
-        if (staff_get.length > 0) { res.json(staff_get) }
-        else { res.status(404).json({ message: "Staff not found" }) }
-    }
-    catch (err) { console.log('Error in Tutor : ', err) }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -355,22 +243,17 @@ route.delete('/mentor/:id', async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.get('/staffdepartments', async (req, res) => {
+// Hod Display
+
+route.get('/hod', async (req, res) => {
 
     try {
-        const dept_category = await staffmaster.findAll({
-            attributes: [[fn('DISTINCT', col('staff_dept')), 'staff_dept']]
-        });
-
-        if (dept_category.length > 0) {
-            res.json(dept_category);
-        } else {
-            console.log("No Staff Department Data Found");
-            res.status(404).json({ message: "No Staff Department Data Found" });
-        }
-    } catch (err) {
-        console.error("Server Error in staffdepartments route:", err.message);
-        res.status(500).json({ message: "Server Error", error: err.message });
+        const hodData = await hod.findAll();
+        res.json(hodData);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while fetching data from the HOD Table.' });
     }
 })
 
@@ -427,6 +310,131 @@ route.post('/newhodadded', async (req, res) => {
         }
     }
     catch (err) { console.error("Error adding HOD : ", err) }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Hod Update
+
+route.put('/hod/:id', async (req, res) => {
+
+    const { id } = req.params;
+    const { hod_name, graduate, dept_id, category, dept_name, s_no, staff_id } = req.body;
+    console.log(req.body, req.params)
+
+    try {
+        const [updated] = await hod.update(
+            { hod_name, graduate, dept_id, category, dept_name, staff_id },
+            { where: { s_no: s_no } }
+        )
+        console.log(updated)
+        if (updated) {
+            res.status(200).json({ message: `HOD with staff ID ${id} updated Successfully.` });
+        }
+        else {
+            res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
+        }
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'An error occurred while updating the record.' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Hod Delete
+
+route.delete('/hod/:id', async (req, res) => {
+
+    const { dept_id, staff_id, category, graduate } = req.body;
+    // console.log(req.body)
+
+    try {
+
+        const deleted = await hod.destroy({ where: { staff_id, dept_id, category, graduate } })
+        // console.log(deleted)
+
+        if (deleted) {
+            res.status(200).json({ message: `HOD with staff ID ${staff_id} deleted successfully.` });
+            const scopeFind = await hod.findAll({ where: { staff_id } })
+            if (scopeFind.length > 0) { return null }
+            else { await scope.update({ hod_report: 0 }, { where: { staff_id } }) }
+        }
+        else { res.status(404).json({ error: `HOD with staff ID ${staff_id} not found.` }) }
+    }
+    catch (err) {
+        console.error('Error in deleting Hod : ', err);
+        res.status(500).json({ error: 'An error occurred while deleting the record.' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+route.get('/staffdepartments', async (req, res) => {
+
+    try {
+        const dept_category = await staffmaster.findAll({
+            attributes: [[fn('DISTINCT', col('staff_dept')), 'staff_dept']]
+        });
+
+        if (dept_category.length > 0) {
+            res.json(dept_category);
+        } else {
+            console.log("No Staff Department Data Found");
+            res.status(404).json({ message: "No Staff Department Data Found" });
+        }
+    } catch (err) {
+        console.error("Server Error in staffdepartments route:", err.message);
+        res.status(500).json({ message: "Server Error", error: err.message });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+route.get('/getstaff', async (req, res) => {
+
+    const { newTuturId } = req.query;
+
+    try {
+
+        if (!newTuturId || newTuturId.trim() === "") {
+            return res.status(400).json({ message: "Invalid or missing newTuturId" });
+        }
+
+        const staff_get = await staffmaster.findAll({
+            where: { staff_id: { [Op.like]: `%${newTuturId.trim()}%` } },
+            attributes: ['staff_id']
+        })
+
+        if (staff_get.length === 0) {
+            return res.status(404).json({ message: "No staff found" });
+        }
+        res.status(200).json(staff_get);
+    }
+    catch (error) {
+        console.error("Error fetching staff : ", error);
+        res.status(500).json({ message: "An error occurred", error: error.message });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Staff Data from Staff Master
+
+route.get('/staffdata', async (req, res) => {
+
+    try {
+        const { newTuturId } = req.query;
+
+        if (!newTuturId || newTuturId.trim() === "") { return res.status(400).json({ message: "Invalid or missing newTuturId" }) }
+
+        const staff_get = await staffmaster.findAll({ where: { staff_id: newTuturId } })
+
+        if (staff_get.length > 0) { res.json(staff_get) }
+        else { res.status(404).json({ message: "Staff not found" }) }
+    }
+    catch (err) { console.log('Error in Tutor : ', err) }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
