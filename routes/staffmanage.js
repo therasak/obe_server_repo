@@ -1,6 +1,5 @@
 const express = require('express');
 const route = express.Router();
-
 const staffmaster = require('../models/staffmaster');
 const scope = require('../models/scope');
 const hod = require('../models/hod');
@@ -8,7 +7,7 @@ const mentor = require('../models/mentor');
 const coursemapping = require('../models/coursemapping');
 const academic = require('../models/academic');
 const report = require('../models/report');
-const { Op, where, col, fn } = require('sequelize');
+const { Op, where, col, fn, Sequelize } = require('sequelize');
 
 // ------------------------------------------------------------------------------------------------------- //
 
@@ -55,7 +54,7 @@ route.post('/newstaff', async (req, res) => {
                 relationship_matrix: permissions.rsm ? 1 : 0,
                 settings: permissions.setting ? 1 : 0,
             })
-        return res.json({ message: 'New Staff and Permissions Added Successfully' });
+        return res.json({ message: 'New Staff and Permissions Added Successfully', newStaff });
     }
     catch (err) {
         console.error('Error Inserting Data into the DataBase:', err);
@@ -80,7 +79,9 @@ route.put('/staffupdate', async (req, res) => {
             staff_dept: newdept,
             staff_category: newStaffCategory,
             dept_category: newDeptCategory
-        }, { where: { staff_id: newstaffid } })
+        }, { where: { staff_id: newstaffid },returning: true  })
+
+        const updatedStaff = await staffmaster.findOne({ where: { staff_id: newstaffid } });
 
         await coursemapping.update({
             category: newStaffCategory,
@@ -102,7 +103,7 @@ route.put('/staffupdate', async (req, res) => {
             staff_name: newstaffname
         }, { where: { staff_id: newstaffid } })
 
-        res.json({ message: 'Staff Updated Successfully' })
+        res.json({ message: 'Staff Updated Successfully', updatedStaff })
     }
     catch (err) { console.log("Error while Update", err) }
 })
@@ -145,30 +146,24 @@ route.get('/hod', async (req, res) => {
 
 route.delete('/hod/:id', async (req, res) => {
 
-    const { id } = req.params;
-    const { dept_id } = req.body;
+    const { dept_id, staff_id, category, graduate } = req.body;
+    // console.log(req.body)
 
     try {
-        const deleted = await hod.destroy({
-            where: { staff_id: id, dept_id: dept_id },
-        })
+
+        const deleted = await hod.destroy({ where: { staff_id, dept_id, category, graduate } })
+        // console.log(deleted)
 
         if (deleted) {
-            res.status(200).json({ message: `HOD with staff ID ${id} deleted successfully.` });
-            const scopeFind = await hod.findAll({
-                where: { staff_id: id }
-            })
+            res.status(200).json({ message: `HOD with staff ID ${staff_id} deleted successfully.` });
+            const scopeFind = await hod.findAll({ where: { staff_id } })
             if (scopeFind.length > 0) { return null }
-            else {
-                await scope.update({ hod_report: 0 }, { where: { staff_id: id } })
-            }
+            else { await scope.update({ hod_report: 0 }, { where: { staff_id } }) }
         }
-        else {
-            res.status(404).json({ error: `HOD with staff ID ${id} not found.` });
-        }
+        else { res.status(404).json({ error: `HOD with staff ID ${staff_id} not found.` }) }
     }
     catch (err) {
-        console.error(err);
+        console.error('Error in deleting Hod : ', err);
         res.status(500).json({ error: 'An error occurred while deleting the record.' });
     }
 })
@@ -200,107 +195,11 @@ route.put('/hod/:id', async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
-route.get('/mentor', async (req, res) => {
-
-    try {
-        const mentorData = await mentor.findAll();
-        res.json(mentorData);
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'An error occurred while fetching data from the Mentor Table.' });
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-route.delete('/mentor/:id', async (req, res) => {
-
-    const { id } = req.params;
-
-    try {
-        const activeAcademic = await academic.findOne({where: { active_sem: 1 }})
-
-        const deleted = await mentor.destroy({
-            where: {
-                staff_id: id,
-                academic_sem: activeAcademic.academic_sem
-            }
-        })
-
-        if (deleted) { res.status(200).json({ message: `Mentor with Staff Id ${id} deleted Successfully.` })}
-        else { res.status(404).json({ error: `Mentor with Staff Id ${id} not found.` })}
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "An error occurred while deleting the record." });
-    }
-});
-
-// ------------------------------------------------------------------------------------------------------- //
-
-// PUT route to update a mentor by staff ID
-
-route.put("/mentor/:id", async (req, res) => {
-
-    const { id } = req.params;
-    const { batch, staff_name, category, degree, dept_name, section } = req.body;
-
-    try {
-        const [updated] = await mentor.update(
-            { batch, staff_name, category, degree, dept_name, section },
-            { where: { staff_id: id } }
-        )
-        if (updated) {
-            res.status(200).json({ message: `Mentor with staff ID ${id} updated successfully.` });
-        }
-        else {
-            res.status(404).json({ error: `Mentor with staff ID ${id} not found.` });
-        }
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "An error occurred while updating the record." });
-    }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
-// New Hod Add
-
-route.post('/newhodadded', async (req, res) => {
-
-    try {
-        const { newstaffId, newhodName, newcategory, newDeptId, newdeptName, newgraduate } = req.body;
-
-        const existhod = await hod.findAll({
-            where: {
-                staff_id: newstaffId, hod_name: newhodName,
-                graduate: newgraduate, dept_id: newDeptId,
-                category: newcategory, dept_name: newdeptName
-            }
-        })
-
-        if (existhod.length > 0) { res.json({ message: "Hod Already exist" }) }
-
-        else {
-            const newhod = await hod.create({
-                staff_id: newstaffId, graduate: newgraduate,
-                category: newcategory, dept_id: newDeptId,
-                dept_name: newdeptName, hod_name: newhodName
-            })
-            res.json({ message: "New Hod Added" })
-        }
-    }
-    catch (err) { console.error("Error adding HOD:", err) }
-})
-
-// ------------------------------------------------------------------------------------------------------- //
-
 route.get('/getstaff', async (req, res) => {
 
+    const { newTuturId } = req.query;
+
     try {
-        const { newTuturId } = req.query;
 
         if (!newTuturId || newTuturId.trim() === "") {
             return res.status(400).json({ message: "Invalid or missing newTuturId" });
@@ -317,7 +216,7 @@ route.get('/getstaff', async (req, res) => {
         res.status(200).json(staff_get);
     }
     catch (error) {
-        console.error("Error fetching staff:", error);
+        console.error("Error fetching staff : ", error);
         res.status(500).json({ message: "An error occurred", error: error.message });
     }
 })
@@ -342,6 +241,38 @@ route.get('/staffdata', async (req, res) => {
 })
 
 // ------------------------------------------------------------------------------------------------------- //
+
+// Tutor Display
+
+route.get('/mentor', async (req, res) => {
+
+    try {
+
+        const activeAcademic = await academic.findOne({ where: { active_sem: 1 } })
+
+        const mentorData = await mentor.findAll(
+            { where: { academic_sem: activeAcademic.academic_sem } }
+        )
+
+        const allStaff = await staffmaster.findAll({
+            attributes: ['staff_id', 'staff_name']
+        })
+
+        const staffDeptDetails = await mentor.findAll({
+            attributes: ['graduate', 'dept_id', 'category', 'degree', 'dept_name', 'section', 'batch'],
+        })
+
+        res.json({ mentorData: mentorData, staff_data: allStaff, 'deptDetails': staffDeptDetails });
+    }
+    catch (err) {
+        console.error('Error in fetching tutor details : ', err);
+        res.status(500).json({ error: 'An error occurred while fetching data from the Mentor Table.' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Tutor Add
 
 route.post('/newtutoradded', async (req, res) => {
 
@@ -374,6 +305,56 @@ route.post('/newtutoradded', async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
+// Tutor Edit
+
+route.put("/mentor/:id", async (req, res) => {
+
+    const { id } = req.params;
+    const { batch, staff_name, category, degree, dept_name, section } = req.body;
+
+    try {
+
+        const [updated] = await mentor.update(
+            { batch, staff_name, category, degree, dept_name, section },
+            { where: { staff_id: id } }
+        )
+        if (updated) { res.status(200).json({ message: `Mentor with staff ID ${id} updated successfully.` }) }
+        else { res.status(404).json({ error: `Mentor with staff ID ${id} not found.` }) }
+    }
+    catch (err) {
+        console.error('Error in updating tutor : ', err);
+        res.status(500).json({ error: "An error occurred while updating the record." });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Tutor Delete
+
+route.delete('/mentor/:id', async (req, res) => {
+
+    const { id } = req.params;
+
+    try {
+
+        const activeAcademic = await academic.findOne({ where: { active_sem: 1 } })
+
+        const deleted = await mentor.destroy({
+            where: { staff_id: id, academic_sem: activeAcademic.academic_sem }
+        })
+
+        if (deleted) { res.status(200).json({ message: `Mentor with Staff Id ${id} deleted Successfully.` }) }
+        else { res.json({ error: `Mentor with Staff Id ${id} not found.` }) }
+
+    }
+    catch (err) {
+        console.error('Error in deleting tutor : ', err);
+        res.status(500).json({ error: "An error occurred while deleting the record." });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
 route.get('/staffdepartments', async (req, res) => {
 
     try {
@@ -391,6 +372,61 @@ route.get('/staffdepartments', async (req, res) => {
         console.error("Server Error in staffdepartments route:", err.message);
         res.status(500).json({ message: "Server Error", error: err.message });
     }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Dropdown Values for Hod
+
+route.get('/hodDropDownValues', async (req, res) => {
+
+    try {
+
+        const uniqueStaffs = await staffmaster.findAll({
+            attributes: [
+                [Sequelize.fn('DISTINCT', Sequelize.col('staff_id')), 'staff_id'], 'staff_name'
+            ],
+            raw: true
+        });
+
+        const uniqueDepts = await coursemapping.findAll({
+            attributes: [
+                [Sequelize.fn('DISTINCT', Sequelize.col('dept_id')), 'dept_id'], 'dept_name'
+            ],
+            raw: true
+        })
+
+        return res.status(200).json({ uniqueDepts, uniqueStaffs });
+
+    } catch (error) {
+        console.log('Error in fetching Hod Dropdown values : ', error);
+        return res.status(500).json({ message: 'Error fetching values' });
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// New Hod Add
+
+route.post('/newhodadded', async (req, res) => {
+
+    const { staff_id, hod_name, category, dept_id, dept_name, graduate } = req.body;
+    // console.log(req.body)
+
+    try {
+
+        const existhod = await hod.findAll({
+            where: { staff_id, hod_name, graduate, dept_id, category, dept_name }
+        })
+
+        if (existhod.length > 0) { res.json({ message: "Hod Already exist" }) }
+
+        else {
+            const newHod = await hod.create({ staff_id, hod_name, graduate, dept_id, category, dept_name })
+            res.json({ message: "New Hod Added", newHod })
+        }
+    }
+    catch (err) { console.error("Error adding HOD : ", err) }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
