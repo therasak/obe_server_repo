@@ -158,7 +158,7 @@ route.get('/mentor', async (req, res) => {
     }
 })
 
-// ------------------------------------------------------------------------------------------------------- //
+// ---------------------------------D---------------------------------------------------------------------- //
 
 // Tutor Add
 
@@ -166,9 +166,9 @@ route.post('/newtutoradded', async (req, res) => {
 
     try {
 
-        const { newMentor } = req.body;
+        // const { newMentor } = req.body;
 
-        const { staff_id, staff_name, graduate, category, dept_name, dept_id, batch, degree, section } = newMentor;
+        const { staff_id, staff_name, graduate, category, dept_name, dept_id, batch, degree, section } = req.body;
 
         const existTutor = await mentor.findAll({
             where: {
@@ -198,16 +198,17 @@ route.post('/newtutoradded', async (req, res) => {
 route.put("/mentor/:id", async (req, res) => {
 
     const { id } = req.params;
-    const { batch, staff_name, category, degree, dept_name, section } = req.body;
+    const { batch, staff_name, category, academic_sem, academic_year, degree, dept_name, section, s_no, staff_id } = req.body;
+    // console.log(req.body)
 
     try {
 
         const [updated] = await mentor.update(
-            { batch, staff_name, category, degree, dept_name, section },
-            { where: { staff_id: id } }
+            { batch, staff_name, category, degree, dept_name, section, staff_id },
+            { where: { s_no: s_no, academic_sem, academic_year } }
         )
-        if (updated) { res.status(200).json({ message: `Mentor with staff ID ${id} updated successfully.` }) }
-        else { res.status(404).json({ error: `Mentor with staff ID ${id} not found.` }) }
+        if (updated) { res.status(200).json({ message: 'Mentor with staff ID ${id} updated successfully.' }) }
+        else { res.status(404).json({ error: 'Mentor with staff ID ${id} not found.' }) }
     }
     catch (err) {
         console.error('Error in updating tutor : ', err);
@@ -320,14 +321,14 @@ route.put('/hod/:id', async (req, res) => {
 
     const { id } = req.params;
     const { hod_name, graduate, dept_id, category, dept_name, s_no, staff_id } = req.body;
-    console.log(req.body, req.params)
+    // console.log(req.body, req.params)
 
     try {
         const [updated] = await hod.update(
             { hod_name, graduate, dept_id, category, dept_name, staff_id },
             { where: { s_no: s_no } }
         )
-        console.log(updated)
+        // console.log(updated)
         if (updated) {
             res.status(200).json({ message: `HOD with staff ID ${id} updated Successfully.` });
         }
@@ -425,6 +426,7 @@ route.get('/getstaff', async (req, res) => {
 route.get('/staffdata', async (req, res) => {
 
     try {
+        
         const { newTuturId } = req.query;
 
         if (!newTuturId || newTuturId.trim() === "") { return res.status(400).json({ message: "Invalid or missing newTuturId" }) }

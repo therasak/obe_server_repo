@@ -34,7 +34,7 @@ const hodreport = require('./routes/hodreport');
 const tutorreport = require('./routes/tutorreport');
 const prospecificoutcome = require('./routes/prospecificoutcome');
 const prooutcome = require('./routes/prooutcome');
-const showblock =  require('./routes/showblock');
+const showblock = require('./routes/showblock');
 
 const app = express();
 app.use(cors());
@@ -357,32 +357,22 @@ const secretKey = process.env.SECRET_KEY;
 
 // Validation Coding
 
-app.post('/login', async (req, res) => 
-{
+app.post('/login', async (req, res) => {
+
     const { staff_id, staff_pass } = req.body;
 
-    try 
-    {
-        const user = await staffmaster.findOne({
-            where: { staff_id: staff_id }
-        })
+    try {
 
-        if (user) 
-        {
-            if (user.staff_pass === staff_pass) {
-                return res.json({ success: true, message: "Login Successful" });
-            }
+        const user = await staffmaster.findOne({ where: { staff_id: staff_id } })
 
-            else {
-                return res.json({ success: false, message: "Invalid Password" });
-            }
+        if (user) {
+            if (user.staff_pass === staff_pass) { return res.json({ success: true, message: "Login Successful" }) }
+            else { return res.json({ success: false, message: "Invalid Password" }) }
         }
-        else {
-            return res.json({ success: false, message: "User Not Found" });
-        }
+        else { return res.json({ success: false, message: "User Not Found" }) }
     }
     catch (error) {
-        console.error('Error during Login:', error);
+        console.error('Error during Login : ', error);
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 });
@@ -391,12 +381,11 @@ app.post('/login', async (req, res) =>
 
 // Scope Options Validating Coding
 
-app.get('/scope/:staffId', async (req, res) => 
-{
+app.get('/scope/:staffId', async (req, res) => {
+
     const { staffId } = req.params;
 
-    try 
-    {
+    try {
         const scopeDetails = await scope.findOne({
             where: { staff_id: staffId }
         })
@@ -413,10 +402,10 @@ app.get('/scope/:staffId', async (req, res) =>
 // Database Authenticate Coding
 
 
-app.post('/staffName', async(req, res) => {
+app.post('/staffName', async (req, res) => {
 
     const { staffId } = req.body;
-    
+
     const user = await staffmaster.findOne({
         where: {
             staff_id: staffId
@@ -448,12 +437,11 @@ sequelize_conn.authenticate()
 
 // Academic Year Setting Coding
 
-app.put('/academic', async (req, res) => 
-{
+app.put('/academic', async (req, res) => {
+
     const { academicsem } = req.body;
 
-    try 
-    {
+    try {
         await academic.update(
             { active_sem: 0 },
             { where: {} }
@@ -484,8 +472,7 @@ app.put('/academic', async (req, res) =>
 
 // Active Sem Fetching Coding
 
-app.post('/activesem', async (req, res) => 
-{
+app.post('/activesem', async (req, res) => {
     const activeAcademic = await academic.findOne({
         where: { active_sem: 1 }
     })
