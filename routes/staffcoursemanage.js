@@ -187,6 +187,8 @@ router.post('/scmcoursetitle', async (req, res) => {
 
 // ------------------------------------------------------------------------------------------------------- //
 
+// Staff Course Manage Add
+
 router.post('/scmNewStaff', async (req, res) => {
 
     try {
@@ -221,6 +223,48 @@ router.post('/scmNewStaff', async (req, res) => {
 })
 
 // ------------------------------------------------------------------------------------------------------- //
+
+// Staff Course Manage Edit
+
+router.post('/staffCourseEdit', async (req, res) => {
+    const editData = req.body;
+    // console.log('Received editData:', editData);
+
+    try {
+        const updated = await coursemapping.update(
+            {
+                // fields to update
+                staff_id: editData.staff_id,
+                staff_name: editData.staff_name,
+                category: editData.category,
+                batch: editData.batch,
+                section: editData.section,
+                dept_id: editData.dept_id,
+                degree: editData.degree,
+                dept_name: editData.dept_name,
+                semester: editData.semester,
+                course_code: editData.course_code,
+                course_title: editData.course_title,
+                active_sem: editData.academic_sem || editData.active_sem,
+            },
+            {
+                where: {
+                    s_no: editData.s_no,
+                },
+            }
+        );
+
+
+        return res.json({ok: true, updated});
+    } catch (error) {
+        console.error('Error updating staff course:', error);
+        return res.status(500).json({ok: false, error: error.message});
+    }
+})
+
+// ------------------------------------------------------------------------------------------------------- //
+
+// Staff Course Manage Delete
 
 router.delete('/deletestaff', async (req, res) => {
 
