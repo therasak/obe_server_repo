@@ -149,7 +149,7 @@ router.post('/scmsection', async (req, res) => {
             attributes: ['section', 'course_code']
         })
         const uniqueSection = [...new Set(section.map(entry => entry.section))];
-        const uniqueCourse = [...new Set(section.map(entry => entry.course_code))]; 
+        const uniqueCourse = [...new Set(section.map(entry => entry.course_code))];
 
         res.json({ section: uniqueSection, courseCode: uniqueCourse })
     }
@@ -177,7 +177,7 @@ router.post('/scmcoursetitle', async (req, res) => {
 
         const uniqueCourseTitle = [...new Set(courseTitle.map(entry => entry.course_title))];
 
-        res.json({ courseTitle: uniqueCourseTitle, batch: uniqueBatch  })
+        res.json({ courseTitle: uniqueCourseTitle, batch: uniqueBatch })
     }
     catch (error) {
         console.error('Error fetching Department Data :', error);
@@ -193,8 +193,8 @@ router.post('/scmNewStaff', async (req, res) => {
 
     try {
 
-        const { staff_id, staff_name, category, dept_id, dept_name, degree, 
-        semester, section, course_code, course_title, batch } = req.body;
+        const { staff_id, staff_name, category, dept_id, dept_name, degree,
+            semester, section, course_code, course_title, batch } = req.body;
 
         const activeAcademic = await academic.findOne({ where: { active_sem: 1 } })
 
@@ -203,8 +203,8 @@ router.post('/scmNewStaff', async (req, res) => {
         const activeSemester = activeAcademic.academic_sem;
 
         const newStaffCourse = await coursemapping.create({
-            staff_id, staff_name, category, dept_id, dept_name, 
-            degree, semester, section, course_code, course_title, 
+            staff_id, staff_name, category, dept_id, dept_name,
+            degree, semester, section, course_code, course_title,
             batch, academic_sem: activeSemester,
         })
 
@@ -215,7 +215,7 @@ router.post('/scmNewStaff', async (req, res) => {
         })
 
         res.status(201).json({ message: "Staff course mapping saved Successfully", data: newStaffCourse })
-    } 
+    }
     catch (error) {
         console.error('Error saving staff course mapping:', error);
         res.status(500).json({ error: 'Error saving staff course mapping' });
@@ -255,11 +255,11 @@ router.post('/staffCourseEdit', async (req, res) => {
         );
 
 
-        return res.json({ok: true, updated});
+        return res.json({ ok: true, updated });
     } catch (error) {
         console.error('Error updating staff course:', error);
-        return res.status(500).json({ok: false, error: error.message});
-    }
+        return res.status(500).json({ ok: false, error: error.message });
+    }
 })
 
 // ------------------------------------------------------------------------------------------------------- //
@@ -268,14 +268,21 @@ router.post('/staffCourseEdit', async (req, res) => {
 
 router.delete('/deletestaff', async (req, res) => {
 
-    const { staff_id, course_code, category, section } = req.query;
+    const { staff_id, course_code, category, section, dept_id } = req.query;
 
     try {
 
+        const activeAcademic = await academic.findOne({ where: { active_sem: 1 } })
+
+        if (!activeAcademic) { return res.status(404).json({ error: "Active academic year not found" }) }
+
+        const activeSemester = activeAcademic.academic_sem;
+        const deptName = await coursemapping.findOne({ where: { dept_id: dept_id } })
+
         const deletedStaffCourse = await coursemapping.destroy({
             where: {
-                staff_id: staff_id, course_code: course_code,
-                category: category, section: section
+                staff_id: staff_id, course_code: course_code, dept_id: dept_id,
+                category: category, section: section, academic_sem: activeSemester,
             }
         })
 
@@ -283,8 +290,8 @@ router.delete('/deletestaff', async (req, res) => {
 
         const deletedreport = await report.destroy({
             where: {
-                staff_id: staff_id, course_code: course_code,
-                category: category, section: section
+                staff_id: staff_id, course_code: course_code, dept_name: deptName.dept_name,
+                category: category, section: section, academic_sem: activeSemester,
             }
         })
 
@@ -297,5 +304,7 @@ router.delete('/deletestaff', async (req, res) => {
         res.status(500).json({ error: "Error Deleting Staff Course Entry" });
     }
 })
+
+// ------------------------------------------------------------------------------------------------------- //
 
 module.exports = router;
